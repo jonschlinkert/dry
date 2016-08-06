@@ -1,6 +1,6 @@
 # dry
 
-> Template engine with support for block helpers and advanced inheritance features.
+> Template engine with support for block helpers, advanced inheritance features, and more.
 
 WIP
 
