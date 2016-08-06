@@ -1,0 +1,26 @@
+{
+  "name": "dry",
+  "description": "Template engine with support for block helpers and advanced inheritance features.",
+  "version": "0.1.0",
+  "homepage": "https://github.com/jonschlinkert/dry",
+  "author": "Jon Schlinkert (https://github.com/jonschlinkert)",
+  "repository": "jonschlinkert/dry",
+  "bugs": {
+    "url": "https://github.com/jonschlinkert/dry/issues"
+  },
+  "license": "MIT",
+  "files": [
+    "index.js",
+    "LICENSE"
+  ],
+  "main": "index.js",
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "keywords": [
+    "dry"
+  ]
+}
