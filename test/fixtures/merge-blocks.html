@@ -1,0 +1,49 @@
+{% extends "merge-blocks" %}
+
+<!-- block -->
+
+{% block "a" %}
+a: "merge-blocks.html"
+  {% block "b" %}
+  b: "merge-blocks.html" inside
+  {% endblock %}
+{% endblock %}
+
+<!-- block -->
+
+{% block "c" %}
+c: "merge-blocks.html"
+{% endblock %}
+
+{% block "c.d" %}
+c.d: "merge-blocks.html"
+{% endblock %}
+
+<!-- block -->
+
+{% block "e" %}
+e: "merge-blocks.html"
+  {% block "f" %}
+  f: "merge-blocks.html" inside
+  {% endblock %}
+{% endblock %}
+
+{% block "e.f" %}
+e.f: "merge-blocks.html" outside
+{% endblock %}
+
+<!-- block -->
+
+{% block merge="g" %}
+g: "merge-blocks.html"
+{% endblock %}
+
+{% block "g.h" %}
+g.h: "merge-blocks.html" outside
+{% endblock %}
+
+<!-- block -->
+
+{% block merge="i" %}
+i: "merge-blocks.html"
+{% endblock %}

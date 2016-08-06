@@ -1,0 +1,26 @@
+{% extends "parent-mixed2" %}
+Only some blocks are prepended.
+
+{% block prepend="two" %}
+two: "blocks/nested-extends-mixed2.html"
+{% endblock %}
+
+{% block prepend="three" %}
+three: "blocks/nested-extends-mixed2.html"
+{% endblock %}
+
+{% block prepend="four" %}
+four: "blocks/nested-extends-mixed2.html"
+{% endblock %}
+
+{% block "five" %}
+five: "blocks/nested-extends-mixed2.html"
+{% endblock %}
+
+{% block prepend="six" %}
+six: "blocks/nested-extends-mixed2.html"
+{% endblock %}
+
+{% block prepend="seven" %}
+seven: "blocks/nested-extends-mixed2.html"
+{% endblock %}

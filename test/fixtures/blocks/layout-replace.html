@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+  {% block "head" %}
+  <head>
+    <meta charset="UTF-8">
+    <title>Body fixture</title>
+  </head>
+  {% endblock %}
+  <body>
+    {% block "body" %}
+    body: "blocks/layout-replace.html"
+    {% endblock %}
+    {% block "footer" %}
+    footer: "blocks/layout-replace.html"
+    {% endblock %}
+  </body>
+</html>

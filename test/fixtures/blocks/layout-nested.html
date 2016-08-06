@@ -1,0 +1,16 @@
+{% layout "layout-parent.html" %}
+{% block "head" %}
+<head>
+  <meta charset="UTF-8">
+  <title>Body fixture</title>
+</head>
+{% endblock %}
+
+<body>
+  {% block "body" %}
+  body: "layout-nested.html"
+  {% endblock %}
+  {% block "footer" %}
+  body: "layout-nested.html"
+  {% endblock %}
+</body>

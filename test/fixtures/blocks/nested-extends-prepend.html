@@ -1,0 +1,26 @@
+{% extends "parent-prepend" %}
+Only some blocks are prepended.
+
+{% block prepend="two" %}
+two: "blocks/nested-extends-prepend.html"
+{% endblock %}
+
+{% block prepend="three" %}
+three: "blocks/nested-extends-prepend.html"
+{% endblock %}
+
+{% block prepend="four" %}
+four: "blocks/nested-extends-prepend.html"
+{% endblock %}
+
+{% block "five" %}
+five: "blocks/nested-extends-prepend.html"
+{% endblock %}
+
+{% block prepend="six" %}
+six: "blocks/nested-extends-prepend.html"
+{% endblock %}
+
+{% block prepend="seven" %}
+seven: "blocks/nested-extends-prepend.html"
+{% endblock %}

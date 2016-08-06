@@ -16,6 +16,10 @@ function render(file, locals) {
   return file;
 }
 
+/**
+ * Expose API
+ */
+
 module.exports = render;
 module.exports.parse = parser;
 module.exports.render = render;

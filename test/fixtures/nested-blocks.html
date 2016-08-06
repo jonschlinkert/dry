@@ -1,0 +1,51 @@
+{% extends "nested-blocks" %}
+
+{% block "a" %}
+before `a.b`: "nested.blocks.html"
+  {% block "b" %}
+  a.b: "nested.blocks.html"
+  {% endblock %}
+after `a.b`: "nested.blocks.html"
+{% endblock %}
+
+{% block prepend="c" %}
+c: "nested.blocks.html"
+{% endblock %}
+
+{% block append="c" %}
+c: "nested.blocks.html"
+{% endblock %}
+
+{% block "c.d" %}
+c.d: "nested.blocks.html" outside
+{% endblock %}
+
+
+{% block "e" %}
+{% block "f" %}
+e.f: "nested.blocks.html" inside
+{% endblock %}
+{% endblock %}
+
+{% block "e.f" %}
+e.f: "nested.blocks.html" outside
+{% endblock %}
+
+
+{% block "g.h" %}
+g.h: "nested.blocks.html" outside
+{% endblock %}
+
+{% block "g" %}
+{% block "h" %}
+g.h: "nested.blocks.html" inside
+{% endblock %}
+{% endblock %}
+
+{% block prepend="i" %}
+i: "nested.blocks.html" before
+{% block append="j" %}
+i.j: "nested.blocks.html" inside
+{% endblock %}
+i: "nested.blocks.html" after
+{% endblock %}

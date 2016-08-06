@@ -1,0 +1,24 @@
+{% extends "accessors" %}
+
+<!-- block -->
+
+{% block "a" %}
+a: "accessors.html"
+  {% block "b" %}
+  b: "accessors.html" 
+  {% endblock %}
+{% endblock %}
+
+{% block "a.b" %}
+a.b: "accessors.html"
+{% endblock %}
+
+<!-- block -->
+
+{% block "c" %}
+c: "accessors.html"
+{% endblock %}
+
+{% block "c.d" %}
+c.d: "accessors.html"
+{% endblock %}

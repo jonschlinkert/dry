@@ -1,0 +1,17 @@
+{% extends "multiple-mixed" %}
+{% block "one" %}
+one: "pages/multiple.html"
+{% endblock %}
+{% block replace="two" %}
+two: "pages/multiple.html"
+{% endblock %}
+{% block append="three" %}
+three: "pages/multiple.html"
+{% endblock %}
+{% block prepend="four" %}
+four: "pages/multiple.html"
+{% endblock %}
+FIVE IS SKIPPED INTENTIONALLY
+{% block append="six" %}
+six: "pages/multiple.html"
+{% endblock %}

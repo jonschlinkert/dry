@@ -37,7 +37,12 @@
     "dry"
   ],
   "devDependencies": {
-    "gulp-format-md": "^0.1.10"
+    "gulp-format-md": "^0.1.10",
+    "matched": "^0.4.3",
+    "mocha": "^3.0.1",
+    "repeat-string": "^1.5.4",
+    "should": "^10.0.0",
+    "vinyl": "^1.2.0"
   },
   "verb": {
     "toc": false,

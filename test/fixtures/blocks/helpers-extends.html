@@ -1,0 +1,10 @@
+
+{% foo "bar" %}
+bar: "blocks/helpers-extends.html"
+{% endfoo %}
+
+{% foo "qux" %}
+  {% foo "fez" %}
+  qux.fez: "blocks/helpers-extends.html"
+  {% endfoo %}
+{% endfoo %}

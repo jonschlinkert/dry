@@ -1,0 +1,21 @@
+{% extends "nested-extends-mixed2" %}
+
+{% block prepend="one" %}
+one: "nested-extends-mixed2.html"
+{% endblock %}
+
+{% block append="two" %}
+two: "nested-extends-mixed2.html"
+{% endblock %}
+
+{% block append="five" %}
+five: "nested-extends-mixed2.html"
+{% endblock %}
+
+{% block "six" %}
+six: "nested-extends-mixed2.html"
+{% endblock %}
+
+{% block prepend="seven" %}
+seven: "nested-extends-mixed2.html"
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends "parent-append" %}
+Only some blocks are appended.
+{% block append="two" %}
+two: "blocks/nested-extends-append.html"
+{% endblock %}
+{% block append="three" %}
+three: "blocks/nested-extends-append.html"
+{% endblock %}
+{% block append="four" %}
+four: "blocks/nested-extends-append.html"
+{% endblock %}
+{% block "five" %}
+five: "blocks/nested-extends-append.html"
+{% endblock %}
+{% block append="six" %}
+six: "blocks/nested-extends-append.html"
+{% endblock %}
+{% block append="seven" %}
+seven: "blocks/nested-extends-append.html"
+{% endblock %}

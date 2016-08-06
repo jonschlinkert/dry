@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+  {% block "parent" %}
+  parent: I should be rendered
+  {% endblock %}
+  {% block "head" %}
+  head: I should NOT be rendered
+  {% endblock %}
+  {% block "body" %}
+  body: I should NOT be rendered
+  {% endblock %}
+  {% block "footer" %}
+  footer: I should NOT be rendered
+  {% endblock %}
+</html>

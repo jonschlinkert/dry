@@ -1,0 +1,28 @@
+{% block "a" %}
+a: default first
+  {% block "b" %}
+  a.b: default
+  {% endblock %}
+{% endblock %}
+
+{% block "a.b" %}
+a.b: default one
+{% endblock %}
+
+{% block "a.b" %}
+a.b: default two
+{% endblock %}
+
+{% block "a" %}
+a: default second
+{% endblock %}
+
+{% block "a" %}
+a: default third
+{% endblock %}
+
+{% block "a" %}
+  {% block "b" %}
+  a.b: default three
+  {% endblock %}
+{% endblock %}

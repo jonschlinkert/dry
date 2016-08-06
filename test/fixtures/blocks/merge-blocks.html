@@ -1,0 +1,36 @@
+
+{% block "a" %}
+a: default
+  {% block "b" %}
+  a.b: default inside block
+  {% endblock %}
+{% endblock %}
+
+{% block "c" %}
+c: default
+  {% block "d" %}
+  d: default inside block
+  {% endblock %}
+{% endblock %}
+
+{% block "e" %}
+e: default
+  {% block "f" %}
+  f: default inside block
+  {% endblock %}
+{% endblock %}
+
+{% block "g" %}
+g: default
+  {% block "h" %}
+  h: default inside block
+  {% endblock %}
+{% endblock %}
+
+{% block "i" %}
+i: default
+  {% block "j" %}
+  j: default inside block
+  {% endblock %}
+{% endblock %}
+

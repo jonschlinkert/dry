@@ -1,0 +1,15 @@
+{% extends "helpers-extends" %}
+
+{% foo "bar" %}
+bar: "helpers-extends.html"
+{% endfoo %}
+
+{% foo "baz" %}
+bar: "helpers-extends.html"
+{% endfoo %}
+
+{% foo "qux" %}
+  {% foo "fez" %}
+  qux.fez: "helpers-extends.html"
+  {% endfoo %}
+{% endfoo %}
