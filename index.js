@@ -9,10 +9,11 @@ var utils = require('./lib/utils');
  * Render
  */
 
-function render(file, locals) {
+function render(file, options) {
   debug('rendering <%s>', file.path);
-  compile(file, locals);
-  file.fn(locals);
+  var opts = utils.extend({}, options);
+  compile(file, opts);
+  file.fn(opts.locals);
   return file;
 }
 
