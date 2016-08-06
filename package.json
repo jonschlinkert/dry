@@ -25,6 +25,7 @@
   ],
   "dependencies": {
     "clone-deep": "^0.2.4",
+    "debug": "^2.2.0",
     "extend-shallow": "^2.0.1",
     "get-value": "^2.0.6",
     "isobject": "^2.1.0",
