@@ -127,9 +127,12 @@ describe('blocks', function() {
     });
   });
 
-  describe('layout tag', function() {
+  describe.only('layout tag', function() {
     createUnits({
-      'layout-tag.html': 'should inject content',
+      'layout-text-node.html': 'should inject text nodes',
+      'layout-block.html': 'should inject content from a block into a layout block',
+      'layout-block-outside-body.html': 'should inject content from a block into a layout block outside of the body block',
+      'layout-block-and-text-node.html': 'should inject blocks and text nodes',
       'layout-tag-replace.html': 'should replace content',
       'layout-tag-nested.html': 'should work with nested content',
       'layout-file-property.html': {
