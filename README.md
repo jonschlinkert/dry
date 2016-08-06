@@ -1,6 +1,8 @@
-# dry [![NPM version](https://badge.fury.io/js/dry.svg)](https://npmjs.org/package/dry) [![Build Status](https://travis-ci.org/jonschlinkert/dry.svg?branch=master)](https://travis-ci.org/jonschlinkert/dry)
+# dry
 
 > Template engine with support for block helpers and advanced inheritance features.
+
+WIP
 
 ## Installation
 
@@ -12,7 +14,6 @@ $ npm install --save dry
 
 ```js
 var dry = require('dry');
-dry();
 ```
 
 ## License
