@@ -146,6 +146,14 @@ describe('blocks', function() {
   describe('extend block', function() {
     createUnits({
       'block.html': 'should replace a block',
+      'block-file-extends.html': {
+        description: 'should extend a block defined on the file object',
+        options: {
+          file: {
+            extends: 'basic'
+          }
+        }
+      },
       'replace-block.html': 'should replace a block',
       'prepend-block.html': 'should prepend a block',
       'append-block.html': 'should append a block',
