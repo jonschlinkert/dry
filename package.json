@@ -39,8 +39,10 @@
   ],
   "devDependencies": {
     "gulp-format-md": "^0.1.10",
+    "handlebars": "^4.0.5",
     "matched": "^0.4.3",
     "mocha": "^3.0.1",
+    "parser-front-matter": "^1.5.0",
     "should": "^10.0.0",
     "vinyl": "^1.2.0"
   },

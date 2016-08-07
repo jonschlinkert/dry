@@ -1,7 +1,8 @@
 'use strict';
 
+var fs = require('fs');
+var path = require('path');
 var File = require('vinyl');
-var utils = require('../lib/utils');
 var dry = require('..');
 
 var options = {
@@ -26,7 +27,7 @@ var def = new File({
     '{% block "body" %}',
     '{% endblock %}',
     'Default after',
-    '</html>'
+    '</html>',
   ].join('\n'))
 });
 
@@ -43,26 +44,30 @@ var base = new File({
     '    {% block "body" %}',
     '    {% endblock %}',
     '    Base after',
-    '  </body>'
+    '  </body>',
   ].join('\n'))
 });
 
-var file = new File({
+var foo = new File({
   path: 'foo.html',
   contents: new Buffer([
     '{% layout "base.html" %}',
     'This is foo',
     '{% block "footer" %}',
-    '{% endblock %}'
+    '{% endblock %}',
   ].join('\n'))
 });
 
-var res = dry(file, {
-  files: {
-    'default.html': def,
-    'base.html': base,
-  }
+var files = [def, foo, base];
+options.files = {
+  'foo.html': foo,
+  'base.html': base,
+  'default.html': def
+};
+
+files.forEach(function(file) {
+  dry.parse(file, options);
 });
 
-console.log(res)
-
+var res = dry(foo, options);
+console.log(res.contents.toString());

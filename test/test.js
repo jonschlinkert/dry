@@ -125,6 +125,18 @@ describe('blocks', function() {
         cb();
       }
     });
+
+    it('should throw an error when a layout cannot be found', function(cb) {
+      try {
+        var file = createFile('error-missing-block.html', {cwd: fixtures()});
+        file.layout = 'fofofoofofofoofofof';
+        dry(file, {files: files});
+        cb(new Error('expected an error'));
+      } catch (err) {
+        assert.equal(err.message, 'cannot resolve layout "fofofoofofofoofofof"');
+        cb();
+      }
+    });
   });
 
   describe('layout tag', function() {
@@ -151,17 +163,19 @@ describe('blocks', function() {
       'block.html': 'should replace a block',
       'block-file-extends.html': {
         description: 'should extend a block defined on the file object',
-        options: {
-          file: {
-            extends: 'basic'
-          }
-        }
+        options: {file: {extends: 'basic'}}
       },
       'replace-block.html': 'should replace a block',
       'prepend-block.html': 'should prepend a block',
       'append-block.html': 'should append a block',
       'text-nodes.html': 'should not render (child) text nodes that are not inside blocks',
       'repeat.html': 'should repeat a block multiple times if defined in parent',
+    });
+  });
+
+  describe('body tag', function() {
+    createUnits({
+      'body-tag.html': 'should inject content where the body tag is positioned',
     });
   });
 
@@ -173,6 +187,7 @@ describe('blocks', function() {
 
   describe('multiple blocks', function() {
     createUnits({
+      'block-body.html': 'should replace the body block',
       'block-multiple.html': 'should replace multiple blocks',
       'replace-block-multiple.html': 'should replace multiple blocks using `replace` hash argument',
       'prepend-block-multiple.html': 'should prepend multiple blocks using `prepend` hash argument',
@@ -239,22 +254,22 @@ describe('blocks', function() {
           }
         }
       },
-      'helpers-extends-args.html': {
-        description: 'should expose helper arguments',
-        options: {
-          helpers: {
-            foo: function(name) {
-              console.log('args:', arguments);
-              // console.log('this:', this);
-              return this.fn();
-            }
-          }
-        }
-      },
+      // 'helpers-extends-args.html': {
+      //   description: 'should expose helper arguments',
+      //   options: {
+      //     helpers: {
+      //       foo: function(name) {
+      //         // console.log('args:', arguments);
+      //         // console.log('this:', this);
+      //         return this.fn();
+      //       }
+      //     }
+      //   }
+      // },
     });
   });
 
-  describe('filters', function() {
+  describe.skip('filters', function() {
     createUnits({
       'filter.html': {
         description: 'should return an empty string when variable is not on the context',
