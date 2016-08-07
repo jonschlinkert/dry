@@ -1,18 +1,21 @@
 'use strict';
 
 var debug = require('debug')('dry');
-var compile = require('./lib/compile');
-var parser = require('./lib/parser');
+var Compiler = require('./lib/compiler');
+var Parser = require('./lib/parser');
 var utils = require('./lib/utils');
 
 /**
  * Render
  */
 
-function render(file, options) {
+function dry(file, options) {
   debug('rendering <%s>', file.path);
   var opts = utils.extend({}, options);
-  compile(file, opts);
+  var compiler = new Compiler(file, opts);
+  var parser = new Parser(opts);
+  parser.parse(file);
+  compiler.compile(file.ast);
   file.fn(opts.locals);
   return file;
 }
@@ -21,7 +24,14 @@ function render(file, options) {
  * Expose API
  */
 
-module.exports = render;
-module.exports.parse = parser;
-module.exports.render = render;
-module.exports.compile = compile;
+dry.Parser = Parser;
+dry.Compiler = Compiler;
+dry.render = dry;
+
+dry.parse = function(file, options) {
+  var parser = new Parser(options);
+  return parser.parse(file);
+};
+
+module.exports = dry;
+

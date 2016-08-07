@@ -10,7 +10,7 @@ var assert = require('assert');
 var should = require('should');
 var glob = require('matched');
 var File = require('vinyl');
-var blocks = require('..');
+var dry = require('..');
 
 var fixtures = path.join.bind(path, __dirname, 'fixtures');
 
@@ -47,7 +47,7 @@ function loadBlocks(patterns, options) {
           ast = val;
         },
         get: function() {
-          return ast || (ast = blocks.parse(this, opts));
+          return ast || (ast = dry.parse(this, opts));
         }
       });
 
@@ -78,7 +78,7 @@ function createUnit(name, description) {
       }
     }
 
-    var res = blocks(file, opts);
+    var res = dry(file, opts);
     var val = opts.expected;
     if (typeof val === 'undefined') {
       val = expected(name);
@@ -107,7 +107,7 @@ describe('blocks', function() {
     it('should throw an error when multiple extends are defined', function(cb) {
       var file = createFile('error-multiple-extends.html', {cwd: fixtures()});
       try {
-        blocks(file, {files: files});
+        dry(file, {files: files});
         cb(new Error('expected an error'));
       } catch (err) {
         assert.equal(err.message, 'only one "extends" tag may be defined per template');
@@ -118,7 +118,7 @@ describe('blocks', function() {
     it('should throw an error when extend is defined and the template cannot be found', function(cb) {
       var file = createFile('error-missing-block.html', {cwd: fixtures()});
       try {
-        blocks(file, {files: files});
+        dry(file, {files: files});
         cb(new Error('expected an error'));
       } catch (err) {
         assert.equal(err.message, 'tag "extends" cannot find "missing", in error-missing-block.html');
@@ -127,7 +127,7 @@ describe('blocks', function() {
     });
   });
 
-  describe.only('layout tag', function() {
+  describe('layout tag', function() {
     createUnits({
       'layout-text-node.html': 'should inject text nodes',
       'layout-block.html': 'should inject content from a block into a layout block',
@@ -160,7 +160,7 @@ describe('blocks', function() {
       'replace-block.html': 'should replace a block',
       'prepend-block.html': 'should prepend a block',
       'append-block.html': 'should append a block',
-      'text-nodes.html': 'should not render nodes that are not inside blocks',
+      'text-nodes.html': 'should not render (child) text nodes that are not inside blocks',
       'repeat.html': 'should repeat a block multiple times if defined in parent',
     });
   });
@@ -229,18 +229,28 @@ describe('blocks', function() {
           }
         }
       },
-      // 'helpers-extends.html': {
-      //   description: 'should extend another helper block',
-      //   options: {
-      //     helpers: {
-      //       foo: function() {
-      //         console.log('args:', arguments);
-      //         console.log('this:', this);
-      //         return this.fn();
-      //       }
-      //     }
-      //   }
-      // },
+      'helpers-extends.html': {
+        description: 'should extend another helper block',
+        options: {
+          helpers: {
+            foo: function() {
+              return this.fn();
+            }
+          }
+        }
+      },
+      'helpers-extends-args.html': {
+        description: 'should expose helper arguments',
+        options: {
+          helpers: {
+            foo: function(name) {
+              // console.log('args:', arguments);
+              // console.log('this:', this);
+              return this.fn();
+            }
+          }
+        }
+      },
     });
   });
 

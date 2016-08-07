@@ -3,47 +3,47 @@
 <!-- block -->
 
 {% block "a" %}
-a: "merge-blocks.html"
+a: child
   {% block "b" %}
-  b: "merge-blocks.html" inside
+  b: child inside
   {% endblock %}
 {% endblock %}
 
 <!-- block -->
 
 {% block "c" %}
-c: "merge-blocks.html"
+c: child
 {% endblock %}
 
 {% block "c.d" %}
-c.d: "merge-blocks.html"
+c.d: child
 {% endblock %}
 
 <!-- block -->
 
 {% block "e" %}
-e: "merge-blocks.html"
+e: child
   {% block "f" %}
-  f: "merge-blocks.html" inside
+  f: child inside
   {% endblock %}
 {% endblock %}
 
 {% block "e.f" %}
-e.f: "merge-blocks.html" outside
+e.f: child outside
 {% endblock %}
 
 <!-- block -->
 
 {% block merge="g" %}
-g: "merge-blocks.html"
+g: child
 {% endblock %}
 
 {% block "g.h" %}
-g.h: "merge-blocks.html" outside
+g.h: child outside
 {% endblock %}
 
 <!-- block -->
 
 {% block merge="i" %}
-i: "merge-blocks.html"
+i: child
 {% endblock %}

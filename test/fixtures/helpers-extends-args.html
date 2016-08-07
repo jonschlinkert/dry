@@ -1,11 +1,11 @@
 {% extends "helpers-extends" %}
 
-{% foo "two" %}
+{% foo "two" "yes" %}
 √ two:child
 {% endfoo %}
 
-{% foo "three" %}
-  {% foo "four" %}
+{% foo "three" "yes" %}
+  {% foo "four" "yes" %}
   √ three.four:child
   {% endfoo %}
 {% endfoo %}

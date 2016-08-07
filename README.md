@@ -2,7 +2,7 @@
 
 > Template engine with support for block helpers, advanced inheritance features, and more.
 
-WIP
+WIP. This isn't production-ready, but the inheritance features are implemented if you feel like playing aroudn with the [unit tests](test).
 
 ## Installation
 
