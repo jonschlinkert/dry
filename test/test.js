@@ -244,7 +244,7 @@ describe('blocks', function() {
         options: {
           helpers: {
             foo: function(name) {
-              // console.log('args:', arguments);
+              console.log('args:', arguments);
               // console.log('this:', this);
               return this.fn();
             }
