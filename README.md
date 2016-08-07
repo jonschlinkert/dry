@@ -122,7 +122,7 @@ I will NOT render
 Layouts use blocks, but the strategy for merging them differs in important ways:
 
 * **blocks**: content defined in blocks works the same way as with `extends`
-* **text nodes** from child and parent templates are preserved. Text nodes from child templates that do not belong to a specific block will be rendered into the `body` block of the parent layout
+* **text nodes** from child and parent templates are preserved, and text nodes from child templates that do not belong to a specific block will be rendered into the `body` block of the parent layout
 
 **Defining layouts**
 
