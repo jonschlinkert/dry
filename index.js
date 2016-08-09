@@ -12,10 +12,8 @@ var utils = require('./lib/utils');
 function dry(file, options) {
   debug('rendering <%s>', file.path);
   var opts = utils.extend({}, options);
-  var compiler = new Compiler(file, opts);
-  var parser = new Parser(opts);
-  parser.parse(file);
-  compiler.compile(file.ast);
+  dry.parse(file, opts);
+  dry.compile(file, opts);
   file.fn(opts.locals);
   return file;
 }
@@ -31,6 +29,13 @@ dry.render = dry;
 dry.parse = function(file, options) {
   var parser = new Parser(options);
   return parser.parse(file);
+};
+
+dry.compile = function(file, options) {
+  var compiler = new Compiler(file, options);
+  var str = compiler.compile(file.ast, options);
+  file.contents = new Buffer(str);
+  return file;
 };
 
 module.exports = dry;

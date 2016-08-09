@@ -185,6 +185,12 @@ describe('blocks', function() {
     });
   });
 
+  describe('other blocks', function() {
+    createUnits({
+      'other-blocks.html': 'should not match block names that aren\'t explicitly registered',
+    });
+  });
+
   describe('multiple blocks', function() {
     createUnits({
       'block-body.html': 'should replace the body block',
@@ -254,18 +260,18 @@ describe('blocks', function() {
           }
         }
       },
-      // 'helpers-extends-args.html': {
-      //   description: 'should expose helper arguments',
-      //   options: {
-      //     helpers: {
-      //       foo: function(name) {
-      //         // console.log('args:', arguments);
-      //         // console.log('this:', this);
-      //         return this.fn();
-      //       }
-      //     }
-      //   }
-      // },
+      'helpers-extends-args.html': {
+        description: 'should expose helper arguments',
+        options: {
+          helpers: {
+            foo: function(name) {
+              // console.log('args:', arguments);
+              // console.log('this:', this);
+              return this.fn();
+            }
+          }
+        }
+      },
     });
   });
 
