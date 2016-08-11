@@ -3,6 +3,7 @@
 var debug = require('debug')('dry');
 var Compiler = require('./lib/compiler');
 var Parser = require('./lib/parser');
+var Lexer = require('./lib/lexer');
 var utils = require('./lib/utils');
 
 /**
@@ -22,19 +23,21 @@ function dry(file, options) {
  * Expose API
  */
 
+dry.Lexer = Lexer;
 dry.Parser = Parser;
 dry.Compiler = Compiler;
 dry.render = dry;
 
 dry.parse = function(file, options) {
-  var parser = new Parser(options);
-  return parser.parse(file);
+  var parser = new Parser(file, options);
+  return parser.parse();
 };
 
 dry.compile = function(file, options) {
   var compiler = new Compiler(file, options);
   var str = compiler.compile(file.ast, options);
   file.contents = new Buffer(str);
+  file.content = str;
   return file;
 };
 

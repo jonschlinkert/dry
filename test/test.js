@@ -223,7 +223,7 @@ describe('blocks', function() {
     });
   });
 
-  describe('merge blocks', function() {
+  describe.only('merge blocks', function() {
     createUnits({
       'merge-blocks.html': 'should merge blocks',
     });
