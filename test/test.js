@@ -85,6 +85,7 @@ function createUnit(name, description) {
     }
 
     var str = res.contents.toString();
+    // console.log(str);
     assert.equal(str, val);
   });
 }
@@ -161,6 +162,7 @@ describe('blocks', function() {
   describe('extend block', function() {
     createUnits({
       'block.html': 'should replace a block',
+      'block-indent.html': 'should indent a block',
       'block-file-extends.html': {
         description: 'should extend a block defined on the file object',
         options: {file: {extends: 'basic'}}
@@ -223,7 +225,7 @@ describe('blocks', function() {
     });
   });
 
-  describe.only('merge blocks', function() {
+  describe('merge blocks', function() {
     createUnits({
       'merge-blocks.html': 'should merge blocks',
     });
