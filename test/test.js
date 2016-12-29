@@ -107,7 +107,7 @@ describe('blocks', function() {
     it('should throw an error when multiple extends are defined', function(cb) {
       var file = createFile('error-multiple-extends.html', {cwd: fixtures()});
       try {
-        dry(file, {files: files});
+        dry(file, {files: files, strict: true});
         cb(new Error('expected an error'));
       } catch (err) {
         assert.equal(err.message, 'only one "extends" tag may be defined per template');
