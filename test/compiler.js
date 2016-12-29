@@ -4,7 +4,6 @@ require('mocha');
 var fs = require('fs');
 var path = require('path');
 var assert = require('assert');
-var should = require('should');
 var File = require('vinyl');
 var Lexer = require('../lib/lexer');
 var Compiler = require('../lib/compiler');

@@ -7,7 +7,6 @@ var extend = require('extend-shallow');
 var merge = require('mixin-deep');
 var repeat = require('repeat-string');
 var assert = require('assert');
-var should = require('should');
 var glob = require('matched');
 var File = require('vinyl');
 var dry = require('..');
@@ -155,7 +154,7 @@ describe('blocks', function() {
             layout: 'layout-default.html'
           }
         }
-      },
+      }
     });
   });
 
@@ -171,25 +170,25 @@ describe('blocks', function() {
       'prepend-block.html': 'should prepend a block',
       'append-block.html': 'should append a block',
       'text-nodes.html': 'should not render (child) text nodes that are not inside blocks',
-      'repeat.html': 'should repeat a block multiple times if defined in parent',
+      'repeat.html': 'should repeat a block multiple times if defined in parent'
     });
   });
 
   describe('body tag', function() {
     createUnits({
-      'body-tag.html': 'should inject content where the body tag is positioned',
+      'body-tag.html': 'should inject content where the body tag is positioned'
     });
   });
 
   describe('missing blocks', function() {
     createUnits({
-      'blocks-missing.html': 'should not render blocks that are not defined in the parent template',
+      'blocks-missing.html': 'should not render blocks that are not defined in the parent template'
     });
   });
 
   describe('other blocks', function() {
     createUnits({
-      'other-blocks.html': 'should not match block names that aren\'t explicitly registered',
+      'other-blocks.html': 'should not match block names that aren\'t explicitly registered'
     });
   });
 
@@ -200,7 +199,7 @@ describe('blocks', function() {
       'replace-block-multiple.html': 'should replace multiple blocks using `replace` hash argument',
       'prepend-block-multiple.html': 'should prepend multiple blocks using `prepend` hash argument',
       'append-block-multiple.html': 'should append multiple blocks using `append` hash argument',
-      'mixed-multiple.html': 'should replace, append or prepend multiple blocks',
+      'mixed-multiple.html': 'should replace, append or prepend multiple blocks'
     });
   });
 
@@ -211,7 +210,7 @@ describe('blocks', function() {
       'nested-extends-append-stacked.html': 'should stack appended nested extends',
       'nested-extends-prepend.html': 'should prepend nested extends',
       'nested-extends-mixed.html': 'should replace, append or prepend multiple nested blocks',
-      'nested-extends-mixed2.html': 'should replace, append or prepend multiple nested blocks2',
+      'nested-extends-mixed2.html': 'should replace, append or prepend multiple nested blocks2'
     });
   });
 
@@ -221,13 +220,13 @@ describe('blocks', function() {
       'nested-blocks-prepend.html': 'prepend',
       'nested-blocks-append.html': 'append',
       'nested-blocks-append-repeat.html': 'append-repeat',
-      'accessors.html': 'accessors',
+      'accessors.html': 'accessors'
     });
   });
 
   describe('merge blocks', function() {
     createUnits({
-      'merge-blocks.html': 'should merge blocks',
+      'merge-blocks.html': 'should merge blocks'
     });
   });
 
@@ -273,7 +272,7 @@ describe('blocks', function() {
             }
           }
         }
-      },
+      }
     });
   });
 
@@ -285,7 +284,7 @@ describe('blocks', function() {
           expected: ''
         }
       },
-      'filter.html': {
+      'filter2.html': {
         description: 'should use a filter function',
         options: {
           locals: {title: 'doowb'},
