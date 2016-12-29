@@ -1,7 +1,7 @@
 {
   "name": "dry",
   "description": "Template engine with support for block helpers, advanced inheritance features, and more.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "homepage": "https://github.com/jonschlinkert/dry",
   "author": "Jon Schlinkert (https://github.com/jonschlinkert)",
   "repository": "jonschlinkert/dry",
