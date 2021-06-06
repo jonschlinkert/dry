@@ -1,0 +1,27 @@
+{
+  "name": "dry",
+  "description": "Node.js library and API for dry",
+  "version": "0.0.0",
+  "private": true,
+  "main": "index.js",
+  "engines": {
+    "node": ">=10"
+  },
+  "license": "MIT",
+  "scripts": {
+    "test": "mocha --recursive"
+  },
+  "devDependencies": {
+    "@babel/eslint-parser": "^7.14.4",
+    "@babel/eslint-plugin": "^7.13.16",
+    "mocha": "^8.4.0",
+    "string-width": "^2.1.1"
+  },
+  "dependencies": {
+    "expand-value": "file:../../js-utils/objects/expand-value",
+    "export-files": "file:../../path-utils/export-files",
+    "fill-range": "^7.0.1",
+    "is-number": "^7.0.0",
+    "set-value": "^4.0.0"
+  }
+}
