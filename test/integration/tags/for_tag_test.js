@@ -103,7 +103,7 @@ describe('for_tag_test', () => {
     assert_template_result(' false  false  true ', '{%for item in array%} {{forloop.last}} {%endfor%}', assigns);
   });
 
-  it.only('test_for_and_if', () => {
+  it('test_for_and_if', () => {
     const assigns = { array: [1, 2, 3] };
     assert_template_result(
       '+--',
