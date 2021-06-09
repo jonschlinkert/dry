@@ -24,7 +24,7 @@ describe('variabe_test', () => {
 
   it('test_variable_lookup_calls_to_liquid_value', () => {
     assert_template_result('1', '{{ foo }}', { foo: new IntegerDrop('1') });
-    assert_template_result('3', '{{ list[foo] }}', { foo: new IntegerDrop('2'), list: [1, 2, 3] });
+    assert_template_result('2', '{{ list[foo] }}', { foo: new IntegerDrop('1'), list: [1, 2, 3] });
     assert_template_result('one', '{{ list[foo] }}', { foo: new IntegerDrop('1'), list: { 1: 'one' } });
     assert_template_result('Yay', '{{ foo }}', { foo: new BooleanDrop(true) });
     assert_template_result('YAY', '{{ foo | upcase }}', { foo: new BooleanDrop(true) });

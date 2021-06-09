@@ -21,7 +21,10 @@
     "expand-value": "file:../../js-utils/objects/expand-value",
     "export-files": "file:../../path-utils/export-files",
     "fill-range": "^7.0.1",
+    "get-value": "^3.0.1",
     "is-number": "^7.0.0",
-    "set-value": "^4.0.0"
+    "kind-of": "^6.0.3",
+    "set-value": "^4.0.0",
+    "yaml": "^1.10.2"
   }
 }

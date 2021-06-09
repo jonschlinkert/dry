@@ -1,28 +1,8 @@
 'use strict';
 
-const assert = require('assert').strict;
+const { assert_raises, assert_template_result } = require('../../test_helpers');
 const Dry = require('../../..');
-const {
-  Template,
-  nodes: { Conditional }
-} = Dry;
-
-const assert_template_result = (expected, input, locals) => {
-  const template = new Template();
-  template.parse(input);
-  assert.equal(template.render(locals), expected);
-};
-
-const assert_raises = (ErrorClass, fn) => {
-  try {
-    fn();
-  } catch (err) {
-    assert(err instanceof ErrorClass);
-    return err;
-  }
-
-  return {};
-};
+const { nodes: { Condition } } = Dry;
 
 describe('if_else_tag_test', () => {
   it('test_if', () => {
@@ -161,25 +141,25 @@ describe('if_else_tag_test', () => {
   });
 
   it('test_if_with_custom_condition', () => {
-    const original_op = Conditional.operators['contains'];
-    Conditional.operators['contains'] = {};
+    const original_op = Condition.operators['contains'];
+    Condition.operators['contains'] = {};
 
     try {
       assert_template_result('yes', '{% if "bob" contains "o" %}yes{% endif %}');
       assert_template_result('no', '{% if "bob" contains "f" %}yes{% else %}no{% endif %}');
     } catch (err) {
-      Conditional.operators['contains'] = original_op;
+      Condition.operators['contains'] = original_op;
     }
   });
 
   it('test_operators_are_ignored_unless_isolated', () => {
-    const original_op = Conditional.operators['contains'];
-    Conditional.operators['contains'] = {};
+    const original_op = Condition.operators['contains'];
+    Condition.operators['contains'] = {};
 
     try {
       assert_template_result('yes', '{% if "gnomeslab-and-or-liquid" contains "gnomeslab-and-or-liquid" %}yes{% endif %}');
     } catch (err) {
-      Conditional.operators['contains'] = original_op;
+      Condition.operators['contains'] = original_op;
     }
   });
 

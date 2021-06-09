@@ -79,12 +79,12 @@ class BooleanDrop extends Dry.Drop {
     return this.value;
   }
 
-  toString() {
+  to_s() {
     return this.value ? 'Yay' : 'Nay';
   }
 
-  to_s() {
-    return this.toString();
+  toString() {
+    return this.to_s();
   }
 }
 
@@ -147,11 +147,66 @@ const with_error_mode = (mode, options, cb) => {
   }
 };
 
+const with_global_filter = (...globals) => {
+  const factory = Dry.StrainerFactory;
+  const original_global_filters = factory.global_filters;
+  const block = globals.pop();
+
+  factory.global_filters = [];
+
+  try {
+    globals.forEach(filters => {
+      factory.add_global_filter(filters);
+    });
+
+    factory.strainer_class_cache.clear();
+
+    globals.forEach(filters => {
+      Dry.Template.register_filter(filters);
+    });
+
+    block();
+  } catch (err) {
+    console.log(err);
+  } finally {
+    factory.strainer_class_cache.clear();
+    factory.global_filters = original_global_filters;
+  }
+};
+
+// const with_global_filter = (...globals) => {
+//   const factory = Dry.StrainerFactory;
+//   const original_global_filters = factory.global_filters;
+//   const block = globals.pop();
+
+//   factory.global_filters = [];
+
+//   try {
+//     for (const g of globals) {
+//       factory.add_global_filter(g);
+//     }
+
+//     factory.strainer_class_cache.clear();
+
+//     for (const g of globals) {
+//       Dry.Template.register_filter(g);
+//     }
+
+//     return block();
+//   } catch (err) {
+//     console.log(err);
+//   } finally {
+//     factory.strainer_class_cache.clear();
+//     factory.global_filters = original_global_filters;
+//   }
+// };
+
 module.exports = {
   // Helpers
   assert_raises,
   assert_template_result,
   with_error_mode,
+  with_global_filter,
 
   // Drops
   BooleanDrop,

@@ -1,25 +1,9 @@
 'use strict';
 
 const assert = require('assert').strict;
+const { assert_raises, assert_template_result } = require('../../test_helpers');
 const Dry = require('../../..');
 const { Template } = Dry;
-
-const assert_template_result = (expected, input, locals) => {
-  const template = new Template();
-  template.parse(input);
-  assert.equal(template.render(locals), expected);
-};
-
-const assert_raises = (ErrorClass, fn) => {
-  try {
-    fn();
-  } catch (err) {
-    assert(err instanceof ErrorClass);
-    return err;
-  }
-
-  return {};
-};
 
 class ThingWithValue extends Dry.Drop {
   get value() {
