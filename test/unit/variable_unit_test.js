@@ -10,14 +10,20 @@ const create_variable = (markup, options = {}) => {
   return new Variable(markup, new State(options));
 };
 
-const deep_filter = arr => {
+const filter_args = arr => {
   return arr.reduce((a, v) => {
     if (Array.isArray(v)) {
-      a.push(deep_filter(v));
+      a.push(filter_args(v));
       return a;
     }
 
     if (v instanceof Map) {
+      if (v.size === 0) return a;
+      const obj = {};
+      for (const [k, val] of v) {
+        obj[k] = val;
+      }
+      a.push(obj);
       return a;
     }
 
@@ -27,10 +33,10 @@ const deep_filter = arr => {
 };
 
 const assert_equal_filters = (expected, actual, message) => {
-  assert.deepEqual(deep_filter(actual), expected);
+  assert.deepEqual(filter_args(actual), expected);
 };
 
-describe.only('variable_unit_test', () => {
+describe('variable_unit_test', () => {
   it('test_test_variable', () => {
     const v = create_variable('hello');
     assert.deepEqual(new VariableLookup('hello'), v.name);
@@ -100,7 +106,8 @@ describe.only('variable_unit_test', () => {
 
   it('test_symbol', () => {
     const v = create_variable("http://disney.com/logo.gif | image: 'med' ", { error_mode: 'lax' });
-    assert.deepEqual(new VariableLookup('http://disney.com/logo.gif'), v.name);
+    const expected = new VariableLookup('http://disney.com/logo.gif');
+    assert.deepEqual(v.name, expected);
     assert_equal_filters([['image', ['med']]], v.filters);
   });
 
@@ -142,7 +149,7 @@ describe.only('variable_unit_test', () => {
   });
 
   it('test_string_with_special_chars', () => {
-    const v = create_variable('"hello! $!this..;"ddasd" "');
+    const v = create_variable(" 'hello! $!this..;\"ddasd\" ' ");
     assert.deepEqual('hello! $!this..;"ddasd" ', v.name);
   });
 
@@ -152,7 +159,7 @@ describe.only('variable_unit_test', () => {
   });
 
   it('test_filter_with_keyword_arguments', () => {
-    const v = create_variable('hello | things: greeting: "world", farewell: "goodbye"');
+    const v = create_variable(' hello | things: greeting: "world", farewell: \'goodbye\'');
     assert.deepEqual(new VariableLookup('hello'), v.name);
     assert_equal_filters([['things', [], { greeting: 'world', farewell: 'goodbye' }]], v.filters);
   });
@@ -179,9 +186,8 @@ describe.only('variable_unit_test', () => {
     assert.deepEqual(' name_of_variable | upcase ', v.raw);
   });
 
-  it.only('test_variable_lookup_interface', () => {
+  it('test_variable_lookup_interface', () => {
     const lookup = new VariableLookup('a.b.c');
-    console.log(lookup.lookups)
     assert.deepEqual('a', lookup.name);
     assert.deepEqual(['b', 'c'], lookup.lookups);
   });

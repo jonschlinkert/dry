@@ -174,7 +174,7 @@ const with_error_mode = (mode, options, cb) => {
     Dry.Template.error_mode = mode;
     cb();
   } catch (err) {
-    if (options.silent !== true) {
+    if (options && options.silent !== true) {
       console.log(err);
     }
   } finally {
