@@ -1,7 +1,7 @@
 'use strict';
 
 const assert = require('assert').strict;
-const Parser = require('../../lib/expression/Parser');
+const Parser = require('../../lib/expressions/Parser');
 const Dry = require('../..');
 const { Context, Expression, Template } = Dry;
 

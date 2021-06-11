@@ -4,8 +4,9 @@
 const assert = require('assert').strict;
 const { assert_raises, assert_template_result, ThingWithToLiquid } = require('../test_helpers');
 const Dry = require('../..');
-const { StandardFilters, Template, utils } = Dry;
-const filters = StandardFilters;
+const { Context, StandardFilters, Template, utils } = Dry;
+const orig_filters = { ...StandardFilters };
+let filters;
 
 class TestThing {
   constructor() {
@@ -73,6 +74,17 @@ const with_timezone = (tz, callback) => {
 };
 
 describe('standard_filters_test', () => {
+  beforeEach(() => {
+    filters = {};
+    for (const [key, value] of Object.entries(orig_filters)) {
+      filters[key] = function(...args) {
+        const ctx = this || {};
+        ctx.context = ctx.context || new Context();
+        return value.call(ctx, ...args);
+      };
+    }
+  });
+
   it('test_size', () => {
     assert.equal(3, filters.size([1, 2, 3]));
     assert.equal(0, filters.size([]));
@@ -161,14 +173,13 @@ describe('standard_filters_test', () => {
     assert.equal('', filters.base64_encode(null));
   });
 
-  it.skip('test_base64_decode', () => {
+  it('test_base64_decode', () => {
     assert.equal('one two three', filters.base64_decode('b25lIHR3byB0aHJlZQ=='));
-
     assert.throws(() => filters.base64_decode('invalidbase64'), Dry.ArgumentError);
     assert.throws(() => filters.base64_decode('invalidbase64'), /invalid base64/);
   });
 
-  it.skip('test_base64_url_safe_encode', () => {
+  it('test_base64_url_safe_encode', () => {
     const fixture = 'abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 1234567890 !@#$%^&*()-=_+/?.:;[]{}\\|';
     const expected = 'YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXogQUJDREVGR0hJSktMTU5PUFFSU1RVVldYWVogMTIzNDU2Nzg5MCAhQCMkJV4mKigpLT1fKy8_Ljo7W117fVx8';
 
@@ -176,11 +187,13 @@ describe('standard_filters_test', () => {
     assert.equal('', filters.base64_url_safe_encode(null));
   });
 
-  it.skip('test_base64_url_safe_decode', () => {
+  it('test_base64_url_safe_decode', () => {
     assert.equal('abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 1234567890 !@#$%^&*()-=_+/?.:;[]{}\\|', filters.base64_url_safe_decode('YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXogQUJDREVGR0hJSktMTU5PUFFSU1RVVldYWVogMTIzNDU2Nzg5MCAhQCMkJV4mKigpLT1fKy8_Ljo7W117fVx8'));
+
     const exception = assert_raises(Dry.ArgumentError, () => {
       filters.base64_url_safe_decode('invalidbase64');
     });
+
     assert.equal('Dry error: invalid base64 provided to base64_url_safe_decode', exception.message);
   });
 
@@ -200,9 +213,9 @@ describe('standard_filters_test', () => {
     assert.equal(filters.url_decode(null), null);
   });
 
-  it.skip('test_url_decode_errors', () => {
+  it('test_url_decode_errors', () => {
     assert.throws(() => filters.url_decode('%ff'), Dry.ArgumentError);
-    assert.throws(() => filters.url_decode('%ff'), /invalid byte sequence in UTF-8/);
+    assert.throws(() => filters.url_decode('%ff'), /invalid byte sequence/);
   });
 
   it('test_truncatewords', () => {
@@ -217,9 +230,10 @@ describe('standard_filters_test', () => {
     assert.equal('one...', filters.truncatewords('one two three four', 0));
   });
 
-  it.skip('test_truncatewords_errors', () => {
-    assert.throws(() => filters.truncatewords('one two three four', 1 << 31), Dry.ArgumentError);
-    assert.throws(() => filters.truncatewords('one two three four', 1 << 31), /too big for truncatewords/);
+  it('test_truncatewords_errors', () => {
+    const max = Number.MAX_SAFE_INTEGER;
+    assert.throws(() => filters.truncatewords('one two three four', max + 1), Dry.ArgumentError);
+    assert.throws(() => filters.truncatewords('one two three four', max + 1), /too big for truncatewords/);
   });
 
   it('test_strip_html', () => {
@@ -441,12 +455,12 @@ describe('standard_filters_test', () => {
     assert_template_result('123', '{{ foo | map: "foo" }}', { foo: new TestEnumerable() });
   });
 
-  it.skip('test_map_returns_empty_on_2d_input_array', () => {
+  it('test_map_returns_empty_on_2d_input_array', () => {
     const foo = [[1], [2], [3]];
     assert.throws(() => filters.map(foo, 'bar'), Dry.ArgumentError);
   });
 
-  it.skip('test_map_returns_empty_with_no_property', () => {
+  it('test_map_returns_empty_with_no_property', () => {
     const foo = [[1], [2], [3]];
     assert.throws(() => filters.map(foo, null), Dry.ArgumentError);
   });
@@ -599,7 +613,7 @@ describe('standard_filters_test', () => {
     assert_template_result('5', '{{ price | divided_by:2 }}', { price: new NumberLikeThing(10) });
   });
 
-  it.skip('test_divided_by_errors', () => {
+  it('test_divided_by_errors', () => {
     assert.equal('Dry error: cannot divide by zero', Template.parse('{{ 5 | divided_by:0 }}').render());
     assert.throws(() => assert_template_result('', '{{ 5 | divided_by:0 }}'), Dry.ZeroDivisionError);
     assert.throws(() => assert_template_result('4', '{{ 1 | modulo: 0 }}'), Dry.ZeroDivisionError);
@@ -610,7 +624,7 @@ describe('standard_filters_test', () => {
     assert_template_result('1', '{{ price | modulo:2 }}', { price: new NumberLikeThing(3) });
   });
 
-  it.skip('test_modulo_error', () => {
+  it('test_modulo_error', () => {
     assert.throws(() => assert_template_result('4', '{{ 1 | modulo: 0 }}'), Dry.ZeroDivisionError);
   });
 
@@ -623,8 +637,10 @@ describe('standard_filters_test', () => {
     assert_template_result('4', '{{ price | round }}', { price: new NumberLikeThing(4.3) });
   });
 
-  it.skip('test_round_float_domain_error', () => {
-    assert.throws(() => assert_template_result('4', '{{ 1.0 | divided_by: 0.0 | round }}'), Dry.FloatDomainError);
+  it('test_round_float_domain_error', () => {
+    // in ruby this was a FloatDomainError, but in js we're throwing a ZeroDivisionError
+    // since floats do not retain decimals when the value is zero
+    assert.throws(() => assert_template_result('4', '{{ 1.0 | divided_by: 0.0 | round }}'), Dry.ZeroDivisionError);
   });
 
   it('test_ceil', () => {
@@ -634,10 +650,10 @@ describe('standard_filters_test', () => {
     assert_template_result('5', '{{ price | ceil }}', { price: new NumberLikeThing(4.6) });
   });
 
-  it.skip('test_ceil_float_domain_error', () => {
+  it('test_ceil_float_domain_error', () => {
     assert.throws(() => {
       assert_template_result('4', '{{ 1.0 | divided_by: 0.0 | ceil }}');
-    }, Dry.FloatDomainError);
+    }, Dry.ZeroDivisionError);
   });
 
   it('test_floor', () => {
@@ -647,10 +663,10 @@ describe('standard_filters_test', () => {
     assert_template_result('5', '{{ price | floor }}', { price: new NumberLikeThing(5.4) });
   });
 
-  it.skip('test_floor_float_domain_error', () => {
+  it('test_floor_float_domain_error', () => {
     assert.throws(() => {
       assert_template_result('4', '{{ 1.0 | divided_by: 0.0 | floor }}');
-    }, Dry.FloatDomainError);
+    }, Dry.ZeroDivisionError);
   });
 
   it('test_at_most', () => {
@@ -820,24 +836,27 @@ describe('standard_filters_test', () => {
       ['foo', 123, null, true, false, Dry.Drop, ['foo'], { foo: 'bar' }]
     ];
 
-    // console.log(filters.methods)
-
-    // test_types.forEach(first => {
-    //   test_types.forEach(other => {
-    //     (filters.methods - Object.methods).each do |method|
-    //       let arg_count = filters.method(method).length
-    //       if (arg_count < 0) arg_count *= -1
-    //       const inputs = [first]
-    //       if (arg_count > 1) inputs.push([other] * (arg_count - 1))
-    //       try {
-    //         return filters[method](...inputs);
-    //       catch(err) {
-    //         // Dry.ArgumentError, Dry.ZeroDivisionError
-    //         return null
-    //       }
-    //     }
-    //   });
-    // });
+    test_types.forEach(first => {
+      test_types.forEach(other => {
+        Object.keys(filters).forEach(method => {
+          const filter = filters[method];
+          if (typeof filter !== 'function') return;
+          // let arg_count = filter.length;
+          // if (arg_count < 0) arg_count *= -1;
+          const inputs = [first, other];
+          // if (arg_count > 1) inputs.push([other] * (arg_count - 1));
+          try {
+            return filter(...inputs);
+          } catch (err) {
+            if (!(err instanceof Dry.DryError)) {
+              console.log(err);
+            }
+            // Dry.ArgumentError, Dry.ZeroDivisionError
+            return null;
+          }
+        });
+      });
+    });
   });
 
   it('test_where_no_target_value', () => {

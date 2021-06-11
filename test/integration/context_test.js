@@ -4,19 +4,7 @@ const assert = require('assert').strict;
 const { with_error_mode, with_global_filter } = require('../test_helpers');
 const Dry = require('../..');
 const { Context, Drop, ResourceLimits, StaticRegisters, Template } = Dry;
-
-const assert_no_object_allocations = () => {
-  throw new Error('assert_no_object_allocations() not implemented yet');
-  // unless RUBY_ENGINE == 'ruby'
-  //   skip("stackprof needed to count object allocations")
-  // }
-  // require 'stackprof'
-
-  // profile = StackProf.run(mode: :object) do
-  //   yield
-  // }
-  // assert.equal(0, profile[kSamples])
-};
+const { today } = Dry.utils;
 
 class HundredCentes {
   to_liquid() {
@@ -36,8 +24,7 @@ class CentsDrop extends Drop {
 
 class ContextSensitiveDrop extends Drop {
   get test() {
-    console.log(this.context)
-    return this.context['test'];
+    return this.context.get('test');
   }
 }
 
@@ -72,13 +59,6 @@ class CounterDrop extends Drop {
     return this[kCount];
   }
 }
-
-const today = () => {
-  const date = new Date();
-  const dd = String(date.getDate()).padStart(2, '0');
-  const mm = String(date.getMonth() + 1).padStart(2, '0'); //January is 0!
-  return date.getFullYear();
-};
 
 describe('context_test', () => {
   let context;
@@ -312,12 +292,10 @@ describe('context_test', () => {
     context['hash'] = { first: 'Hello' };
 
     assert.equal(1, context['array.first']);
-    assert(context['array["first"]'] == null);
-    assert.equal(1, context.array.first);
+    assert(context['array["first"]'] === undefined);
+    assert.equal(1, context['array.first']);
     assert.equal('Hello', context['hash["first"]']);
-
-    // this differs. In ruby this returns undefined
-    assert.equal(1, context['array["first"]']);
+    assert.equal(undefined, context['array["first"]']);
   });
 
   it('test_first_can_appear_in_middle_of_callchain', () => {
@@ -406,92 +384,80 @@ describe('context_test', () => {
     assert.equal(3, context['counter["count"]']);
   });
 
-  it.skip('test_proc_as_variable', () => {
-    // context['dynamic'] = proc { 'Hello' }
-
+  it('test_proc_as_variable', () => {
+    context['dynamic'] = 'Hello';
     assert.equal('Hello', context['dynamic']);
   });
 
-  it.skip('test_lambda_as_variable', () => {
-    // context['dynamic'] = proc { 'Hello' }
-
+  it('test_lambda_as_variable', () => {
+    context['dynamic'] = () => { return 'Hello'; };
     assert.equal('Hello', context['dynamic']);
   });
 
-  it.skip('test_nested_lambda_as_variable', () => {
-    // context['dynamic'] = { "lambda": proc { 'Hello' } }
-
+  it('test_nested_lambda_as_variable', () => {
+    context['dynamic'] = { lambda: () => { return 'Hello'; } };
     assert.equal('Hello', context['dynamic.lambda']);
   });
 
-  it.skip('test_array_containing_lambda_as_variable', () => {
-    // context['dynamic'] = [1, 2, proc { 'Hello' }, 4, 5]
-
+  it('test_array_containing_lambda_as_variable', () => {
+    context['dynamic'] = [1, 2, () => { return 'Hello'; }, 4, 5];
     assert.equal('Hello', context['dynamic[2]']);
   });
 
-  it.skip('test_lambda_is_called_once', () => {
-    // context['callcount'] = proc {
-    //   this.global ||= 0
-    //   this.global  += 1
-    //   this.global.toString()
-    // }
+  it('test_lambda_is_called_once', () => {
+    let count = 0;
+
+    context['callcount'] = function() {
+      count++;
+      return String(count);
+    };
 
     assert.equal('1', context['callcount']);
     assert.equal('1', context['callcount']);
     assert.equal('1', context['callcount']);
-
-    this.global = null;
   });
 
-  it.skip('test_nested_lambda_is_called_once', () => {
-    // context['callcount'] = { "lambda": proc {
-    //                                         this.global ||= 0
-    //                                         this.global  += 1
-    //                                         this.global.toString()
-    //                                       } }
+  it('test_nested_lambda_is_called_once', () => {
+    let count = 0;
+
+    context['callcount'] = {
+      lambda: function() {
+        count++;
+        return String(count);
+      }
+    };
 
     assert.equal('1', context['callcount.lambda']);
     assert.equal('1', context['callcount.lambda']);
     assert.equal('1', context['callcount.lambda']);
-
-    this.global = null;
   });
 
-  it.skip('test_lambda_in_array_is_called_once', () => {
-    // context['callcount'] = [1, 2, proc {
-    //                                  this.global ||= 0
-    //                                  this.global  += 1
-    //                                  this.global.toString()
-    //                                }, 4, 5]
+  it('test_lambda_in_array_is_called_once', () => {
+    let count = 0;
+
+    context['callcount'] = [0, 1,
+      function() {
+        count++;
+        return String(count);
+      }, 4, 5];
 
     assert.equal('1', context['callcount[2]']);
     assert.equal('1', context['callcount[2]']);
     assert.equal('1', context['callcount[2]']);
-
-    this.global = null;
   });
 
-  it.skip('test_access_to_context_from_proc', () => {
+  it('test_access_to_context_from_proc', () => {
     context.registers['magic'] = 345392;
 
-    // context['magic'] = proc { context.registers['magic'] }
+    context['magic'] = () => { return context.registers['magic']; };
 
     assert.equal(345392, context['magic']);
   });
 
   it('test_to_liquid_and_context_at_first_level', () => {
     context['category'] = new Category('foobar');
-    console.log(context.category);
     assert(context.category instanceof CategoryDrop, 'expected an instance of CategoryDrop');
     assert.deepEqual({ ...context }, { ...context['category'].context });
-  });
-
-  it.skip('test_interrupt_avoids_object_allocations', () => {
-    // context.interrupt? // ruby 3.0.0 allocates on the first call
-    // assert_no_object_allocations do
-    //   context.interrupt?
-    // }
   });
 
   it('test_context_initialization_with_a_function_in_environment', () => {
@@ -564,7 +530,6 @@ describe('context_test', () => {
     const registers = { my_register: 'my_value' };
     const super_context = new Context({ environments: {}, outer_scope: {}, registers: new StaticRegisters(registers) });
     super_context.registers['my_register'] = 'my_alt_value';
-    console.log(super_context);
     const subcontext = super_context.new_isolated_subcontext();
     assert.equal('my_value', subcontext.registers['my_register']);
   });

@@ -6,12 +6,34 @@ const { Template } = Dry;
 const {
   assert_raises,
   assert_template_result,
-  BooleanDrop,
   IntegerDrop,
   ThingWithToLiquid
 } = require('../test_helpers');
 
-describe('variabe_test', () => {
+class BooleanDrop extends Dry.Drop {
+  constructor(value) {
+    super();
+    this.value = value;
+  }
+
+  equals(value) {
+    return this.value === value;
+  }
+
+  to_liquid_value() {
+    return this.value;
+  }
+
+  to_s() {
+    return this.value ? 'Yay' : 'Nay';
+  }
+
+  toString() {
+    return this.to_s();
+  }
+}
+
+describe('variable_test', () => {
   it('test_simple_variable', () => {
     const template = Template.parse('a {{test}} b');
     assert.equal('a worked b', template.render({ test: 'worked' }));
@@ -138,7 +160,7 @@ describe('variabe_test', () => {
     });
 
     assigns['test'] = 'Tobi';
-    assert.equal('Hello Tobi', template.render(assigns));
+    assert.equal('Hello Tobi', template.render_strict(assigns));
     delete assigns['test'];
 
     const e = assert_raises(Error, () => {

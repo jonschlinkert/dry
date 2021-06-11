@@ -1,13 +1,35 @@
 'use strict';
 
 const assert = require('assert').strict;
-const { assert_raises, assert_template_result } = require('../../test_helpers');
+const { ErrorDrop, assert_raises, assert_template_result, assert_usage_increment } = require('../../test_helpers');
 const Dry = require('../../..');
-const { Template } = Dry;
+const { Context, Template } = Dry;
 
 class ThingWithValue extends Dry.Drop {
   get value() {
     return 3;
+  }
+}
+
+class LoaderDrop extends Dry.Drop {
+  constructor(data) {
+    super(data);
+    this.data = data;
+  }
+
+  each(block) {
+    this.each_called = true;
+    this.data.forEach(block);
+  }
+
+  load_slice(from, to) {
+    this.load_slice_called = true;
+    return this.data.slice(from, to);
+  }
+
+  * [Symbol.iterator]() {
+    this.each_called = true;
+    yield* [...this.data];
   }
 }
 
@@ -231,15 +253,15 @@ describe('for_tag_test', () => {
     assert_template_result(expected, markup, assigns);
   });
 
-  it.skip('test_for_with_break', () => {
+  it('test_for_with_break', () => {
     let assigns = { array: { items: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] } };
     let markup = '{% for i in array.items %}{% break %}{% endfor %}';
     let expected = '';
     assert_template_result(expected, markup, assigns);
 
-    // markup = '{% for i in array.items %}{{ i }}{% break %}{% endfor %}';
-    // expected = '1';
-    // assert_template_result(expected, markup, assigns);
+    markup = '{% for i in array.items %}{{ i }}{% break %}{% endfor %}';
+    expected = '1';
+    assert_template_result(expected, markup, assigns);
 
     markup = '{% for i in array.items %}{% break %}{{ i }}{% endfor %}';
     expected = '';
@@ -260,7 +282,10 @@ describe('for_tag_test', () => {
                {% endfor %}
              {% endfor %}`;
     expected = '3456';
-    assert_template_result(expected, markup, assigns);
+
+    const template = new Template();
+    template.parse(markup);
+    assert.equal(template.render_strict(assigns).replace(/\s+/g, ''), expected);
 
     // test break does nothing when unreached
     assigns = { array: { items: [1, 2, 3, 4, 5] } };
@@ -269,7 +294,7 @@ describe('for_tag_test', () => {
     assert_template_result(expected, markup, assigns);
   });
 
-  it.skip('test_for_with_continue', () => {
+  it('test_for_with_continue', () => {
     let assigns = { array: { items: [1, 2, 3, 4, 5] } };
     let markup = '{% for i in array.items %}{% continue %}{% endfor %}';
     let expected = '';
@@ -291,7 +316,7 @@ describe('for_tag_test', () => {
     expected = '1245';
     assert_template_result(expected, markup, assigns);
 
-    // tests to } catch (err) { it only continues the local for loop and not all of them.
+    // tests to ensure it only continues the local for loop and not all of them.
     assigns = { array: [ [1, 2], [3, 4], [5, 6] ] };
     markup = `{% for item in array %}
                {% for i in item %}
@@ -302,7 +327,10 @@ describe('for_tag_test', () => {
                {% endfor %}
              {% endfor %}`;
     expected = '23456';
-    assert_template_result(expected, markup, assigns);
+
+    const template = new Template();
+    template.parse(markup);
+    assert.equal(template.render_strict(assigns).replace(/\s+/g, ''), expected);
 
     // test continue does nothing when unreached
     assigns = { array: { items: [1, 2, 3, 4, 5] } };
@@ -355,7 +383,7 @@ describe('for_tag_test', () => {
     assert_template_result('', '{% for char in characters %}I WILL NOT BE OUTPUT{% endfor %}', { characters: '' });
   });
 
-  it.skip('test_bad_variable_naming_in_for_loop', () => {
+  it('test_bad_variable_naming_in_for_loop', () => {
     assert_raises(Dry.SyntaxError, () => {
       Template.parse('{% for a/b in x %}{% endfor %}');
     });
@@ -367,27 +395,6 @@ describe('for_tag_test', () => {
     const assigns = { items: [1, 2, 3, 4, 5] };
     assert_template_result(expected, template, assigns);
   });
-
-  class LoaderDrop extends Dry.Drop {
-    constructor(data) {
-      super(data);
-      this.data = data;
-    }
-
-    each(block) {
-      this.each_called = true;
-      this.data.forEach(block);
-    }
-
-    load_slice(from, to) {
-      this.load_slice_called = true;
-      return this.data.slice(from, to);
-    }
-
-    * [Symbol.iterator]() {
-      yield* [...this.data];
-    }
-  }
 
   it('test_iterate_with_each_when_no_limit_applied', () => {
     const loader = new LoaderDrop([1, 2, 3, 4, 5]);
@@ -430,33 +437,39 @@ describe('for_tag_test', () => {
   });
 
   it('test_for_cleans_up_registers', () => {
-    // context = new Context(new ErrorDrop());
-    // assert_raises(StandardError) do
-    //   Dry.Template.parse('{% for i in (1..2) %}{{ standard_error }}{% endfor %}').render!(context)
-    // }
-    // assert(context.registers[kFor_stack].empty?)
+    const context = new Context(new ErrorDrop());
+
+    const template = new Template();
+    template.parse('{% for i in (1..2) %}{{ standard_error }}{% endfor %}');
+    template.render_strict(context);
+
+    assert(Dry.utils.empty(context.registers['for_stack']));
   });
 
   it('test_instrument_for_offset_continue', () => {
-    // assert_usage_increment('for_offset_continue') do
-    //   Template.parse('{% for item in items offset:continue %}{{item}}{% endfor %}')
-    // }
-    // assert_usage_increment('for_offset_continue', times: 0) do
-    //   Template.parse('{% for item in items offset:2 %}{{item}}{% endfor %}')
-    // }
+    assert_usage_increment('for_offset_continue', () => {
+      Template.parse('{% for item in items offset:continue %}{{item}}{% endfor %}');
+    });
+
+    assert_usage_increment('for_offset_continue', { times: 0 }, () => {
+      Template.parse('{% for item in items offset:2 %}{{item}}{% endfor %}');
+    });
   });
 
   it('test_instrument_forloop_drop_name', () => {
-    // const assigns = { 'items': [1, 2, 3, 4, 5] };
-    // assert_usage_increment('forloop_drop_name', times: 5) do
-    //   Template.parse('{% for item in items %}{{forloop.name}}{% endfor %}').render!(assigns)
-    // }
-    // assert_usage_increment('forloop_drop_name', times: 0) do
-    //   Template.parse('{% for item in items %}{{forloop.index}}{% endfor %}').render!(assigns)
-    // }
-    // assert_usage_increment('forloop_drop_name', times: 0) do
-    //   Template.parse('{% for item in items %}{{item}}{% endfor %}').render!(assigns)
-    // }
+    const assigns = { items: [1, 2, 3, 4, 5] };
+
+    assert_usage_increment('forloop_drop_name', { times: 5 }, () => {
+      Template.parse('{% for item in items %}{{forloop.name}}{% endfor %}').render_strict(assigns);
+    });
+
+    assert_usage_increment('forloop_drop_name', { times: 0 }, () => {
+      Template.parse('{% for item in items %}{{forloop.index}}{% endfor %}').render_strict(assigns);
+    });
+
+    assert_usage_increment('forloop_drop_name', { times: 0 }, () => {
+      Template.parse('{% for item in items %}{{item}}{% endfor %}').render_strict(assigns);
+    });
   });
 });
 

@@ -1,9 +1,13 @@
 /* eslint-disable eqeqeq */
 'use strict';
 
+const path = require('path');
 const assert = require('assert').strict;
-const utils = require('../lib/utils');
 const Dry = require('..');
+
+const fixture = name => {
+  return path.join(path.resolve(__dirname), 'fixtures', name);
+};
 
 /**
  * File system
@@ -45,7 +49,7 @@ class ThingWithToLiquid {
 class IntegerDrop extends Dry.Drop {
   constructor(value) {
     super();
-    this.value = utils.toInteger(value);
+    this.value = Dry.utils.toInteger(value);
   }
 
   equals(other) {
@@ -62,29 +66,6 @@ class IntegerDrop extends Dry.Drop {
 
   to_liquid_value() {
     return this.value;
-  }
-}
-
-class BooleanDrop extends Dry.Drop {
-  constructor(value) {
-    super();
-    this.value = value;
-  }
-
-  equals(other) {
-    return this.value == other;
-  }
-
-  to_liquid_value() {
-    return this.value;
-  }
-
-  to_s() {
-    return this.value ? 'Yay' : 'Nay';
-  }
-
-  toString() {
-    return this.to_s();
   }
 }
 
@@ -110,11 +91,65 @@ class ErrorDrop extends Dry.Drop {
   }
 }
 
-const assert_template_result = (expected, input, locals) => {
+const render = (input, assigns, options) => {
+  return Dry.Template.parse(input).render(assigns, options);
+};
+
+const render_strict = (input, assigns, options) => {
+  return Dry.Template.parse(input).render_strict(assigns, options);
+};
+
+const assert_template_result = (expected, input, locals, message) => {
   const template = new Dry.Template();
   template.parse(input);
-  assert.equal(template.render(locals), expected);
+  assert.equal(template.render_strict(locals), expected, message);
 };
+
+const assert_usage_increment = (name, options, block) => {
+  if (typeof options === 'function') {
+    block = options;
+    options = {};
+  }
+
+  const { times = 1 } = options;
+  const increment = Dry.Usage.increment;
+  let calls = 0;
+
+  try {
+    Dry.Usage.increment = null;
+    Dry.Usage.increment = received_name => {
+      if (received_name == name) calls += 1;
+      increment.call(Dry.Usage, received_name);
+    };
+    block();
+  } catch (err) {
+    console.error(err);
+  } finally {
+    Dry.Usage.increment = increment;
+  }
+
+  assert.equal(times, calls, `Number of calls to Usage.increment with ${name.inspect}`);
+};
+
+// const assert_template_result = (expected, fixture, assigns = {}, message = null) => {
+//   const template = Dry.Template.parse(fixture, { line_numbers: true });
+//   assert.equal(expected, template.render_strict(assigns), message);
+// };
+
+// const assert_template_result_matches = (expected, template, assigns = {}, message = null) => {
+//   if (expected instanceof RegExp) {
+//     assert_match(expected, parse(template).render_strict(assigns), message);
+//     return;
+//   }
+//   assert_template_result(expected, template, assigns, message);
+// };
+
+// const assert_match_syntax_error = (match, template, assigns = {}) => {
+//   exception = assert_raises(Dry.SyntaxError) do
+//     Template.parse(template, line_numbers: true).render(assigns)
+//   }
+//   assert_match(match, exception.message)
+// }
 
 const assert_raises = (ErrorClass, fn) => {
   try {
@@ -148,6 +183,7 @@ const with_error_mode = (mode, options, cb) => {
 };
 
 const with_global_filter = (...globals) => {
+  globals = globals.flat();
   const factory = Dry.StrainerFactory;
   const original_global_filters = factory.global_filters;
   const block = globals.pop();
@@ -166,53 +202,36 @@ const with_global_filter = (...globals) => {
     });
 
     block();
+  // eslint-disable-next-line no-useless-catch
   } catch (err) {
-    console.log(err);
+    throw err;
   } finally {
     factory.strainer_class_cache.clear();
     factory.global_filters = original_global_filters;
   }
 };
 
-// const with_global_filter = (...globals) => {
-//   const factory = Dry.StrainerFactory;
-//   const original_global_filters = factory.global_filters;
-//   const block = globals.pop();
-
-//   factory.global_filters = [];
-
-//   try {
-//     for (const g of globals) {
-//       factory.add_global_filter(g);
-//     }
-
-//     factory.strainer_class_cache.clear();
-
-//     for (const g of globals) {
-//       Dry.Template.register_filter(g);
-//     }
-
-//     return block();
-//   } catch (err) {
-//     console.log(err);
-//   } finally {
-//     factory.strainer_class_cache.clear();
-//     factory.global_filters = original_global_filters;
-//   }
-// };
-
 module.exports = {
+  fixture,
+
   // Helpers
   assert_raises,
   assert_template_result,
+  assert_usage_increment,
+  // assert_template_result_matches,
+
+  render,
+  render_strict,
+
   with_error_mode,
   with_global_filter,
 
-  // Drops
-  BooleanDrop,
-  ErrorDrop,
-  IntegerDrop,
+  // partial cache
   StubFileSystem,
   StubTemplateFactory,
+
+  // Drops
+  ErrorDrop,
+  IntegerDrop,
   ThingWithToLiquid
 };

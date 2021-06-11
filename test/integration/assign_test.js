@@ -49,9 +49,9 @@ describe('assign_test', () => {
     }, /assign/i);
   });
 
-  it.skip('test_assign_uses_error_mode', () => {
+  it('test_assign_uses_error_mode', () => {
     with_error_mode('strict', () => {
-      assert_raises(SyntaxError, () => {
+      assert_raises(Dry.SyntaxError, () => {
         Dry.Template.parse("{% assign foo = ('X' | downcase) %}");
       });
     });

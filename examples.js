@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 'use strict';
 
 const Lexer = require('./lib/Lexer');
@@ -111,8 +112,17 @@ Template.register_filter({
   }
 });
 
+const fixture = `
+{% for inner in outer %}
+  {% for k in inner -%}
+    {{ forloop.parentloop.index0 }}
+  {%- endfor %}
+{% endfor %}
+`;
+
 const template = new Template();
 template.parse(input2b);
+console.log(template.root.ast.value.toString() === input2b)
 // const { root } = template;
 // console.log(root);
 // console.log(root.nodes[0]);
@@ -130,7 +140,8 @@ const output = template.render({
     ['f', 'f', 'f'],
     ['g', 'g', 'g']
   ],
-  test: 'incorrect'
+  outer: [ [1, 1, 1], [1, 1, 1] ],
+  test: false
 });
 
 console.log(output);

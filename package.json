@@ -18,11 +18,16 @@
     "string-width": "^2.1.1"
   },
   "dependencies": {
+    "@folder/readdir": "^3.1.0",
+    "atob": "^2.1.2",
+    "base64-js": "^1.5.1",
+    "btoa": "^1.2.1",
     "expand-value": "file:../../js-utils/objects/expand-value",
     "export-files": "file:../../path-utils/export-files",
     "fill-range": "^7.0.1",
     "get-value": "^3.0.1",
     "is-number": "^7.0.0",
+    "is-plain-object": "^2.0.4",
     "kind-of": "^6.0.3",
     "set-value": "^4.0.0",
     "yaml": "^1.10.2"

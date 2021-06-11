@@ -2,7 +2,6 @@
 
 const { assert_raises, assert_template_result } = require('../../test_helpers');
 const Dry = require('../../..');
-const { nodes: { Condition } } = Dry;
 
 describe('if_else_tag_test', () => {
   it('test_if', () => {
@@ -11,7 +10,7 @@ describe('if_else_tag_test', () => {
     assert_template_result('  you rock ?', '{% if false %} you suck {% endif %} {% if true %} you rock {% endif %}?');
   });
 
-  it.skip('test_literal_comparisons', () => {
+  it('test_literal_comparisons', () => {
     assert_template_result(' NO ', '{% assign v = false %}{% if v %} YES {% else %} NO {% endif %}');
     assert_template_result(' YES ', '{% assign v = null %}{% if v == null %} YES {% else %} NO {% endif %}');
   });
@@ -129,42 +128,42 @@ describe('if_else_tag_test', () => {
   });
 
   it('test_syntax_error_no_variable', () => {
-    assert_raises(SyntaxError, () => {
+    assert_raises(Dry.SyntaxError, () => {
       assert_template_result('', '{% if jerry == 1 %}');
     });
   });
 
   it('test_syntax_error_no_expression', () => {
-    assert_raises(SyntaxError, () => {
+    assert_raises(Dry.SyntaxError, () => {
       assert_template_result('', '{% if %}');
     });
   });
 
   it('test_if_with_custom_condition', () => {
-    const original_op = Condition.operators['contains'];
-    Condition.operators['contains'] = {};
+    const original_op = Dry.Condition.operators['contains'];
+    Dry.Condition.operators['contains'] = {};
 
     try {
       assert_template_result('yes', '{% if "bob" contains "o" %}yes{% endif %}');
       assert_template_result('no', '{% if "bob" contains "f" %}yes{% else %}no{% endif %}');
     } catch (err) {
-      Condition.operators['contains'] = original_op;
+      Dry.Condition.operators['contains'] = original_op;
     }
   });
 
   it('test_operators_are_ignored_unless_isolated', () => {
-    const original_op = Condition.operators['contains'];
-    Condition.operators['contains'] = {};
+    const original_op = Dry.Condition.operators['contains'];
+    Dry.Condition.operators['contains'] = {};
 
     try {
       assert_template_result('yes', '{% if "gnomeslab-and-or-liquid" contains "gnomeslab-and-or-liquid" %}yes{% endif %}');
     } catch (err) {
-      Condition.operators['contains'] = original_op;
+      Dry.Condition.operators['contains'] = original_op;
     }
   });
 
   it('test_operators_are_whitelisted', () => {
-    assert_raises(SyntaxError, () => {
+    assert_raises(Dry.SyntaxError, () => {
       assert_template_result('', '{% if 1 or throw or or 1 %}yes{% endif %}');
     });
   });
