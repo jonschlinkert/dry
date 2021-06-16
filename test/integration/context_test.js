@@ -30,7 +30,7 @@ class ContextSensitiveDrop extends Drop {
 
 class Category extends Drop {
   constructor(name) {
-    super();
+    super(name);
     this.name = name;
   }
 
@@ -386,6 +386,7 @@ describe('context_test', () => {
 
   it('test_proc_as_variable', () => {
     context['dynamic'] = 'Hello';
+
     assert.equal('Hello', context['dynamic']);
   });
 
@@ -467,12 +468,10 @@ describe('context_test', () => {
   });
 
   it('test_apply_global_filter', () => {
-    const global_filter = output => {
-      return `${output} filtered`;
-    };
+    const global_filter_proc = output => `${output} filtered`;
 
     context = new Context();
-    context.global_filter = global_filter;
+    context.global_filter = global_filter_proc;
 
     assert.equal('hi filtered', context.apply_global_filter('hi'));
   });
@@ -496,6 +495,7 @@ describe('context_test', () => {
     const super_context = new Context();
     super_context['my_variable'] = 'some value';
     const subcontext = super_context.new_isolated_subcontext();
+
     assert.equal(undefined, subcontext['my_variable']);
   });
 
@@ -528,7 +528,7 @@ describe('context_test', () => {
 
   it('test_new_isolated_subcontext_does_not_inherit_non_static_registers', () => {
     const registers = { my_register: 'my_value' };
-    const super_context = new Context({ environments: {}, outer_scope: {}, registers: new StaticRegisters(registers) });
+    const super_context = new Context({ registers: new StaticRegisters(registers) });
     super_context.registers['my_register'] = 'my_alt_value';
     const subcontext = super_context.new_isolated_subcontext();
     assert.equal('my_value', subcontext.registers['my_register']);

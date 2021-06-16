@@ -63,10 +63,10 @@ After
 const input2b = `
 Before
 {% if test == false %}
-  {% for group of letters offset:2 limit:3 %}
-    {%- for letter of group %}
-      - {{forloop.parentloop.index0}}:{{forloop.index0}} {{letter | upcase | prepend: "-foo-" | repeat:5 }}
-    {%- endfor %}
+  {% for group of letters offset:2 limit:3 -%}
+    {%- for letter of group -%}
+      - {{forloop.parentloop.index0}}:{{forloop.index0}} {{letter | upcase | prepend: "-foo-" | duplicate: times:5 }}
+    {%- endfor -%}
   {% else %}
     No letters :(
   {% endfor %}
@@ -120,9 +120,23 @@ const fixture = `
 {% endfor %}
 `;
 
+const caseTag = `
+{% assign handle = 1 %}
+{% case handle %}
+  {% when "cake" %}
+    This is a cake
+  {% when "cookie", "biscuit" %}
+    This is a cookie
+  {% when (1..10) %}
+    This is a number
+  {% else %}
+    This is not a cake nor a cookie
+{% endcase %}
+`;
+
 const template = new Template();
-template.parse(input2b);
-console.log(template.root.ast.value.toString() === input2b)
+template.parse(caseTag);
+// console.log(template.root.ast.value.toString() === input2b);
 // const { root } = template;
 // console.log(root);
 // console.log(root.nodes[0]);

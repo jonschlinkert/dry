@@ -19,11 +19,11 @@ const MoneyFilter = {
   }
 };
 
-class CanadianMoneyFilter {
-  static money(input) {
+const CanadianMoneyFilter = {
+  money(input) {
     return util.format(' %d$ CAD ', input);
   }
-}
+};
 
 const SubstituteFilter = {
   substitute(input, params = {}) {
@@ -178,7 +178,6 @@ describe('filters_test', () => {
     });
 
     it('test_local_filter_with_deprecated_syntax', () => {
-      assert.equal(' 1000$ CAD ', render_strict('{{1000 | money}}', null, CanadianMoneyFilter));
       assert.equal(' 1000$ CAD ', render_strict('{{1000 | money}}', null, [CanadianMoneyFilter]));
     });
   });

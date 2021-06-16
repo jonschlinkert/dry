@@ -53,7 +53,6 @@ describe('capture_test', () => {
   it('test_increment_assign_score_by_bytes_not_characters', () => {
     const template = Template.parse('{% capture foo %}すごい{% endcapture %}');
     template.render_strict();
-    console.log(template.resource_limits);
     assert.equal(9, template.resource_limits.assign_score);
   });
 });

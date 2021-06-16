@@ -70,7 +70,7 @@ describe('assign_test', () => {
     const t = Dry.Template.parse('{% assign foo = 42 %}{% assign bar = 23 %}');
     t.resource_limits.assign_score_limit = 1;
     assert.equal('Dry error: Memory limits exceeded', t.render());
-    assert(t.resource_limits.reached());
+    assert(t.resource_limits.reached);
 
     t.resource_limits.assign_score_limit = 2;
     assert.equal('', t.render());
@@ -82,7 +82,7 @@ describe('assign_test', () => {
 
     t.resource_limits.assign_score_limit = 3;
     assert.equal('Dry error: Memory limits exceeded', t.render());
-    assert(t.resource_limits.reached());
+    assert(t.resource_limits.reached);
 
     t.resource_limits.assign_score_limit = 5;
     assert.equal('', t.render());

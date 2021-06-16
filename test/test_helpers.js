@@ -1,4 +1,4 @@
-/* eslint-disable eqeqeq */
+/* eslint-disable eqeqeq, no-useless-catch */
 'use strict';
 
 const path = require('path');
@@ -99,10 +99,10 @@ const render_strict = (input, assigns, options) => {
   return Dry.Template.parse(input).render_strict(assigns, options);
 };
 
-const assert_template_result = (expected, input, locals, message) => {
+const assert_template_result = (expected, input, assigns, message) => {
   const template = new Dry.Template();
   template.parse(input);
-  assert.equal(template.render_strict(locals), expected, message);
+  assert.equal(template.render_strict(assigns), expected, message);
 };
 
 const assert_usage_increment = (name, options, block) => {
@@ -158,7 +158,6 @@ const assert_raises = (ErrorClass, fn) => {
     assert(err instanceof ErrorClass);
     return err;
   }
-
   return {};
 };
 
@@ -174,9 +173,7 @@ const with_error_mode = (mode, options, cb) => {
     Dry.Template.error_mode = mode;
     cb();
   } catch (err) {
-    if (options && options.silent !== true) {
-      console.log(err);
-    }
+    if (process.env.DEBUG) console.error(err);
   } finally {
     Dry.Template.error_mode = old_mode;
   }
@@ -202,12 +199,29 @@ const with_global_filter = (...globals) => {
     });
 
     block();
-  // eslint-disable-next-line no-useless-catch
   } catch (err) {
     throw err;
   } finally {
     factory.strainer_class_cache.clear();
     factory.global_filters = original_global_filters;
+  }
+};
+
+const with_custom_tag = (tag_name, tag_class, block) => {
+  const old_tag = Dry.Template.tags.get(tag_name);
+
+  try {
+    Dry.Template.register_tag(tag_name, tag_class);
+    block();
+
+  } catch (err) {
+    throw err;
+  } finally {
+    if (old_tag) {
+      Dry.Template.tags.set(tag_name, old_tag);
+    } else {
+      Dry.Template.tags.delete(tag_name);
+    }
   }
 };
 
@@ -223,6 +237,7 @@ module.exports = {
   render,
   render_strict,
 
+  with_custom_tag,
   with_error_mode,
   with_global_filter,
 
