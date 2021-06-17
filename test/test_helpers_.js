@@ -33,47 +33,52 @@ const assert_raises = (ErrorClass, callback) => {
   }
 };
 
-const assert_match = (regex, string, message) => {
-  if (!(regex instanceof RegExp)) {
-    throw new TypeError('assert_match expected a regular expression');
+// const assert_template_result = (expected, fixture, assigns = {}, message = null) => {
+//   const template = Template.parse(fixture, { line_numbers: true });
+//   assert.equal(expected, template.render_strict(assigns), message);
+// };
+
+// const assert_template_result_matches = (expected, template, assigns = {}, message = null) => {
+//   if (expected instanceof RegExp) {
+//     assert_match(expected, parse(template).render_strict(assigns), message);
+//     return;
+//   }
+//   assert_template_result(expected, template, assigns, message);
+// };
+
+// const assert_match_syntax_error = (match, template, assigns = {}) => {
+//   exception = assert_raises(Dry.SyntaxError) do
+//     Template.parse(template, line_numbers: true).render(assigns)
+//   }
+//   assert_match(match, exception.message)
+// }
+
+const assert_template_result = (expected, input, assigns, message) => {
+  const template = new Template();
+  template.parse(input);
+  assert.equal(template.render_strict(assigns), expected, message);
+};
+
+const assert_usage_increment = (name, options, callback) => {
+  if (typeof options === 'function') {
+    callback = options;
+    options = {};
   }
-  assert(regex.test(string), message);
-};
 
-const assert_template_result = (expected, template, assigns = {}, message = null) => {
-  assert.equal(expected, Template.parse(template, { line_numbers: true }).render_strict(assigns), message);
-};
-
-const assert_template_result_matches = (expected, template, assigns = {}, message = null) => {
-  if (!(expected instanceof RegExp)) return assert_template_result(expected, template, assigns, message);
-  assert_match(expected, Template.parse(template, { line_numbers: true }).render_strict(assigns), message);
-};
-
-const assert_match_syntax_error = (match, template, assigns = {}) => {
-  const exception = assert_raises(Dry.SyntaxError, () => {
-    Template.parse(template, { line_numbers: true }).render(assigns);
-  });
-
-  assert_match(match, exception.message);
-};
-
-const assert_usage_increment = (name, ...rest) => {
-  const callback = rest.pop();
-  const options = rest.pop() || {};
-  const old_method = Dry.Usage.increment;
   const { times = 1 } = options;
+  const increment = Dry.Usage.increment;
   let calls = 0;
 
   try {
-    Dry.Usage.increment = function(got_name) {
-      if (got_name === name) calls += 1;
-      return old_method.call(this, got_name);
+    Dry.Usage.increment = received_name => {
+      if (received_name == name) calls += 1;
+      increment.call(Dry.Usage, received_name);
     };
     callback();
   } catch (err) {
-    if (process.env.DEBUG) console.error(err);
+    console.error(err);
   } finally {
-    Dry.Usage.increment = old_method;
+    Dry.Usage.increment = increment;
   }
 
   assert.equal(times, calls, `Number of calls to Usage.increment with ${name.inspect}`);
@@ -81,16 +86,18 @@ const assert_usage_increment = (name, ...rest) => {
 
 const with_global_filter = (...globals) => {
   globals = globals.flat();
+  const factory = Dry.StrainerFactory;
+  const original_global_filters = factory.global_filters;
   const callback = globals.pop();
-  const original_global_filters = Dry.StrainerFactory.global_filters;
+
+  factory.global_filters = [];
 
   try {
-    Dry.StrainerFactory.global_filters = [];
     globals.forEach(filters => {
-      Dry.StrainerFactory.add_global_filter(filters);
+      factory.add_global_filter(filters);
     });
 
-    Dry.StrainerFactory.strainer_class_cache.clear();
+    factory.strainer_class_cache.clear();
 
     globals.forEach(filters => {
       Template.register_filter(filters);
@@ -99,12 +106,17 @@ const with_global_filter = (...globals) => {
   } catch (err) {
     throw err;
   } finally {
-    Dry.StrainerFactory.strainer_class_cache.clear();
-    Dry.StrainerFactory.global_filters = original_global_filters;
+    factory.strainer_class_cache.clear();
+    factory.global_filters = original_global_filters;
   }
 };
 
 const with_error_mode = (mode, callback) => {
+  if (typeof mode === 'function') {
+    callback = mode;
+    mode = undefined;
+  }
+
   const old_mode = Template.error_mode;
 
   try {
@@ -203,7 +215,7 @@ class ErrorDrop extends Dry.Drop {
   }
 
   runtime_error() {
-    throw new Dry.DryError('runtime error');
+    throw new Error('runtime error');
   }
 
   exception() {
@@ -245,11 +257,12 @@ module.exports = {
   render_strict,
 
   assert_raises,
-  assert_match,
+  // assert_match,
   assert_template_result,
-  assert_template_result_matches,
-  assert_match_syntax_error,
+  // assert_template_result_matches,
+  // assert_match_syntax_error,
   assert_usage_increment,
+  // assert_template_result_matches,
 
   ThingWithToLiquid,
   IntegerDrop,

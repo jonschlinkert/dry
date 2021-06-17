@@ -1,7 +1,7 @@
 'use strict';
 
 const assert = require('assert').strict;
-const { StubFileSystem, StubTemplateFactory } = require('../test_helpers');
+const { StubFileSystem, StubTemplateFactory, times } = require('../test_helpers');
 const Dry = require('../..');
 
 describe('partial_cache_unit_test', () => {
@@ -25,9 +25,9 @@ describe('partial_cache_unit_test', () => {
     const context = Dry.Context.build({ registers: { file_system } });
     const options = { context, state: new Dry.State() };
 
-    for (let i = 0; i < 2; i++) {
+    times(2, () => {
       Dry.PartialCache.load('my_partial', options);
-    }
+    });
 
     assert.equal(1, file_system.file_read_count);
   });
@@ -35,21 +35,12 @@ describe('partial_cache_unit_test', () => {
   it('test_cache_state_is_stored_per_context', () => {
     const state = new Dry.State();
     const shared_file_system = new StubFileSystem({ my_partial: 'my shared value' });
-    const context_one = Dry.Context.build({
-      registers: {
-        file_system: shared_file_system
-      }
-    });
+    const context_one = Dry.Context.build({ registers: { file_system: shared_file_system } });
+    const context_two = Dry.Context.build({ registers: { file_system: shared_file_system } });
 
-    const context_two = Dry.Context.build({
-      registers: {
-        file_system: shared_file_system
-      }
-    });
-
-    for (let i = 0; i < 2; i++) {
+    times(2, () => {
       Dry.PartialCache.load('my_partial', { context: context_one, state });
-    }
+    });
 
     Dry.PartialCache.load('my_partial', { context: context_two, state });
     assert.equal(2, shared_file_system.file_read_count);

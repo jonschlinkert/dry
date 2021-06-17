@@ -14,22 +14,21 @@
   "devDependencies": {
     "@babel/eslint-parser": "^7.14.4",
     "@babel/eslint-plugin": "^7.13.16",
+    "handlebars": "^4.7.7",
     "mocha": "^8.4.0",
-    "string-width": "^2.1.1"
+    "parser-front-matter": "^1.6.4",
+    "vinyl": "^2.2.1"
   },
   "dependencies": {
     "@folder/readdir": "^3.1.0",
-    "atob": "^2.1.2",
-    "base64-js": "^1.5.1",
-    "btoa": "^1.2.1",
     "expand-value": "file:../../js-utils/objects/expand-value",
     "export-files": "file:../../path-utils/export-files",
     "fill-range": "^7.0.1",
-    "get-value": "^3.0.1",
     "is-number": "^7.0.0",
     "is-plain-object": "^2.0.4",
     "kind-of": "^6.0.3",
     "set-value": "^4.0.0",
+    "whence": "file:../../whence",
     "yaml": "^1.10.2"
   }
 }

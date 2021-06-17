@@ -21,7 +21,7 @@ const assign_score_of = obj => {
   return context.resource_limits.assign_score;
 };
 
-describe('assign_test', () => {
+describe.only('assign_test', () => {
   it('test_assign_with_hyphen_in_variable_name', () => {
     const template_source = `
     {% assign this-thing = 'Print this-thing' %}
@@ -43,10 +43,13 @@ describe('assign_test', () => {
     assert_template_result('.bar.', '{% assign foo = values | split: "," %}.{{ foo[1] }}.', assigns);
   });
 
-  it('test_assign_syntax_error', () => {
-    assert.throws(() => {
+  it('test_assign_syntax_error', cb => {
+    try {
       Dry.Template.parse('{% assign foo not values %}.').render({ values: 'foo,bar,baz' });
-    }, /assign/i);
+    } catch (err) {
+      assert(/assign/i.test(err.message));
+      cb();
+    }
   });
 
   it('test_assign_uses_error_mode', () => {
@@ -61,7 +64,7 @@ describe('assign_test', () => {
     });
   });
 
-  it('test_expression_with_whitespace_in_square_brackets', () => {
+  it.only('test_expression_with_whitespace_in_square_brackets', () => {
     const source = "{% assign r = a[ 'b' ] %}{{ r }}";
     assert_template_result('result', source, { a: { b: 'result' } });
   });

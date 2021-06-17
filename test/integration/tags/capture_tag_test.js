@@ -4,7 +4,7 @@ const assert = require('assert').strict;
 const { assert_template_result } = require('../../test_helpers');
 const { Template } = require('../../..');
 
-describe('capture_test', () => {
+describe('capture_tag_test', () => {
   it('test_captures_block_content_in_variable', () => {
     assert_template_result('test string', "{% capture 'var' %}test string{% endcapture %}{{var}}", {});
   });
@@ -51,8 +51,9 @@ describe('capture_test', () => {
   });
 
   it('test_increment_assign_score_by_bytes_not_characters', () => {
-    const template = Template.parse('{% capture foo %}すごい{% endcapture %}');
-    template.render_strict();
-    assert.equal(9, template.resource_limits.assign_score);
+    const t = Template.parse('{% capture foo %}すごい{% endcapture %}');
+    t.render_strict();
+    assert.equal(9, t.resource_limits.assign_score);
   });
 });
+

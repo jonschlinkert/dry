@@ -17,9 +17,7 @@ describe('file_system_unit_test', () => {
     assert.equal('/some/path/dir/_mypartial.liquid', file_system.full_path('dir/mypartial'));
 
     assert.throws(() => file_system.full_path('../dir/mypartial'), FileSystemError);
-
     assert.throws(() => file_system.full_path('/dir/../../dir/mypartial'), FileSystemError);
-
     assert.throws(() => file_system.full_path('/etc/passwd'), FileSystemError);
   });
 
