@@ -2,10 +2,12 @@
   errors:
     syntax:
       assign: "Syntax Error in 'assign' - Valid syntax: assign [var] = [source]"
+      block: "Syntax Error in 'block' - Valid syntax: block [var]"
       capture: "Syntax Error in 'capture' - Valid syntax: capture [var]"
       case_invalid_else: "Syntax Error in tag 'case' - Valid else condition: {% else %} (no parameters) "
       case_invalid_when: "Syntax Error in tag 'case' - Valid when condition: {% when [condition] [or condition2...] %}"
       case: "Syntax Error in 'case' - Valid syntax: case [condition]"
+      conditional: "Syntax Error in tag '%{tag_name}' - Valid syntax: %{tag_name} [expression]"
       cycle: "Syntax Error in 'cycle' - Valid syntax: cycle [name :] var [, var2, var3 ...]"
       for_invalid_attribute: "Invalid attribute in for loop. Valid attributes are limit and offset"
       for_invalid_in: "For loops require an 'in' clause"
@@ -25,5 +27,7 @@
       variable_termination: "Variable '%{token}' was not properly terminated with: %{tag_end}"
     argument:
       include: "Argument error in tag 'include' - Illegal template name"
+      extends: "Argument error in tag 'extends' - Illegal template name"
+      layout: "Argument error in tag 'layout' - Illegal template name"
     disabled:
       tag: "usage is not allowed in this context"

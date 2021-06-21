@@ -50,6 +50,21 @@ describe('capture_tag_test', () => {
     assert.equal('3-3', rendered.replace(/\s/g, ''));
   });
 
+  it('test_assigned_variable_from_outer_scope_inside_capture', () => {
+    const template_source = `
+      {% assign foo = "assigned" %}
+      {% capture bar %}
+      Inner content
+      {{ foo }}
+      {% endcapture %}
+      {{ bar }}
+    `;
+
+    const template = Template.parse(template_source);
+    const rendered = template.render_strict();
+    assert.equal('Innercontentassigned', rendered.replace(/\s/g, ''));
+  });
+
   it('test_increment_assign_score_by_bytes_not_characters', () => {
     const t = Template.parse('{% capture foo %}すごい{% endcapture %}');
     t.render_strict();

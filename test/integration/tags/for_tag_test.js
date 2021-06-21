@@ -64,7 +64,7 @@ describe('for_tag_test', () => {
   it('test_for_with_range', () => {
     assert_template_result(' 1  2  3 ', '{%for item in (1..3) %} {{item}} {%endfor%}');
 
-    assert_raises(Dry.ArgumentError, () => {
+    assert_raises(Dry.RangeError, () => {
       Template.parse('{% for i in (a..2) %}{% endfor %}').render({ a: [1, 2] });
     });
 

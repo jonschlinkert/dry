@@ -92,7 +92,7 @@ describe('standard_tag_test', () => {
   });
 
   it('test_size_of_array', () => {
-    const assigns = { 'array': [1, 2, 3, 4] };
+    const assigns = { array: [1, 2, 3, 4] };
     assert_template_result('array has 4 elements', 'array has {{ array.size }} elements', assigns);
   });
 
@@ -109,10 +109,10 @@ describe('standard_tag_test', () => {
   });
 
   it('test_ifchanged', () => {
-    let assigns = { 'array': [1, 1, 2, 2, 3, 3] };
+    let assigns = { array: [1, 1, 2, 2, 3, 3] };
     assert_template_result('123', '{%for item in array%}{%ifchanged%}{{item}}{% endifchanged %}{%endfor%}', assigns);
 
-    assigns = { 'array': [1, 1, 1, 1] };
+    assigns = { array: [1, 1, 1, 1] };
     assert_template_result('1', '{%for item in array%}{%ifchanged%}{{item}}{% endifchanged %}{%endfor%}', assigns);
   });
 

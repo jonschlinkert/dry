@@ -21,7 +21,7 @@ const assign_score_of = obj => {
   return context.resource_limits.assign_score;
 };
 
-describe.only('assign_test', () => {
+describe('assign_test', () => {
   it('test_assign_with_hyphen_in_variable_name', () => {
     const template_source = `
     {% assign this-thing = 'Print this-thing' %}
@@ -30,6 +30,17 @@ describe.only('assign_test', () => {
     const template = Dry.Template.parse(template_source);
     const rendered = template.render();
     assert.equal('Print this-thing', rendered.trim());
+  });
+
+  it('temp', () => {
+    assert_template_result('false', '{% assign truthy = val > 2 %}{{ truthy }}', { val: 1 });
+    assert_template_result('FALSE', '{% assign truthy = val > 2 | upcase %}{{ truthy }}', { val: 1 });
+    assert_template_result('true', '{% assign truthy = val < 2 %}{{ truthy }}', { val: 1 });
+    assert_template_result('4', '{% assign number = a - b %}{{ number }}', { a: 5, b: 1 });
+    assert_template_result('11', '{% assign number = a + b %}{{ number }}', { a: 4, b: 7 });
+    assert_template_result('5', '{% assign number = a / b %}{{ number }}', { a: 15, b: 3 });
+    assert_template_result('45', '{% assign number = a * b %}{{ number }}', { a: 15, b: 3 });
+    assert_template_result('21', '{% assign a = 7 %}{% assign number = a * b %}{{ number }}', { b: 3 });
   });
 
   it('test_assigned_variable', () => {
@@ -64,7 +75,7 @@ describe.only('assign_test', () => {
     });
   });
 
-  it.only('test_expression_with_whitespace_in_square_brackets', () => {
+  it('test_expression_with_whitespace_in_square_brackets', () => {
     const source = "{% assign r = a[ 'b' ] %}{{ r }}";
     assert_template_result('result', source, { a: { b: 'result' } });
   });

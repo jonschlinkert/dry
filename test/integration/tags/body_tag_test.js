@@ -2,7 +2,7 @@
 
 const { assert_template_result } = require('../../test_helpers');
 
-describe('body_tag_test', () => {
+describe.skip('body_tag_test', () => {
   it('test_body_variable', () => {
     const assigns = { body: 'The content' };
     const fixture = `

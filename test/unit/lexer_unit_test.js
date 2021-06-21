@@ -49,7 +49,7 @@ describe('lexer_unit_test', () => {
 
   it('test_unexpected_character', () => {
     assert.throws(() => {
-      new Lexer('%').tokenize();
+      new Lexer('#').tokenize();
     });
   });
 });

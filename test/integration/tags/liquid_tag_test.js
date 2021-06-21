@@ -9,42 +9,42 @@ describe.skip('liquid_tag_test', () => {
         echo array | join: " "
       -%}
     `;
-    assert_template_result('1 2 3', fixture, { 'array': [1, 2, 3] });
+    assert_template_result('1 2 3', fixture, { array: [1, 2, 3] });
 
-    fixture = `
-      {%- liquid
-        for value in array
-          echo value
-          unless forloop.last
-            echo " "
-          endunless
-        endfor
-      -%}
-    `;
-    assert_template_result('1 2 3', fixture, { 'array': [1, 2, 3] });
+    // fixture = `
+    //   {%- liquid
+    //     for value in array
+    //       echo value
+    //       unless forloop.last
+    //         echo " "
+    //       endunless
+    //     endfor
+    //   -%}
+    // `;
+    // assert_template_result('1 2 3', fixture, { array: [1, 2, 3] });
 
-    fixture = `
-      {%- liquid
-        for value in array
-          assign double_value = value | times: 2
-          echo double_value | times: 2
-          unless forloop.last
-            echo " "
-          endunless
-        endfor
+    // fixture = `
+    //   {%- liquid
+    //     for value in array
+    //       assign double_value = value | times: 2
+    //       echo double_value | times: 2
+    //       unless forloop.last
+    //         echo " "
+    //       endunless
+    //     endfor
 
-        echo " "
-        echo double_value
-      -%}
-    `;
-    assert_template_result('4 8 12 6', fixture, { 'array': [1, 2, 3] });
+    //     echo " "
+    //     echo double_value
+    //   -%}
+    // `;
+    // assert_template_result('4 8 12 6', fixture, { array: [1, 2, 3] });
 
-    fixture = `
-      {%- liquid echo "a" -%}
-      b
-      {%- liquid echo "c" -%}
-    `;
-    assert_template_result('abc', fixture);
+    // fixture = `
+    //   {%- liquid echo "a" -%}
+    //   b
+    //   {%- liquid echo "c" -%}
+    // `;
+    // assert_template_result('abc', fixture);
   });
 
   it('test_liquid_tag_errors', () => {
