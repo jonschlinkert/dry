@@ -28,13 +28,13 @@ class SomethingWithLength extends Dry.Drop {
 }
 
 class ErroneousDrop extends Dry.Drop {
-  get bad_method() {
-    throw new Error('ruby error in drop');
+  bad_method() {
+    throw new Error('error in drop');
   }
 }
 
 class DropWithUndefinedMethod extends Dry.Drop {
-  get foo() {
+  foo() {
     return 'foo';
   }
 }
@@ -154,7 +154,7 @@ describe('template tests', () => {
     assert.equal(t.render(), '0123456789');
   });
 
-  it.skip('test_resource_limits_render_score', () => {
+  it('test_resource_limits_render_score', () => {
     t = Template.parse('{% for a in (1..10) %} {% for a in (1..10) %} foo {% endfor %} {% endfor %}');
 
     t.resource_limits.render_score_limit = 50;
@@ -207,7 +207,7 @@ describe('template tests', () => {
     assert.equal('', t.render());
   });
 
-  it.skip('test_resource_limits_aborts_rendering_after_first_error', () => {
+  it('test_resource_limits_aborts_rendering_after_first_error', () => {
     t = Template.parse('{% for a in (1..100) %} foo1 {% endfor %} bar {% for a in (1..100) %} foo2 {% endfor %}');
     t.resource_limits.render_score_limit = 50;
     assert.equal('Dry error: Memory limits exceeded', t.render());
@@ -267,15 +267,14 @@ describe('template tests', () => {
     assert.equal('haha', t.parse('{{baz}}').render(drop));
   });
 
-  it.skip('test_render_bang_force_rethrow_errors_on_passed_context', () => {
-    const context = new Dry.Context({ drop: new ErroneousDrop() });
-    t = new Template().parse('{{ drop.bad_method }}');
-
+  it('test_render_bang_force_rethrow_errors_on_passed_context', () => {
+    const context = new Dry.Context({ environments: { drop: new ErroneousDrop() } });
+    t = Template.parse('{{ drop.bad_method }}');
     assert.throws(() => t.render_strict(context), Dry.RuntimeError);
     assert.throws(() => t.render_strict(context), /error in drop/);
   });
 
-  it.skip('test_exception_renderer_that_returns_string', () => {
+  it('test_exception_renderer_that_returns_string', () => {
     let exception = null;
     const exception_renderer = e => {
       exception = e;
@@ -321,22 +320,22 @@ describe('template tests', () => {
     assert.equal('BOB filtered', rendered_template);
   });
 
-  it.skip('test_undefined_variables', () => {
+  it('test_undefined_variables', () => {
     t = Template.parse('{{x}} {{y}} {{z.a}} {{z.b}} {{z.c.d}}');
     const result = t.render({ x: 33, z: { a: 32, c: { e: 31 } } }, { strict_variables: true });
 
     assert.equal(3, t.errors.length);
     assert(t.errors[0] instanceof Dry.UndefinedVariable);
-    assert.equal('undefined variable y', t.errors[0].message);
+    assert.equal('Dry error: undefined variable y', t.errors[0].message);
     assert(t.errors[1] instanceof Dry.UndefinedVariable);
-    assert.equal('undefined variable b', t.errors[1].message);
+    assert.equal('Dry error: undefined variable b', t.errors[1].message);
     assert(t.errors[2] instanceof Dry.UndefinedVariable);
-    assert.equal('undefined variable d', t.errors[2].message);
+    assert.equal('Dry error: undefined variable d', t.errors[2].message);
 
     assert.equal('33  32  ', result);
   });
 
-  it.skip('test_nil_value_does_not_raise', () => {
+  it('test_nil_value_does_not_raise', () => {
     Template.error_mode = 'strict';
     t = Template.parse('some{{x}}thing');
     const result = t.render({ x: null }, { strict_variables: true });
@@ -345,31 +344,30 @@ describe('template tests', () => {
     assert.equal('something', result);
   });
 
-  it.skip('test_undefined_variables_raise', () => {
+  it('test_undefined_variables_raise', () => {
     t = Template.parse('{{x}} {{y}} {{z.a}} {{z.b}} {{z.c.d}}');
 
     assert.throws(() => {
-      t.render({ x: 33, z: { a: 32, c: { e: 31 } } }, { strict_variables: true });
+      t.render_strict({ x: 33, z: { a: 32, c: { e: 31 } } }, { strict_variables: true });
     }, Dry.UndefinedVariable);
   });
 
-  it.skip('test_undefined_drop_methods', () => {
+  it('test_undefined_drop_methods', () => {
     const d = new DropWithUndefinedMethod();
     t = Template.parse('{{ foo }} {{ woot }}');
     const result = t.render(d, { strict_variables: true });
-
-    assert.equal('foo ', result);
     assert.equal(1, t.errors.length);
     assert(t.errors[0] instanceof Dry.UndefinedDropMethod);
+    assert.equal('foo ', result);
   });
 
-  it.skip('test_undefined_drop_methods_raise', () => {
+  it('test_undefined_drop_methods_raise', () => {
     const d = new DropWithUndefinedMethod();
     t = Template.parse('{{ foo }} {{ woot }}');
-    assert.throws(() => t.render(d, { strict_variables: true }), Dry.UndefinedDropMethod);
+    assert.throws(() => t.render_strict(d, { strict_variables: true }), Dry.UndefinedDropMethod);
   });
 
-  it.skip('test_undefined_filters', () => {
+  it('test_undefined_filters', () => {
     t = Template.parse('{{a}} {{x | upcase | somefilter1 | somefilter2 | somefilter3}}');
 
     const filters = {
@@ -379,17 +377,17 @@ describe('template tests', () => {
     };
 
     const result = t.render({ a: 123, x: 'foo' }, { filters: [filters], strict_filters: false });
-    assert.equal('123 ', result);
-    assert.equal(1, t.errors.length);
+    assert.equal(2, t.errors.length);
     assert(t.errors[0] instanceof Dry.UndefinedFilter);
     assert.equal('Dry error: undefined filter somefilter1', t.errors[0].message);
+    assert.equal('123 -FOO-', result);
   });
 
-  it.skip('test_undefined_filters_raise', () => {
+  it('test_undefined_filters_raise', () => {
     t = Template.parse('{{x | somefilter1 | upcase | somefilter2}}');
 
     assert.throws(() => {
-      t.render({ x: 'foo' }, { strict_filters: true });
+      t.render_strict({ x: 'foo' }, { strict_filters: true });
     }, Dry.UndefinedFilter);
   });
 

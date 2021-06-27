@@ -13,6 +13,22 @@ describe('if_else_tag_test', () => {
   it('test_literal_comparisons', () => {
     assert_template_result(' NO ', '{% assign v = false %}{% if v %} YES {% else %} NO {% endif %}');
     assert_template_result(' YES ', '{% assign v = null %}{% if v == null %} YES {% else %} NO {% endif %}');
+    assert_template_result(' YES ', '{% if v == true %} YES {% endif %}', { v: true });
+    assert_template_result(' YES ', '{% if v is true %} YES {% endif %}', { v: true });
+    assert_template_result('', '{% if v isnt true %} YES {% endif %}', { v: true });
+  });
+
+  it('test_defined_keyword', () => {
+    assert_template_result(' YES ', '{% if v is defined %} YES {% endif %}', { v: true });
+    assert_template_result('', '{% if v is defined %} YES {% endif %}');
+    assert_template_result(' YES ', '{% if v isnt defined %} YES {% endif %}');
+    assert_template_result('', '{% if v isnt defined %} YES {% endif %}', { v: true });
+
+    assert_template_result('', '{% if v == defined %} YES {% endif %}', { v: true });
+    assert_template_result('', '{% if v === defined %} YES {% endif %}', { v: true });
+
+    assert_template_result(' YES ', '{% if v == defined %} YES {% endif %}', { v: true, defined: true });
+    assert_template_result('', '{% if v == defined %} YES {% endif %}', { v: true, defined: false });
   });
 
   it('test_if_else', () => {
@@ -22,7 +38,8 @@ describe('if_else_tag_test', () => {
   });
 
   it('test_if_boolean', () => {
-    assert_template_result(' YES ', '{% if var %} YES {% endif %}', { var: true });
+    assert_template_result(' YES ', '{% if truthy %} YES {% endif %}', { truthy: true });
+    assert_template_result('', '{% if truthy %} YES {% endif %}', { truthy: false });
   });
 
   it('test_if_or', () => {
@@ -47,8 +64,9 @@ describe('if_else_tag_test', () => {
     assert_template_result(' YES ', `{% if ${awful_markup} %} YES {% endif %}`, assigns);
   });
 
-  it('test_comparison_of_expressions_starting_with_and_or_or', () => {
-    const assigns = { order: { items_count: 0 }, android: { name: 'Roy' } };
+  it('test_comparison_of_expressions_starting_with_and*_or_or*_or_is*', () => {
+    const assigns = { order: { items_count: 0 }, android: { name: 'Roy' }, island: 'Maui' };
+    assert_template_result('YES', "{% if island == 'Maui' %}YES{% endif %}", assigns);
     assert_template_result('YES', "{% if android.name == 'Roy' %}YES{% endif %}", assigns);
     assert_template_result('YES', '{% if order.items_count == 0 %}YES{% endif %}', assigns);
   });

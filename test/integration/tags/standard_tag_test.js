@@ -45,8 +45,7 @@ describe('standard_tag_test', () => {
     assert_template_result('foo  bar', 'foo {%comment%}comment{%endcomment%} bar');
     assert_template_result('foo  bar', 'foo {%comment%} comment {%endcomment%} bar');
 
-    assert_template_result('foobar', `foo{%comment%}
-                                     {%endcomment%}bar`);
+    assert_template_result('foobar', 'foo{%comment%} {%endcomment%}bar');
   });
 
   it('test_hyphenated_assign', () => {

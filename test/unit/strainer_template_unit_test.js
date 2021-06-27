@@ -34,7 +34,7 @@ describe('strainer template unit tests', () => {
       s.constructor.add_filter(wrong_filter);
     });
 
-    assert.equal(error.message, 'wrong argument type "function" (expected an object)');
+    assert.equal(error.message, 'Dry error: wrong argument type "function" (expected an object)');
   });
 
   it('test_add_filter_raises_when_module_privately_overrides_registered_public_methods', () => {

@@ -2,8 +2,7 @@
 
 const assert = require('assert').strict;
 const Dry = require('../..');
-const { FileSystemError } = Dry;
-const { FileSystem } = Dry;
+const { FileSystem, FileSystemError } = Dry;
 const { BlankFileSystem, LocalFileSystem } = FileSystem;
 
 describe('file_system_unit_test', () => {

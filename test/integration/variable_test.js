@@ -167,7 +167,7 @@ describe('variable_test', () => {
       template.render(assigns);
     });
 
-    assert.equal("Unknown variable 'test'", e.message);
+    assert.equal("Dry error: Unknown variable 'test'", e.message);
   });
 
   it('test_multiline_variable', () => {

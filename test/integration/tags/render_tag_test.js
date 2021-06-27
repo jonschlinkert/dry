@@ -24,7 +24,7 @@ describe('render_tag_test', () => {
   it('test_render_tag_looks_for_file_system_in_registers_first', () => {
     const file_system = new StubFileSystem({ pick_a_source: 'from register file system' });
     assert.equal('from register file system',
-      Template.parse('{% render "pick_a_source" %}').render_strict({}, { registers: { file_system: file_system } }));
+      Template.parse('{% render "pick_a_source" %}').render_strict({}, { registers: { file_system } }));
   });
 
   it('test_render_passes_named_arguments_into_inner_scope', () => {
@@ -95,7 +95,7 @@ describe('render_tag_test', () => {
     const file_system = new StubFileSystem({ snippet: 'echo' });
     assert.equal('echoecho',
       Template.parse('{% render "snippet" %}{% render "snippet" %}')
-        .render_strict({}, { registers: { file_system: file_system } }));
+        .render_strict({}, { registers: { file_system } }));
     assert.equal(1, file_system.file_read_count);
   });
 
@@ -103,11 +103,11 @@ describe('render_tag_test', () => {
     const file_system = new StubFileSystem({ snippet: 'my message' });
 
     assert.equal('my message',
-      Template.parse('{% include "snippet" %}').render_strict({}, { registers: { file_system: file_system } }));
+      Template.parse('{% include "snippet" %}').render_strict({}, { registers: { file_system } }));
     assert.equal(1, file_system.file_read_count);
 
     assert.equal('my message',
-      Template.parse('{% include "snippet" %}').render_strict({}, { registers: { file_system: file_system } }));
+      Template.parse('{% include "snippet" %}').render_strict({}, { registers: { file_system } }));
     assert.equal(2, file_system.file_read_count);
   });
 

@@ -81,11 +81,12 @@ describe('layout_cache_unit_test', () => {
   });
 
   it('test_uses_template_factory_register_if_present', () => {
-    const template_factory = new StubTemplateFactory();
+    const layout_factory = new StubTemplateFactory();
+
     const context = Dry.Context.build({
       registers: {
         layouts: new StubFileSystem({ my_layout: 'my layout body' }),
-        template_factory
+        layout_factory
       }
     });
 
@@ -95,7 +96,7 @@ describe('layout_cache_unit_test', () => {
     });
 
     assert.equal('my layout body', layout.render());
-    assert.equal(1, template_factory.count);
+    assert.equal(1, layout_factory.count);
   });
 });
 

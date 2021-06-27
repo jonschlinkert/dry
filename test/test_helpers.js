@@ -49,12 +49,12 @@ const assert_template_result_matches = (expected, template, assigns = {}, messag
   assert_match(expected, Template.parse(template, { line_numbers: true }).render_strict(assigns), message);
 };
 
-const assert_match_syntax_error = (match, template, assigns = {}) => {
+const assert_match_syntax_error = (regex, template, assigns = {}, message) => {
   const exception = assert_raises(Dry.SyntaxError, () => {
     Template.parse(template, { line_numbers: true }).render(assigns);
   });
 
-  assert_match(match, exception.message);
+  assert_match(regex, exception && exception.message, message);
 };
 
 const assert_usage_increment = (name, ...rest) => {

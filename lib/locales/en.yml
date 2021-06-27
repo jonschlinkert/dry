@@ -1,5 +1,7 @@
 ---
   errors:
+    file_system:
+      missing: "Cannot locate template: '%{template_name}'"
     syntax:
       assign: "Syntax Error in 'assign' - Valid syntax: assign [var] = [source]"
       block: "Syntax Error in 'block' - Valid syntax: block [var]"
