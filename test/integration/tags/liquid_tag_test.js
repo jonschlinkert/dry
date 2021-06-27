@@ -3,13 +3,13 @@
 const { assert_template_result, assert_match_syntax_error } = require('../../test_helpers');
 
 describe.skip('liquid_tag_test', () => {
-  it('test_liquid_tag', () => {
+  it('test_liquid_tag', async () => {
     let fixture = `
       {%- liquid
         echo array | join: " "
       -%}
     `;
-    assert_template_result('1 2 3', fixture, { array: [1, 2, 3] });
+    await assert_template_result('1 2 3', fixture, { array: [1, 2, 3] });
 
     // fixture = `
     //   {%- liquid
@@ -47,7 +47,7 @@ describe.skip('liquid_tag_test', () => {
     // assert_template_result('abc', fixture);
   });
 
-  it('test_liquid_tag_errors', () => {
+  it('test_liquid_tag_errors', async () => {
     let fixture = `
       {%- liquid error no such tag -%}
     `;
@@ -82,12 +82,12 @@ describe.skip('liquid_tag_test', () => {
     assert_match_syntax_error("syntax error (line 4): 'for' tag was never closed", fixture);
   });
 
-  it('test_line_number_is_correct_after_a_blank_token', () => {
+  it('test_line_number_is_correct_after_a_blank_token', async () => {
     assert_match_syntax_error("syntax error (line 3): Unknown tag 'error'", "{% liquid echo ''\n\n error %}");
     assert_match_syntax_error("syntax error (line 3): Unknown tag 'error'", "{% liquid echo ''\n  \n error %}");
   });
 
-  it('test_nested_liquid_tag', () => {
+  it('test_nested_liquid_tag', async () => {
     const fixture = `
       {%- if true %}
         {%- liquid
@@ -95,10 +95,10 @@ describe.skip('liquid_tag_test', () => {
         %}
       {%- endif -%}
     `;
-    assert_template_result('good', fixture);
+    await assert_template_result('good', fixture);
   });
 
-  it('test_cannot_open_blocks_living_past_a_liquid_tag', () => {
+  it('test_cannot_open_blocks_living_past_a_liquid_tag', async () => {
     const fixture = `
       {%- liquid
         if (true) {
@@ -108,7 +108,7 @@ describe.skip('liquid_tag_test', () => {
     assert_match_syntax_error("syntax error (line 3): 'if' tag was never closed", fixture);
   });
 
-  it('test_cannot_close_blocks_created_before_a_liquid_tag', () => {
+  it('test_cannot_close_blocks_created_before_a_liquid_tag', async () => {
     const fixture = `
       {%- if true -%}
       42
@@ -117,11 +117,11 @@ describe.skip('liquid_tag_test', () => {
     assert_match_syntax_error("syntax error (line 3): 'endif' is not a valid delimiter for liquid tags. use %}", fixture);
   });
 
-  it('test_liquid_tag_in_raw', () => {
+  it('test_liquid_tag_in_raw', async () => {
     const fixture = `
       {% raw %}{% liquid echo 'test' %}{% endraw %}
     `;
-    assert_template_result("{% liquid echo 'test' %}\n", fixture);
+    await assert_template_result("{% liquid echo 'test' %}\n", fixture);
   });
 });
 

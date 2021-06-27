@@ -4,7 +4,7 @@ const { Template } = require('../../..');
 const { assert_template_result, StubFileSystem } = require('../../test_helpers');
 
 describe.skip('extends_tag_test', () => {
-  it('test_extends_variable', () => {
+  it('test_extends_variable', async () => {
     const assigns = {};
     const layouts = {
       default: `

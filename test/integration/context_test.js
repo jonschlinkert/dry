@@ -549,7 +549,7 @@ describe('context_test', () => {
     assert.equal('my_value', super_context.registers['my_register']);
   });
 
-  it('test_new_isolated_subcontext_inherits_filters', () => {
+  it('test_new_isolated_subcontext_inherits_filters', async () => {
     const my_filters = {
       my_filter() {
         return 'my filter result';
@@ -560,7 +560,7 @@ describe('context_test', () => {
     super_context.add_filters([my_filters]);
     const subcontext = super_context.new_isolated_subcontext();
     const template = Template.parse('{{ 123 | my_filter }}');
-    assert.equal('my filter result', template.render(subcontext));
+    assert.equal('my filter result', await template.render(subcontext));
   });
 
   it('test_disables_tag_specified', () => {

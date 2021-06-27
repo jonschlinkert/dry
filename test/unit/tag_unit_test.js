@@ -6,11 +6,11 @@ const { Context, State, Tag, expressions } = Dry;
 const { Tokenizer } = expressions;
 
 describe('tag_unit_test', () => {
-  it('test_tag', () => {
+  it('test_tag', async () => {
     const state = new State();
     const tag = Tag.parse({ name: 'tag', value: '' }, new Tokenizer('', state), state);
     assert.equal('tag', tag.name);
-    assert.equal('', tag.render(new Context()));
+    assert.equal('', await tag.render(new Context()));
   });
 
   it('test_return_raw_text_of_tag', () => {

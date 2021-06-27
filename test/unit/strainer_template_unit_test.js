@@ -25,39 +25,39 @@ const PublicMethodOverrideFilter = {
 };
 
 describe('strainer template unit tests', () => {
-  it('test_add_filter_when_wrong_filter_class', () => {
+  it('test_add_filter_when_wrong_filter_class', async () => {
     const c = new Context();
     const s = c.strainer;
     const wrong_filter = v => v.reverse();
 
-    const error = assert_raises(Dry.TypeError, () => {
-      s.constructor.add_filter(wrong_filter);
+    const error = await assert_raises(Dry.TypeError, () => {
+      return s.constructor.add_filter(wrong_filter);
     });
 
     assert.equal(error.message, 'Dry error: wrong argument type "function" (expected an object)');
   });
 
-  it('test_add_filter_raises_when_module_privately_overrides_registered_public_methods', () => {
+  it('test_add_filter_raises_when_module_privately_overrides_registered_public_methods', async () => {
     const strainer = new Context().strainer;
 
-    const error = assert_raises(Dry.MethodOverrideError, () => {
-      strainer.constructor.add_filter(PrivateMethodOverrideFilter);
+    const error = await assert_raises(Dry.MethodOverrideError, () => {
+      return strainer.constructor.add_filter(PrivateMethodOverrideFilter);
     });
 
     assert.equal('Dry error: Filter overrides registered public methods as non public: assign', error.message);
   });
 
-  it('test_add_filter_raises_when_module_overrides_registered_public_method_as_protected', () => {
+  it('test_add_filter_raises_when_module_overrides_registered_public_method_as_protected', async () => {
     const strainer = new Context().strainer;
 
-    const error = assert_raises(Dry.MethodOverrideError, () => {
-      strainer.constructor.add_filter(ProtectedMethodOverrideFilter);
+    const error = await assert_raises(Dry.MethodOverrideError, () => {
+      return strainer.constructor.add_filter(ProtectedMethodOverrideFilter);
     });
 
     assert.equal('Dry error: Filter overrides registered public methods as non public: constructor', error.message);
   });
 
-  it('test_add_filter_does_not_raise_when_module_overrides_previously_registered_method', () => {
+  it('test_add_filter_does_not_raise_when_module_overrides_previously_registered_method', async () => {
     const strainer = new Context().strainer;
 
     with_global_filter(() => {
@@ -66,7 +66,7 @@ describe('strainer template unit tests', () => {
     });
   });
 
-  it('test_add_filter_does_not_include_already_included_module', () => {
+  it('test_add_filter_does_not_include_already_included_module', async () => {
     let count = 0;
     const mod = {
       included(_mod) {

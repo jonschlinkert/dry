@@ -5,7 +5,7 @@ const { StubFileSystem, StubTemplateFactory, times } = require('../test_helpers'
 const Dry = require('../..');
 
 describe('layout_cache_unit_test', () => {
-  it('test_uses_the_file_system_register_if_present', () => {
+  it('test_uses_the_file_system_register_if_present', async () => {
     const context = Dry.Context.build({
       registers: {
         layouts: new StubFileSystem({ my_layout: 'my layout body' })
@@ -17,7 +17,7 @@ describe('layout_cache_unit_test', () => {
       state: new Dry.State()
     });
 
-    assert.equal('my layout body', layout.render());
+    assert.equal('my layout body', await layout.render());
   });
 
   it('test_reads_from_the_file_system_only_once_per_file', () => {
@@ -65,7 +65,7 @@ describe('layout_cache_unit_test', () => {
     assert.equal(1, layouts.file_read_count);
   });
 
-  it('test_uses_default_template_factory_when_no_template_factory_found_in_register', () => {
+  it('test_uses_default_template_factory_when_no_template_factory_found_in_register', async () => {
     const context = Dry.Context.build({
       registers: {
         layouts: new StubFileSystem({ my_layout: 'my layout body' })
@@ -77,10 +77,10 @@ describe('layout_cache_unit_test', () => {
       state: new Dry.State()
     });
 
-    assert.equal('my layout body', layout.render());
+    assert.equal('my layout body', await layout.render());
   });
 
-  it('test_uses_template_factory_register_if_present', () => {
+  it('test_uses_template_factory_register_if_present', async () => {
     const layout_factory = new StubTemplateFactory();
 
     const context = Dry.Context.build({
@@ -95,7 +95,7 @@ describe('layout_cache_unit_test', () => {
       state: new Dry.State()
     });
 
-    assert.equal('my layout body', layout.render());
+    assert.equal('my layout body', await layout.render());
     assert.equal(1, layout_factory.count);
   });
 });

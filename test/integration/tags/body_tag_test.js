@@ -3,7 +3,7 @@
 const { assert_template_result } = require('../../test_helpers');
 
 describe.skip('body_tag_test', () => {
-  it('test_body_variable', () => {
+  it('test_body_variable', async () => {
     const assigns = { body: 'The content' };
     const fixture = `
       <!DOCTYPE html>
@@ -22,6 +22,6 @@ describe.skip('body_tag_test', () => {
         </body>
       </html>
     `;
-    assert_template_result(expected, fixture, assigns);
+    await assert_template_result(expected, fixture, assigns);
   });
 });

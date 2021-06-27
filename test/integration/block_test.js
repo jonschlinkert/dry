@@ -21,17 +21,17 @@ describe('block_test', () => {
     });
   });
 
-  it('test_custom_block_tags_rendering', () => {
+  it('test_custom_block_tags_rendering', async () => {
     class klass1 extends Dry.BlockTag {
       render() {
         return 'hello';
       }
     }
 
-    with_custom_tag('blabla', klass1, () => {
+    await with_custom_tag('blabla', klass1, async () => {
       const template = Dry.Template.parse('{% blabla %} bla {% endblabla %}');
-      assert.equal('hello', template.render());
-      assert.equal('prefix+hello', template.render({}, { output: 'prefix+' }));
+      assert.equal('hello', await template.render());
+      assert.equal('prefix+hello', await template.render({}, { output: 'prefix+' }));
     });
 
     class klass2 extends klass1 {
@@ -40,10 +40,10 @@ describe('block_test', () => {
       }
     }
 
-    with_custom_tag('blabla', klass2, () => {
+    await with_custom_tag('blabla', klass2, async () => {
       const template = Dry.Template.parse('{% blabla %} foo {% endblabla %}');
-      assert.equal('foohellobar', template.render());
-      assert.equal('prefix+foohellobar', template.render({}, { output: 'prefix+' }));
+      assert.equal('foohellobar', await template.render());
+      assert.equal('prefix+foohellobar', await template.render({}, { output: 'prefix+' }));
     });
   });
 });

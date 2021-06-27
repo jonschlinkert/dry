@@ -32,16 +32,16 @@ describe.skip('profiler_test', () => {
     Dry.Template.file_system = new ProfilingFileSystem();
   });
 
-  it('test_template_allows_flagging_profiling', () => {
+  it('test_template_allows_flagging_profiling', async () => {
     const t = Dry.Template.parse("{{ 'a string' | upcase }}");
-    t.render();
+    await t.render();
 
     assert(!t.profiler);
   });
 
-  it('test_parse_makes_available_simple_profiling', () => {
+  it('test_parse_makes_available_simple_profiling', async () => {
     const t = Dry.Template.parse("{{ 'a string' | upcase }}", { profile: true });
-    t.render();
+    await t.render();
 
     assert.equal(1, t.profiler.length);
 
@@ -49,16 +49,16 @@ describe.skip('profiler_test', () => {
     assert.equal(" 'a string' | upcase ", node.code);
   });
 
-  it('test_render_ignores_raw_strings_when_profiling', () => {
+  it('test_render_ignores_raw_strings_when_profiling', async () => {
     const t = Dry.Template.parse('This is raw string\nstuff\nNewline', { profile: true });
-    t.render();
+    await t.render();
 
     assert.equal(0, t.profiler.length);
   });
 
-  it('test_profiling_includes_line_numbers_of_liquid_nodes', () => {
+  it('test_profiling_includes_line_numbers_of_liquid_nodes', async () => {
     const t = Dry.Template.parse("{{ 'a string' | upcase }}\n{% increment test %}", { profile: true });
-    t.render();
+    await t.render();
     assert.equal(2, t.profiler.length);
 
     // {{ 'a string' | upcase }}
@@ -67,9 +67,9 @@ describe.skip('profiler_test', () => {
     assert.equal(2, t.profiler[1].line_number);
   });
 
-  it('test_profiling_includes_line_numbers_of_included_partials', () => {
+  it('test_profiling_includes_line_numbers_of_included_partials', async () => {
     const t = Dry.Template.parse("{% include 'a_template' %}", { profile: true });
-    t.render();
+    await t.render();
 
     const included_children = t.profiler[0].children;
 
@@ -79,9 +79,9 @@ describe.skip('profiler_test', () => {
     assert.equal(2, included_children[1].line_number);
   });
 
-  it('test_profiling_render_tag', () => {
+  it('test_profiling_render_tag', async () => {
     const t = Dry.Template.parse("{% render 'a_template' %}", { profile: true });
-    t.render();
+    await t.render();
 
     const render_children = t.profiler[0].children;
     render_children.forEach(timing => {
@@ -90,30 +90,30 @@ describe.skip('profiler_test', () => {
     assert.deepEqual([1, 2], render_children.map(timing => timing.line_number));
   });
 
-  it('test_profiling_times_the_rendering_of_tokens', () => {
+  it('test_profiling_times_the_rendering_of_tokens', async () => {
     const t = Dry.Template.parse("{% include 'a_template' %}", { profile: true });
-    t.render();
+    await t.render();
 
     const node = t.profiler[0];
     assert(node.render_time);
   });
 
-  it('test_profiling_times_the_entire_render', () => {
+  it('test_profiling_times_the_entire_render', async () => {
     const t = Dry.Template.parse("{% include 'a_template' %}", { profile: true });
-    t.render();
+    await t.render();
 
     assert(t.profiler.total_render_time >= 0, 'Total render time was not calculated');
   });
 
-  it('test_profiling_multiple_renders', () => {
-    with_custom_tag('sleep', SleepTag, () => {
+  it('test_profiling_multiple_renders', async () => {
+    await with_custom_tag('sleep', SleepTag, async () => {
       const context = new Dry.Context();
       const t = Dry.Dry.Template.parse('{% sleep 0.001 %}', { profile: true });
       context.template_name = 'index';
-      t.render(context);
+      await t.render(context);
       context.template_name = 'layout';
       const first_render_time = context.profiler.total_time;
-      t.render(context);
+      await t.render(context);
 
       const profiler = context.profiler;
       const children = profiler.children;
@@ -125,17 +125,17 @@ describe.skip('profiler_test', () => {
     });
   });
 
-  it('test_profiling_uses_include_to_mark_children', () => {
+  it('test_profiling_uses_include_to_mark_children', async () => {
     const t = Dry.Template.parse("{{ 'a string' | upcase }}\n{% include 'a_template' %}", { profile: true });
-    t.render();
+    await t.render();
 
     const include_node = t.profiler[1];
     assert.equal(2, include_node.children.length);
   });
 
-  it('test_profiling_marks_children_with_the_name_of_included_partial', () => {
+  it('test_profiling_marks_children_with_the_name_of_included_partial', async () => {
     const t = Dry.Template.parse("{{ 'a string' | upcase }}\n{% include 'a_template' %}", { profile: true });
-    t.render();
+    await t.render();
 
     const include_node = t.profiler[1];
     include_node.children.forEach(child => {
@@ -143,9 +143,9 @@ describe.skip('profiler_test', () => {
     });
   });
 
-  it('test_profiling_supports_multiple_templates', () => {
+  it('test_profiling_supports_multiple_templates', async () => {
     const t = Dry.Template.parse("{{ 'a string' | upcase }}\n{% include 'a_template' %}\n{% include 'b_template' %}", { profile: true });
-    t.render();
+    await t.render();
 
     const a_template = t.profiler[1];
     a_template.children.forEach(child => {
@@ -158,9 +158,9 @@ describe.skip('profiler_test', () => {
     });
   });
 
-  it('test_profiling_supports_rendering_the_same_partial_multiple_times', () => {
+  it('test_profiling_supports_rendering_the_same_partial_multiple_times', async () => {
     const t = Dry.Template.parse("{{ 'a string' | upcase }}\n{% include 'a_template' %}\n{% include 'a_template' %}", { profile: true });
-    t.render();
+    await t.render();
 
     const a_template1 = t.profiler[1];
     a_template1.children.forEach(child => {
@@ -173,9 +173,9 @@ describe.skip('profiler_test', () => {
     });
   });
 
-  it('test_can_iterate_over_each_profiling_entry', () => {
+  it('test_can_iterate_over_each_profiling_entry', async () => {
     const t = Dry.Template.parse("{{ 'a string' | upcase }}\n{% increment test %}", { profile: true });
-    t.render();
+    await t.render();
 
     let timing_count = 0;
     t.profiler.forach(() => {
@@ -185,34 +185,34 @@ describe.skip('profiler_test', () => {
     assert.equal(2, timing_count);
   });
 
-  it('test_profiling_marks_children_of_if_blocks', () => {
+  it('test_profiling_marks_children_of_if_blocks', async () => {
     const t = Dry.Template.parse('{% if true %} {% increment test %} {{ test }} {% endif %}', { profile: true });
-    t.render();
+    await t.render();
 
     assert.equal(1, t.profiler.length);
     assert.equal(2, t.profiler[0].children.length);
   });
 
-  it('test_profiling_marks_children_of_for_blocks', () => {
+  it('test_profiling_marks_children_of_for_blocks', async () => {
     const t = Dry.Template.parse('{% for item in collection %} {{ item }} {% endfor %}', { profile: true });
-    t.render({ 'collection': ['one', 'two'] });
+    await t.render({ 'collection': ['one', 'two'] });
 
     assert.equal(1, t.profiler.length);
     // Will profile each invocation of the for block
     assert.equal(2, t.profiler[0].children.length);
   });
 
-  it('test_profiling_supports_self_time', () => {
+  it('test_profiling_supports_self_time', async () => {
     const t = Dry.Template.parse('{% for item in collection %} {{ item }} {% endfor %}', { profile: true });
-    t.render({ 'collection': ['one', 'two'] });
+    await t.render({ 'collection': ['one', 'two'] });
     const leaf = t.profiler[0].children[0];
 
     assert(leaf.self_time > 0);
   });
 
-  it('test_profiling_supports_total_time', () => {
+  it('test_profiling_supports_total_time', async () => {
     const t = Dry.Template.parse('{% if true %} {% increment test %} {{ test }} {% endif %}', { profile: true });
-    t.render();
+    await t.render();
 
     assert(t.profiler[0].total_time > 0);
   });

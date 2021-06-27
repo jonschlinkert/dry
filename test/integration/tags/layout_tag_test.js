@@ -4,7 +4,7 @@ const { Template } = require('../../..');
 const { assert_template_result, StubFileSystem } = require('../../test_helpers');
 
 describe.skip('body_tag_test', () => {
-  it('test_body_variable', () => {
+  it('test_body_variable', async () => {
     const assigns = {};
     const layouts = {
       default: `
@@ -32,7 +32,7 @@ describe.skip('body_tag_test', () => {
     `;
 
     Template.layouts = new StubFileSystem(layouts);
-    console.log(Template.parse(fixture, { line_numbers: true }).render_strict(assigns, { layouts }));
+    console.log(await Template.parse(fixture, { line_numbers: true }).render_strict(assigns, { layouts }));
     // assert_template_result(expected, fixture, assigns);
   });
 });

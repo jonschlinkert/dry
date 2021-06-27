@@ -16,19 +16,23 @@ const fixture = name => {
   return path.resolve(__dirname, 'fixtures', name);
 };
 
-const render = (input, assigns, options) => {
+const render = async (input, assigns, options) => {
   return Template.parse(input).render(assigns, options);
 };
 
-const render_strict = (input, assigns, options) => {
+const render_strict = async (input, assigns, options) => {
   return Template.parse(input).render_strict(assigns, options);
 };
 
-const assert_raises = (ErrorClass, callback) => {
+const assert_raises = async (ErrorClass, callback) => {
   try {
-    callback();
+    await callback();
   } catch (err) {
-    assert(err instanceof ErrorClass);
+    if (ErrorClass instanceof RegExp) {
+      assert(ErrorClass.test(err.message));
+    } else {
+      assert(err instanceof ErrorClass);
+    }
     return err;
   }
 };
@@ -40,24 +44,26 @@ const assert_match = (regex, string, message) => {
   assert(regex.test(string), message);
 };
 
-const assert_template_result = (expected, template, assigns = {}, message = null) => {
-  assert.equal(expected, Template.parse(template, { line_numbers: true }).render_strict(assigns), message);
+const assert_template_result = async (expected, input, assigns = {}, message = null) => {
+  const template = Template.parse(input, { line_numbers: true });
+  assert.equal(expected, await template.render_strict(assigns), message);
 };
 
-const assert_template_result_matches = (expected, template, assigns = {}, message = null) => {
-  if (!(expected instanceof RegExp)) return assert_template_result(expected, template, assigns, message);
-  assert_match(expected, Template.parse(template, { line_numbers: true }).render_strict(assigns), message);
+const assert_template_result_matches = async (expected, input, assigns = {}, message = null) => {
+  if (!(expected instanceof RegExp)) return assert_template_result(expected, input, assigns, message);
+  const template = Template.parse(template, { line_numbers: true });
+  assert_match(expected, await template.render_strict(assigns), message);
 };
 
-const assert_match_syntax_error = (regex, template, assigns = {}, message) => {
-  const exception = assert_raises(Dry.SyntaxError, () => {
-    Template.parse(template, { line_numbers: true }).render(assigns);
+const assert_match_syntax_error = async (regex, template, assigns = {}, message) => {
+  const exception = await assert_raises(Dry.SyntaxError, async () => {
+    await Template.parse(template, { line_numbers: true }).render(assigns);
   });
 
   assert_match(regex, exception && exception.message, message);
 };
 
-const assert_usage_increment = (name, ...rest) => {
+const assert_usage_increment = async (name, ...rest) => {
   const callback = rest.pop();
   const options = rest.pop() || {};
   const old_method = Dry.Usage.increment;
@@ -69,7 +75,7 @@ const assert_usage_increment = (name, ...rest) => {
       if (got_name === name) calls += 1;
       return old_method.call(this, got_name);
     };
-    callback();
+    await callback();
   } catch (err) {
     if (process.env.DEBUG) console.error(err);
   } finally {
@@ -79,7 +85,7 @@ const assert_usage_increment = (name, ...rest) => {
   assert.equal(times, calls, `Number of calls to Usage.increment with ${name.inspect}`);
 };
 
-const with_global_filter = (...globals) => {
+const with_global_filter = async (...globals) => {
   globals = globals.flat();
   const callback = globals.pop();
   const original_global_filters = Dry.StrainerFactory.global_filters;
@@ -95,7 +101,7 @@ const with_global_filter = (...globals) => {
     globals.forEach(filters => {
       Template.register_filter(filters);
     });
-    callback();
+    await callback();
   } catch (err) {
     throw err;
   } finally {
@@ -104,12 +110,12 @@ const with_global_filter = (...globals) => {
   }
 };
 
-const with_error_mode = (mode, callback) => {
+const with_error_mode = async (mode, callback) => {
   const old_mode = Template.error_mode;
 
   try {
     Template.error_mode = mode;
-    callback();
+    await callback();
   } catch (err) {
     if (process.env.DEBUG) console.error(err);
   } finally {
@@ -117,11 +123,11 @@ const with_error_mode = (mode, callback) => {
   }
 };
 
-const with_custom_tag = (tag_name, tag_class, callback) => {
+const with_custom_tag = async (tag_name, tag_class, callback) => {
   const old_tag = Template.tags.get(tag_name);
   try {
     Template.register_tag(tag_name, tag_class);
-    callback();
+    await callback();
   } catch (err) {
     throw err;
   } finally {

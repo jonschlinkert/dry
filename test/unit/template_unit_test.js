@@ -44,8 +44,8 @@ describe('template unit tests', () => {
     }
   });
 
-  it('template_inheritance', () => {
+  it('template_inheritance', async () => {
     class TemplateSubclass extends Dry.Template {}
-    assert.equal('foo', TemplateSubclass.parse('foo').render());
+    assert.equal('foo', await TemplateSubclass.parse('foo').render());
   });
 });

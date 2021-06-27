@@ -101,7 +101,7 @@ describe('standard_filters_test', () => {
     assert.equal('', filters.upcase(null));
   });
 
-  it('test_slice', () => {
+  it('test_slice', async () => {
     assert.equal('oob', filters.slice('foobar', 1, 3));
     assert.equal('oobar', filters.slice('foobar', 1, 1000));
     assert.equal('', filters.slice('foobar', 1, 0));
@@ -115,8 +115,8 @@ describe('standard_filters_test', () => {
     assert.equal('', filters.slice('foobar', -100, 10));
     assert.equal('oob', filters.slice('foobar', '1', '3'));
 
-    assert.throws(() => filters.slice('foobar', null), Dry.ArgumentError);
-    assert.throws(() => filters.slice('foobar', 0, ''), Dry.ArgumentError);
+    await assert.rejects(async () => filters.slice('foobar', null), Dry.ArgumentError);
+    await assert.rejects(async () => filters.slice('foobar', 0, ''), Dry.ArgumentError);
   });
 
   it('test_slice_on_arrays', () => {
@@ -173,10 +173,10 @@ describe('standard_filters_test', () => {
     assert.equal('', filters.base64_encode(null));
   });
 
-  it('test_base64_decode', () => {
+  it('test_base64_decode', async () => {
     assert.equal('one two three', filters.base64_decode('b25lIHR3byB0aHJlZQ=='));
-    assert.throws(() => filters.base64_decode('invalidbase64'), Dry.ArgumentError);
-    assert.throws(() => filters.base64_decode('invalidbase64'), /invalid base64/);
+    await assert_raises(Dry.ArgumentError, () => filters.base64_decode('invalidbase64'));
+    await assert_raises(/invalid base64/, () => filters.base64_decode('invalidbase64'));
   });
 
   it('test_base64_url_safe_encode', () => {
@@ -187,10 +187,10 @@ describe('standard_filters_test', () => {
     assert.equal('', filters.base64_url_safe_encode(null));
   });
 
-  it('test_base64_url_safe_decode', () => {
+  it('test_base64_url_safe_decode', async () => {
     assert.equal('abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 1234567890 !@#$%^&*()-=_+/?.:;[]{}\\|', filters.base64_url_safe_decode('YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXogQUJDREVGR0hJSktMTU5PUFFSU1RVVldYWVogMTIzNDU2Nzg5MCAhQCMkJV4mKigpLT1fKy8_Ljo7W117fVx8'));
 
-    const exception = assert_raises(Dry.ArgumentError, () => {
+    const exception = await assert_raises(Dry.ArgumentError, () => {
       filters.base64_url_safe_decode('invalidbase64');
     });
 
@@ -213,9 +213,9 @@ describe('standard_filters_test', () => {
     assert.equal(filters.url_decode(null), null);
   });
 
-  it('test_url_decode_errors', () => {
-    assert.throws(() => filters.url_decode('%ff'), Dry.ArgumentError);
-    assert.throws(() => filters.url_decode('%ff'), /invalid byte sequence/);
+  it('test_url_decode_errors', async () => {
+    await assert.rejects(async () => filters.url_decode('%ff'), Dry.ArgumentError);
+    await assert.rejects(async () => filters.url_decode('%ff'), /invalid byte sequence/);
   });
 
   it('test_truncatewords', () => {
@@ -230,10 +230,10 @@ describe('standard_filters_test', () => {
     assert.equal('one...', filters.truncatewords('one two three four', 0));
   });
 
-  it('test_truncatewords_errors', () => {
+  it('test_truncatewords_errors', async () => {
     const max = Number.MAX_SAFE_INTEGER;
-    assert.throws(() => filters.truncatewords('one two three four', max + 1), Dry.ArgumentError);
-    assert.throws(() => filters.truncatewords('one two three four', max + 1), /too big for truncatewords/);
+    await assert.rejects(async () => filters.truncatewords('one two three four', max + 1), Dry.ArgumentError);
+    await assert.rejects(async () => filters.truncatewords('one two three four', max + 1), /too big for truncatewords/);
   });
 
   it('test_strip_html', () => {
@@ -340,18 +340,18 @@ describe('standard_filters_test', () => {
     assert.deepEqual([], filters.sort([], 'a'));
   });
 
-  it('test_sort_invalid_property', () => {
+  it('test_sort_invalid_property', async () => {
     const foo = [[1], [2], [3]];
-    assert.throws(() => filters.sort(foo, 'bar'), Dry.ArgumentError);
+    await assert.rejects(async () => filters.sort(foo, 'bar'), Dry.ArgumentError);
   });
 
   it('test_sort_natural_empty_array', () => {
     assert.deepEqual([], filters.sort_natural([], 'a'));
   });
 
-  it('test_sort_natural_invalid_property', () => {
+  it('test_sort_natural_invalid_property', async () => {
     const foo = [[1], [2], [3]];
-    assert.throws(() => filters.sort_natural(foo, 'bar'), Dry.ArgumentError);
+    await assert.rejects(async () => filters.sort_natural(foo, 'bar'), Dry.ArgumentError);
   });
 
   it('test_legacy_sort_hash', () => {
@@ -377,18 +377,18 @@ describe('standard_filters_test', () => {
     assert.deepEqual([], filters.uniq([], 'a'));
   });
 
-  it('test_uniq_invalid_property', () => {
+  it('test_uniq_invalid_property', async () => {
     const foo = [[1], [2], [3]];
-    assert.throws(() => filters.uniq(foo, 'bar'), Dry.ArgumentError);
+    await assert.rejects(async () => filters.uniq(foo, 'bar'), Dry.ArgumentError);
   });
 
   it('test_compact_empty_array', () => {
     assert.deepEqual([], filters.compact([], 'a'));
   });
 
-  it('test_compact_invalid_property', () => {
+  it('test_compact_invalid_property', async () => {
     const foo = [[1], [2], [3]];
-    assert.throws(() => filters.compact(foo, 'bar'), Dry.ArgumentError);
+    await assert.rejects(async () => filters.compact(foo, 'bar'), Dry.ArgumentError);
   });
 
   it('test_reverse', () => {
@@ -399,46 +399,46 @@ describe('standard_filters_test', () => {
     assert.deepEqual([{ a: 1, b: 2 }], filters.reverse({ a: 1, b: 2 }));
   });
 
-  it('test_map', () => {
+  it('test_map', async () => {
     assert.deepEqual([1, 2, 3, 4], filters.map([{ a: 1 }, { a: 2 }, { a: 3 }, { a: 4 }], 'a'));
-    assert_template_result('abc', "{{ ary | map:'foo' | map:'bar' }}", {
+    await assert_template_result('abc', "{{ ary | map:'foo' | map:'bar' }}", {
       ary: [{ foo: { bar: 'a' } }, { foo: { bar: 'b' } }, { foo: { bar: 'c' } }]
     });
   });
 
-  it('test_map_doesnt_call_arbitrary_stuff', () => {
-    assert_template_result('', '{{ "foo" | map: "__id__" }}');
-    assert_template_result('', '{{ "foo" | map: "inspect" }}');
+  it('test_map_doesnt_call_arbitrary_stuff', async () => {
+    await assert_template_result('', '{{ "foo" | map: "__id__" }}');
+    await assert_template_result('', '{{ "foo" | map: "inspect" }}');
   });
 
-  it('test_map_calls_to_liquid', () => {
+  it('test_map_calls_to_liquid', async () => {
     const t = new TestThing();
-    assert_template_result('woot: 1', '{{ foo | map: "whatever" }}', { foo: [t] });
+    await assert_template_result('woot: 1', '{{ foo | map: "whatever" }}', { foo: [t] });
   });
 
-  it('test_map_on_hashes', () => {
-    assert_template_result('4217', '{{ thing | map: "foo" | map: "bar" }}', {
+  it('test_map_on_hashes', async () => {
+    await assert_template_result('4217', '{{ thing | map: "foo" | map: "bar" }}', {
       thing: { foo: [{ bar: 42 }, { bar: 17 }] }
     });
   });
 
-  it('test_legacy_map_on_hashes_with_dynamic_key', () => {
+  it('test_legacy_map_on_hashes_with_dynamic_key', async () => {
     const template = "{% assign key = 'foo' %}{{ thing | map: key | map: 'bar' }}";
     const hash = { foo: { bar: 42 } };
-    assert_template_result('42', template, { thing: hash });
+    await assert_template_result('42', template, { thing: hash });
   });
 
-  it('test_sort_calls_to_liquid', () => {
+  it('test_sort_calls_to_liquid', async () => {
     const t = new TestThing();
-    Template.parse('{{ foo | sort: "whatever" }}').render({ foo: [t] });
+    await Template.parse('{{ foo | sort: "whatever" }}').render({ foo: [t] });
     assert.equal(t.foo, 1);
   });
 
-  it('test_map_over_proc', () => {
+  it('test_map_over_proc', async () => {
     const drop = new TestDrop();
     const p = drop;
     const templ = '{{ procs | map: "test" }}';
-    assert_template_result('testfoo', templ, { procs: [p] });
+    await assert_template_result('testfoo', templ, { procs: [p] });
   });
 
   it('test_map_over_drops_returning_procs', () => {
@@ -455,14 +455,14 @@ describe('standard_filters_test', () => {
     assert_template_result('123', '{{ foo | map: "foo" }}', { foo: new TestEnumerable() });
   });
 
-  it('test_map_returns_empty_on_2d_input_array', () => {
+  it('test_map_returns_empty_on_2d_input_array', async () => {
     const foo = [[1], [2], [3]];
-    assert.throws(() => filters.map(foo, 'bar'), Dry.ArgumentError);
+    await assert.rejects(async () => filters.map(foo, 'bar'), Dry.ArgumentError);
   });
 
-  it('test_map_returns_empty_with_no_property', () => {
+  it('test_map_returns_empty_with_no_property', async () => {
     const foo = [[1], [2], [3]];
-    assert.throws(() => filters.map(foo, null), Dry.ArgumentError);
+    await assert.rejects(async () => filters.map(foo, null), Dry.ArgumentError);
   });
 
   it('test_sort_works_on_enumerables', () => {
@@ -526,175 +526,175 @@ describe('standard_filters_test', () => {
     assert_template_result('2 1 1 1', "{{ '1 1 1 1' | replace_first: '1', 2 }}");
   });
 
-  it('test_remove', () => {
+  it('test_remove', async () => {
     assert.equal('   ', filters.remove('a a a a', 'a'));
     assert.equal('   ', filters.remove('1 1 1 1', 1));
     assert.equal('a a a', filters.remove_first('a a a a', 'a '));
     assert.equal(' 1 1 1', filters.remove_first('1 1 1 1', 1));
-    assert_template_result('a a a', "{{ 'a a a a' | remove_first: 'a ' }}");
+    await assert_template_result('a a a', "{{ 'a a a a' | remove_first: 'a ' }}");
   });
 
-  it('test_pipes_in_string_arguments', () => {
-    assert_template_result('foobar', "{{ 'foo|bar' | remove: '|' }}");
+  it('test_pipes_in_string_arguments', async () => {
+    await assert_template_result('foobar', "{{ 'foo|bar' | remove: '|' }}");
   });
 
-  it('test_strip', () => {
-    assert_template_result('ab c', '{{ source | strip }}', { source: ' ab c  ' });
-    assert_template_result('ab c', '{{ source | strip }}', { source: ' \tab c  \n \t' });
+  it('test_strip', async () => {
+    await assert_template_result('ab c', '{{ source | strip }}', { source: ' ab c  ' });
+    await assert_template_result('ab c', '{{ source | strip }}', { source: ' \tab c  \n \t' });
   });
 
-  it('test_lstrip', () => {
-    assert_template_result('ab c  ', '{{ source | lstrip }}', { source: ' ab c  ' });
-    assert_template_result('ab c  \n \t', '{{ source | lstrip }}', { source: ' \tab c  \n \t' });
+  it('test_lstrip', async () => {
+    await assert_template_result('ab c  ', '{{ source | lstrip }}', { source: ' ab c  ' });
+    await assert_template_result('ab c  \n \t', '{{ source | lstrip }}', { source: ' \tab c  \n \t' });
   });
 
-  it('test_rstrip', () => {
-    assert_template_result(' ab c', '{{ source | rstrip }}', { source: ' ab c  ' });
-    assert_template_result(' \tab c', '{{ source | rstrip }}', { source: ' \tab c  \n \t' });
+  it('test_rstrip', async () => {
+    await assert_template_result(' ab c', '{{ source | rstrip }}', { source: ' ab c  ' });
+    await assert_template_result(' \tab c', '{{ source | rstrip }}', { source: ' \tab c  \n \t' });
   });
 
-  it('test_strip_newlines', () => {
-    assert_template_result('abc', '{{ source | strip_newlines }}', { source: 'a\nb\nc' });
-    assert_template_result('abc', '{{ source | strip_newlines }}', { source: 'a\r\nb\nc' });
+  it('test_strip_newlines', async () => {
+    await assert_template_result('abc', '{{ source | strip_newlines }}', { source: 'a\nb\nc' });
+    await assert_template_result('abc', '{{ source | strip_newlines }}', { source: 'a\r\nb\nc' });
   });
 
-  it('test_newlines_to_br', () => {
-    assert_template_result('a<br />\nb<br />\nc', '{{ source | newline_to_br }}', { source: 'a\nb\nc' });
-    assert_template_result('a<br />\nb<br />\nc', '{{ source | newline_to_br }}', { source: 'a\r\nb\nc' });
+  it('test_newlines_to_br', async () => {
+    await assert_template_result('a<br />\nb<br />\nc', '{{ source | newline_to_br }}', { source: 'a\nb\nc' });
+    await assert_template_result('a<br />\nb<br />\nc', '{{ source | newline_to_br }}', { source: 'a\r\nb\nc' });
   });
 
-  it('test_plus', () => {
-    assert_template_result('2', '{{ 1 | plus:1 }}');
-    assert_template_result('2.0', "{{ '1' | plus:'1.0' }}");
+  it('test_plus', async () => {
+    await assert_template_result('2', '{{ 1 | plus:1 }}');
+    await assert_template_result('2.0', "{{ '1' | plus:'1.0' }}");
 
-    assert_template_result('5', "{{ price | plus:'2' }}", { price: new NumberLikeThing(3) });
+    await assert_template_result('5', "{{ price | plus:'2' }}", { price: new NumberLikeThing(3) });
   });
 
-  it('test_minus', () => {
-    assert_template_result('4', '{{ input | minus:operand }}', { input: 5, operand: 1 });
-    assert_template_result('2.3', "{{ '4.3' | minus:'2' }}");
+  it('test_minus', async () => {
+    await assert_template_result('4', '{{ input | minus:operand }}', { input: 5, operand: 1 });
+    await assert_template_result('2.3', "{{ '4.3' | minus:'2' }}");
 
-    assert_template_result('5', "{{ price | minus:'2' }}", { price: new NumberLikeThing(7) });
+    await assert_template_result('5', "{{ price | minus:'2' }}", { price: new NumberLikeThing(7) });
   });
 
-  it('test_abs', () => {
-    assert_template_result('17', '{{ 17 | abs }}');
-    assert_template_result('17', '{{ -17 | abs }}');
-    assert_template_result('17', "{{ '17' | abs }}");
-    assert_template_result('17', "{{ '-17' | abs }}");
-    assert_template_result('0', '{{ 0 | abs }}');
-    assert_template_result('0', "{{ '0' | abs }}");
-    assert_template_result('17.42', '{{ 17.42 | abs }}');
-    assert_template_result('17.42', '{{ -17.42 | abs }}');
-    assert_template_result('17.42', "{{ '17.42' | abs }}");
-    assert_template_result('17.42', "{{ '-17.42' | abs }}");
+  it('test_abs', async  () => {
+    await assert_template_result('17', '{{ 17 | abs }}');
+    await assert_template_result('17', '{{ -17 | abs }}');
+    await assert_template_result('17', "{{ '17' | abs }}");
+    await assert_template_result('17', "{{ '-17' | abs }}");
+    await assert_template_result('0', '{{ 0 | abs }}');
+    await assert_template_result('0', "{{ '0' | abs }}");
+    await assert_template_result('17.42', '{{ 17.42 | abs }}');
+    await assert_template_result('17.42', '{{ -17.42 | abs }}');
+    await assert_template_result('17.42', "{{ '17.42' | abs }}");
+    await assert_template_result('17.42', "{{ '-17.42' | abs }}");
   });
 
-  it('test_times', () => {
-    assert_template_result('12', '{{ 3 | times:4 }}');
-    assert_template_result('0', "{{ 'foo' | times:4 }}");
-    assert_template_result('6', "{{ '2.1' | times:3 | replace: '.','-' | plus:0}}");
-    assert_template_result('7.25', '{{ 0.0725 | times:100 }}');
-    assert_template_result('-7.25', '{{ "-0.0725" | times:100 }}');
-    assert_template_result('7.25', '{{ "-0.0725" | times: -100 }}');
-    assert_template_result('4', '{{ price | times:2 }}', { price: new NumberLikeThing(2) });
+  it('test_times', async  () => {
+    await assert_template_result('12', '{{ 3 | times:4 }}');
+    await assert_template_result('0', "{{ 'foo' | times:4 }}");
+    await assert_template_result('6', "{{ '2.1' | times:3 | replace: '.','-' | plus:0}}");
+    await assert_template_result('7.25', '{{ 0.0725 | times:100 }}');
+    await assert_template_result('-7.25', '{{ "-0.0725" | times:100 }}');
+    await assert_template_result('7.25', '{{ "-0.0725" | times: -100 }}');
+    await assert_template_result('4', '{{ price | times:2 }}', { price: new NumberLikeThing(2) });
   });
 
-  it('test_divided_by', () => {
-    assert_template_result('4', '{{ 12 | divided_by:3 }}');
-    assert_template_result('4', '{{ 14 | divided_by:3 }}');
+  it('test_divided_by', async  () => {
+    await assert_template_result('4', '{{ 12 | divided_by:3 }}');
+    await assert_template_result('4', '{{ 14 | divided_by:3 }}');
 
-    assert_template_result('5', '{{ 15 | divided_by:3 }}');
+    await assert_template_result('5', '{{ 15 | divided_by:3 }}');
 
-    assert_template_result('5', '{{ 15 | divided_by:3 }}');
+    await assert_template_result('5', '{{ 15 | divided_by:3 }}');
 
-    assert_template_result('0.5', '{{ 2.0 | divided_by:4 }}');
-    assert_template_result('1', '{{ 4.0 | divided_by:4 }}');
-    assert_template_result('5', '{{ price | divided_by:2 }}', { price: new NumberLikeThing(10) });
+    await assert_template_result('0.5', '{{ 2.0 | divided_by:4 }}');
+    await assert_template_result('1', '{{ 4.0 | divided_by:4 }}');
+    await assert_template_result('5', '{{ price | divided_by:2 }}', { price: new NumberLikeThing(10) });
   });
 
-  it('test_divided_by_errors', () => {
-    assert.equal('Dry error: cannot divide by zero', Template.parse('{{ 5 | divided_by:0 }}').render());
-    assert.throws(() => assert_template_result('', '{{ 5 | divided_by:0 }}'), Dry.ZeroDivisionError);
-    assert.throws(() => assert_template_result('4', '{{ 1 | modulo: 0 }}'), Dry.ZeroDivisionError);
+  it('test_divided_by_errors', async () => {
+    assert.equal('Dry error: cannot divide by zero', await Template.parse('{{ 5 | divided_by:0 }}').render());
+    await assert.rejects(async () => assert_template_result('', '{{ 5 | divided_by:0 }}'), Dry.ZeroDivisionError);
+    await assert.rejects(async () => assert_template_result('4', '{{ 1 | modulo: 0 }}'), Dry.ZeroDivisionError);
   });
 
-  it('test_modulo', () => {
-    assert_template_result('1', '{{ 3 | modulo:2 }}');
-    assert_template_result('1', '{{ price | modulo:2 }}', { price: new NumberLikeThing(3) });
+  it('test_modulo', async  () => {
+    await assert_template_result('1', '{{ 3 | modulo:2 }}');
+    await assert_template_result('1', '{{ price | modulo:2 }}', { price: new NumberLikeThing(3) });
   });
 
-  it('test_modulo_error', () => {
-    assert.throws(() => assert_template_result('4', '{{ 1 | modulo: 0 }}'), Dry.ZeroDivisionError);
+  it('test_modulo_error', async  () => {
+    await assert.rejects(async () => assert_template_result('4', '{{ 1 | modulo: 0 }}'), Dry.ZeroDivisionError);
   });
 
-  it('test_round', () => {
-    assert_template_result('5', '{{ input | round }}', { input: 4.6 });
-    assert_template_result('4', "{{ '4.3' | round }}");
-    assert_template_result('4.56', '{{ input | round: 2 }}', { input: 4.5612 });
+  it('test_round', async  () => {
+    await assert_template_result('5', '{{ input | round }}', { input: 4.6 });
+    await assert_template_result('4', "{{ '4.3' | round }}");
+    await assert_template_result('4.56', '{{ input | round: 2 }}', { input: 4.5612 });
 
-    assert_template_result('5', '{{ price | round }}', { price: new NumberLikeThing(4.6) });
-    assert_template_result('4', '{{ price | round }}', { price: new NumberLikeThing(4.3) });
+    await assert_template_result('5', '{{ price | round }}', { price: new NumberLikeThing(4.6) });
+    await assert_template_result('4', '{{ price | round }}', { price: new NumberLikeThing(4.3) });
   });
 
-  it('test_round_float_domain_error', () => {
+  it('test_round_float_domain_error', async  () => {
     // in ruby this was a FloatDomainError, but in js we're throwing a ZeroDivisionError
     // since floats do not retain decimals when the value is zero
-    assert.throws(() => assert_template_result('4', '{{ 1.0 | divided_by: 0.0 | round }}'), Dry.ZeroDivisionError);
+    await assert.rejects(async () => assert_template_result('4', '{{ 1.0 | divided_by: 0.0 | round }}'), Dry.ZeroDivisionError);
   });
 
-  it('test_ceil', () => {
-    assert_template_result('5', '{{ input | ceil }}', { input: 4.6 });
-    assert_template_result('5', "{{ '4.3' | ceil }}");
+  it('test_ceil', async  () => {
+    await assert_template_result('5', '{{ input | ceil }}', { input: 4.6 });
+    await assert_template_result('5', "{{ '4.3' | ceil }}");
 
-    assert_template_result('5', '{{ price | ceil }}', { price: new NumberLikeThing(4.6) });
+    await assert_template_result('5', '{{ price | ceil }}', { price: new NumberLikeThing(4.6) });
   });
 
-  it('test_ceil_float_domain_error', () => {
-    assert.throws(() => {
-      assert_template_result('4', '{{ 1.0 | divided_by: 0.0 | ceil }}');
+  it('test_ceil_float_domain_error', async  () => {
+    await assert.rejects(async () => {
+      return assert_template_result('4', '{{ 1.0 | divided_by: 0.0 | ceil }}');
     }, Dry.ZeroDivisionError);
   });
 
-  it('test_floor', () => {
-    assert_template_result('4', '{{ input | floor }}', { input: 4.6 });
-    assert_template_result('4', "{{ '4.3' | floor }}");
+  it('test_floor', async  () => {
+    await assert_template_result('4', '{{ input | floor }}', { input: 4.6 });
+    await assert_template_result('4', "{{ '4.3' | floor }}");
 
-    assert_template_result('5', '{{ price | floor }}', { price: new NumberLikeThing(5.4) });
+    await assert_template_result('5', '{{ price | floor }}', { price: new NumberLikeThing(5.4) });
   });
 
-  it('test_floor_float_domain_error', () => {
-    assert.throws(() => {
-      assert_template_result('4', '{{ 1.0 | divided_by: 0.0 | floor }}');
+  it('test_floor_float_domain_error', async () => {
+    await assert.rejects(async () => {
+      return assert_template_result('4', '{{ 1.0 | divided_by: 0.0 | floor }}');
     }, Dry.ZeroDivisionError);
   });
 
-  it('test_at_most', () => {
-    assert_template_result('4', '{{ 5 | at_most:4 }}');
-    assert_template_result('5', '{{ 5 | at_most:5 }}');
-    assert_template_result('5', '{{ 5 | at_most:6 }}');
+  it('test_at_most', async  () => {
+    await assert_template_result('4', '{{ 5 | at_most:4 }}');
+    await assert_template_result('5', '{{ 5 | at_most:5 }}');
+    await assert_template_result('5', '{{ 5 | at_most:6 }}');
 
-    assert_template_result('4.5', '{{ 4.5 | at_most:5 }}');
-    assert_template_result('5', '{{ width | at_most:5 }}', { 'width': new NumberLikeThing(6) });
-    assert_template_result('4', '{{ width | at_most:5 }}', { 'width': new NumberLikeThing(4) });
-    assert_template_result('4', '{{ 5 | at_most: width }}', { 'width': new NumberLikeThing(4) });
+    await assert_template_result('4.5', '{{ 4.5 | at_most:5 }}');
+    await assert_template_result('5', '{{ width | at_most:5 }}', { 'width': new NumberLikeThing(6) });
+    await assert_template_result('4', '{{ width | at_most:5 }}', { 'width': new NumberLikeThing(4) });
+    await assert_template_result('4', '{{ 5 | at_most: width }}', { 'width': new NumberLikeThing(4) });
   });
 
-  it('test_at_least', () => {
-    assert_template_result('5', '{{ 5 | at_least:4 }}');
-    assert_template_result('5', '{{ 5 | at_least:5 }}');
-    assert_template_result('6', '{{ 5 | at_least:6 }}');
+  it('test_at_least', async  () => {
+    await assert_template_result('5', '{{ 5 | at_least:4 }}');
+    await assert_template_result('5', '{{ 5 | at_least:5 }}');
+    await assert_template_result('6', '{{ 5 | at_least:6 }}');
 
-    assert_template_result('5', '{{ 4.5 | at_least:5 }}');
-    assert_template_result('6', '{{ width | at_least:5 }}', { 'width': new NumberLikeThing(6) });
-    assert_template_result('5', '{{ width | at_least:5 }}', { 'width': new NumberLikeThing(4) });
-    assert_template_result('6', '{{ 5 | at_least: width }}', { 'width': new NumberLikeThing(6) });
+    await assert_template_result('5', '{{ 4.5 | at_least:5 }}');
+    await assert_template_result('6', '{{ width | at_least:5 }}', { 'width': new NumberLikeThing(6) });
+    await assert_template_result('5', '{{ width | at_least:5 }}', { 'width': new NumberLikeThing(4) });
+    await assert_template_result('6', '{{ 5 | at_least: width }}', { 'width': new NumberLikeThing(6) });
   });
 
-  it('test_append', () => {
+  it('test_append', async  () => {
     const assigns = { 'a': 'bc', 'b': 'd' };
-    assert_template_result('bcd', "{{ a | append: 'd'}}", assigns);
-    assert_template_result('bcd', '{{ a | append: b}}', assigns);
+    await assert_template_result('bcd', "{{ a | append: 'd'}}", assigns);
+    await assert_template_result('bcd', '{{ a | append: b}}', assigns);
   });
 
   it('test_concat', cb => {
@@ -785,9 +785,9 @@ describe('standard_filters_test', () => {
     assert.deepEqual([], filters.where({ a: 'not ok' }, 'a', 'ok'));
   });
 
-  it('test_where_indexable_but_non_map_value', () => {
-    assert.throws(() => filters.where(1, 'ok', true), Dry.ArgumentError);
-    assert.throws(() => filters.where(1, 'ok'), Dry.ArgumentError);
+  it('test_where_indexable_but_non_map_value', async () => {
+    await assert.rejects(async () => filters.where(1, 'ok', true), Dry.ArgumentError);
+    await assert.rejects(async () => filters.where(1, 'ok'), Dry.ArgumentError);
   });
 
   it('test_where_non_boolean_value', () => {

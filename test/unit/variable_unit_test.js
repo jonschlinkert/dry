@@ -137,11 +137,11 @@ describe('variable_unit_test', () => {
     assert.deepEqual(1000.01, v.name);
   });
 
-  it('test_dashes', () => {
+  it('test_dashes', async () => {
     assert.deepEqual(new VariableLookup('foo-bar'), create_variable('foo-bar').name);
     assert.deepEqual(new VariableLookup('foo-bar-2'), create_variable('foo-bar-2').name);
 
-    with_error_mode(() => {
+    await with_error_mode(() => {
       assert.throws(() => create_variable('foo - bar'), Dry.SyntaxError);
       assert.throws(() => create_variable('-foo'), Dry.SyntaxError);
       assert.throws(() => create_variable('2foo'), Dry.SyntaxError);

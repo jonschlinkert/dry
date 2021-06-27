@@ -10,7 +10,7 @@ describe('trim_mode_test', () => {
   let text;
 
   // Make sure the trim isn't applied to standard output
-  it('test_standard_output', () => {
+  it('test_standard_output', async () => {
     text = `
       <div>
         <p>
@@ -25,10 +25,10 @@ describe('trim_mode_test', () => {
         </p>
       </div>
     `;
-    assert_template_result(expected, text);
+    await assert_template_result(expected, text);
   });
 
-  it('test_variable_output_with_multiple_blank_lines', () => {
+  it('test_variable_output_with_multiple_blank_lines', async () => {
     text = `
       <div>
         <p>
@@ -45,10 +45,10 @@ describe('trim_mode_test', () => {
         <p>John</p>
       </div>
     `;
-    assert_template_result(expected, text);
+    await assert_template_result(expected, text);
   });
 
-  it('test_tag_output_with_multiple_blank_lines', () => {
+  it('test_tag_output_with_multiple_blank_lines', async () => {
     text = `
       <div>
         <p>
@@ -67,11 +67,11 @@ describe('trim_mode_test', () => {
         <p>yes</p>
       </div>
     `;
-    assert_template_result(expected, text);
+    await assert_template_result(expected, text);
   });
 
   // Make sure the trim isn't applied to standard tags
-  it('test_standard_tags', () => {
+  it('test_standard_tags', async () => {
     const whitespace = '          ';
     text       = `
       <div>
@@ -91,7 +91,7 @@ ${whitespace}
         </p>
       </div>
     `;
-    assert_template_result(expected, text);
+    await assert_template_result(expected, text);
 
     text = `
       <div>
@@ -109,68 +109,68 @@ ${whitespace}
         </p>
       </div>
     `;
-    assert_template_result(expected, text);
+    await assert_template_result(expected, text);
   });
 
   // Make sure the trim isn't too agressive
-  it('test_no_trim_output', () => {
+  it('test_no_trim_output', async () => {
     text     = '<p>{{- \'John\' -}}</p>';
     expected = '<p>John</p>';
-    assert_template_result(expected, text);
+    await assert_template_result(expected, text);
   });
 
   // Make sure the trim isn't too agressive
-  it('test_no_trim_tags', () => {
+  it('test_no_trim_tags', async () => {
     text     = '<p>{%- if true -%}yes{%- endif -%}</p>';
     expected = '<p>yes</p>';
-    assert_template_result(expected, text);
+    await assert_template_result(expected, text);
 
     text     = '<p>{%- if false -%}no{%- endif -%}</p>';
     expected = '<p></p>';
-    assert_template_result(expected, text);
+    await assert_template_result(expected, text);
   });
 
-  it('test_single_line_outer_tag', () => {
+  it('test_single_line_outer_tag', async () => {
     text     = '<p> {%- if true %} yes {% endif -%} </p>';
     expected = '<p> yes </p>';
-    assert_template_result(expected, text);
+    await assert_template_result(expected, text);
 
     text     = '<p> {%- if false %} no {% endif -%} </p>';
     expected = '<p></p>';
-    assert_template_result(expected, text);
+    await assert_template_result(expected, text);
   });
 
-  it('test_single_line_inner_tag', () => {
+  it('test_single_line_inner_tag', async () => {
     text     = '<p> {% if true -%} yes {%- endif %} </p>';
     expected = '<p> yes </p>';
-    assert_template_result(expected, text);
+    await assert_template_result(expected, text);
 
     text     = '<p> {% if false -%} no {%- endif %} </p>';
     expected = '<p>  </p>';
-    assert_template_result(expected, text);
+    await assert_template_result(expected, text);
   });
 
-  it('test_single_line_post_tag', () => {
+  it('test_single_line_post_tag', async () => {
     text     = '<p> {% if true -%} yes {% endif -%} </p>';
     expected = '<p> yes </p>';
-    assert_template_result(expected, text);
+    await assert_template_result(expected, text);
 
     text     = '<p> {% if false -%} no {% endif -%} </p>';
     expected = '<p> </p>';
-    assert_template_result(expected, text);
+    await assert_template_result(expected, text);
   });
 
-  it('test_single_line_pre_tag', () => {
+  it('test_single_line_pre_tag', async () => {
     text     = '<p> {%- if true %} yes {%- endif %} </p>';
     expected = '<p> yes </p>';
-    assert_template_result(expected, text);
+    await assert_template_result(expected, text);
 
     text     = '<p> {%- if false %} no {%- endif %} </p>';
     expected = '<p> </p>';
-    assert_template_result(expected, text);
+    await assert_template_result(expected, text);
   });
 
-  it('test_pre_trim_output', () => {
+  it('test_pre_trim_output', async () => {
     text = `
       <div>
         <p>
@@ -184,10 +184,10 @@ ${whitespace}
         </p>
       </div>
     `;
-    assert_template_result(expected, text);
+    await assert_template_result(expected, text);
   });
 
-  it('test_pre_trim_tags', () => {
+  it('test_pre_trim_tags', async () => {
     text = `
       <div>
         <p>
@@ -204,7 +204,7 @@ ${whitespace}
         </p>
       </div>
     `;
-    assert_template_result(expected, text);
+    await assert_template_result(expected, text);
 
     text = `
       <div>
@@ -221,10 +221,10 @@ ${whitespace}
         </p>
       </div>
     `;
-    assert_template_result(expected, text);
+    await assert_template_result(expected, text);
   });
 
-  it('test_post_trim_output', () => {
+  it('test_post_trim_output', async () => {
     text = `
       <div>
         <p>
@@ -238,10 +238,10 @@ ${whitespace}
           John</p>
       </div>
     `;
-    assert_template_result(expected, text);
+    await assert_template_result(expected, text);
   });
 
-  it('test_post_trim_tags', () => {
+  it('test_post_trim_tags', async () => {
     text = `
       <div>
         <p>
@@ -258,7 +258,7 @@ ${whitespace}
           </p>
       </div>
     `;
-    assert_template_result(expected, text);
+    await assert_template_result(expected, text);
 
     text = `
       <div>
@@ -275,10 +275,10 @@ ${whitespace}
           </p>
       </div>
     `;
-    assert_template_result(expected, text);
+    await assert_template_result(expected, text);
   });
 
-  it('test_pre_and_post_trim_tags', () => {
+  it('test_pre_and_post_trim_tags', async () => {
     text = `
       <div>
         <p>
@@ -295,7 +295,7 @@ ${whitespace}
           </p>
       </div>
     `;
-    assert_template_result(expected, text);
+    await assert_template_result(expected, text);
 
     text = `
       <div>
@@ -311,10 +311,10 @@ ${whitespace}
         <p></p>
       </div>
     `;
-    assert_template_result(expected, text);
+    await assert_template_result(expected, text);
   });
 
-  it('test_post_and_pre_trim_tags', () => {
+  it('test_post_and_pre_trim_tags', async () => {
     text = `
       <div>
         <p>
@@ -331,7 +331,7 @@ ${whitespace}
         </p>
       </div>
     `;
-    assert_template_result(expected, text);
+    await assert_template_result(expected, text);
 
     const whitespace = '          ';
     text       = `
@@ -350,10 +350,10 @@ ${whitespace}
         </p>
       </div>
     `;
-    assert_template_result(expected, text);
+    await assert_template_result(expected, text);
   });
 
-  it('test_trim_output', () => {
+  it('test_trim_output', async () => {
     text = `
       <div>
         <p>
@@ -366,10 +366,10 @@ ${whitespace}
         <p>John</p>
       </div>
     `;
-    assert_template_result(expected, text);
+    await assert_template_result(expected, text);
   });
 
-  it('test_trim_tags', () => {
+  it('test_trim_tags', async () => {
     text = `
       <div>
         <p>
@@ -384,7 +384,7 @@ ${whitespace}
         <p>yes</p>
       </div>
     `;
-    assert_template_result(expected, text);
+    await assert_template_result(expected, text);
 
     text = `
       <div>
@@ -400,10 +400,10 @@ ${whitespace}
         <p></p>
       </div>
     `;
-    assert_template_result(expected, text);
+    await assert_template_result(expected, text);
   });
 
-  it('test_whitespace_trim_output', () => {
+  it('test_whitespace_trim_output', async () => {
     text = `
       <div>
         <p>
@@ -417,10 +417,10 @@ ${whitespace}
         <p>John,30</p>
       </div>
     `;
-    assert_template_result(expected, text);
+    await assert_template_result(expected, text);
   });
 
-  it('test_whitespace_trim_tags', () => {
+  it('test_whitespace_trim_tags', async () => {
     text = `
       <div>
         <p>
@@ -435,7 +435,7 @@ ${whitespace}
         <p>yes</p>
       </div>
     `;
-    assert_template_result(expected, text);
+    await assert_template_result(expected, text);
 
     text = `
       <div>
@@ -451,10 +451,10 @@ ${whitespace}
         <p></p>
       </div>
     `;
-    assert_template_result(expected, text);
+    await assert_template_result(expected, text);
   });
 
-  it('test_complex_trim_output', () => {
+  it('test_complex_trim_output', async () => {
     text = `
       <div>
         <p>
@@ -481,10 +481,10 @@ ${whitespace}
           30</i>
       </div>
     `;
-    assert_template_result(expected, text);
+    await assert_template_result(expected, text);
   });
 
-  it('test_complex_trim', () => {
+  it('test_complex_trim', async () => {
     text = `
       <div>
         {%- if true -%}
@@ -499,14 +499,14 @@ ${whitespace}
     expected = `
       <div><p>John</p></div>
     `;
-    assert_template_result(expected, text);
+    await assert_template_result(expected, text);
   });
 
-  it('test_right_trim_followed_by_tag', () => {
-    assert_template_result('ab c', '{{ "a" -}}{{ "b" }} c');
+  it('test_right_trim_followed_by_tag', async () => {
+    await assert_template_result('ab c', '{{ "a" -}}{{ "b" }} c');
   });
 
-  it('test_raw_output', () => {
+  it('test_raw_output', async () => {
     const whitespace = '        ';
     text       = `
       <div>
@@ -530,42 +530,42 @@ ${whitespace}
 ${whitespace}
       </div>
     `;
-    assert_template_result(expected, text);
+    await assert_template_result(expected, text);
   });
 
-  it('test_pre_trim_blank_preceding_text', () => {
+  it('test_pre_trim_blank_preceding_text', async () => {
     template = Dry.Template.parse('\n{%- raw %}{% endraw %}');
-    assert.equal('', template.render());
+    assert.equal('', await template.render());
 
     template = Dry.Template.parse('{%- raw %}{% endraw -%}\n');
-    assert.equal('', template.render());
+    assert.equal('', await template.render());
 
     template = Dry.Template.parse('\n{%- if true %}{% endif %}');
-    assert.equal('', template.render());
+    assert.equal('', await template.render());
 
     template = Dry.Template.parse("{{ 'B' }} \n{%- if true %}C{% endif %}");
-    assert.equal('BC', template.render());
+    assert.equal('BC', await template.render());
   });
 
-  it('test_bug_compatible_pre_trim', () => {
+  it('test_bug_compatible_pre_trim', async () => {
     template = Dry.Template.parse('\n {%- raw %}{% endraw %}', { bug_compatible_whitespace_trimming: true });
-    assert.equal('\n', template.render());
+    assert.equal('\n', await template.render());
 
     template = Dry.Template.parse('\n {%- if true %}{% endif %}', { bug_compatible_whitespace_trimming: true });
-    assert.equal('\n', template.render());
+    assert.equal('\n', await template.render());
 
     template = Dry.Template.parse("{{ 'B' }} \n{%- if true %}C{% endif %}", { bug_compatible_whitespace_trimming: true });
-    assert.equal('B C', template.render());
+    assert.equal('B C', await template.render());
 
     template = Dry.Template.parse('B\n {%- raw %}{% endraw %}', { bug_compatible_whitespace_trimming: true });
-    assert.equal('B', template.render());
+    assert.equal('B', await template.render());
 
     template = Dry.Template.parse('B\n {%- if true %}{% endif %}', { bug_compatible_whitespace_trimming: true });
-    assert.equal('B', template.render());
+    assert.equal('B', await template.render());
   });
 
-  it('test_trim_blank', () => {
-    assert_template_result('foobar', 'foo {{-}} bar');
+  it('test_trim_blank', async () => {
+    await assert_template_result('foobar', 'foo {{-}} bar');
   });
 });
 
