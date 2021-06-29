@@ -68,6 +68,6 @@ vendor
 *.sublime-*
 
 test/fixtures
-examples
+
 docs
 brandscale

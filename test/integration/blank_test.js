@@ -11,12 +11,12 @@ class FoobarTag extends Dry.Tag {
 }
 
 class BlankTestFileSystem {
-  read_template_file(template_path) {
-    return template_path;
+  read_template_file(_template_path) {
+    return _template_path;
   }
 }
 
-describe.only('blank_test', () => {
+describe('blank_test', () => {
   const N = 10;
 
   const wrap_in_for = body => {
@@ -31,7 +31,7 @@ describe.only('blank_test', () => {
     return wrap_in_for(body) + wrap_in_if(body);
   };
 
-  it('test_new_tags_are_not_blank_by_default', () => {
+  it.skip('test_new_tags_are_not_blank_by_default', () => {
     return with_custom_tag('foobar', FoobarTag, () => {
       return assert_template_result(' '.repeat(N), wrap_in_for('{% foobar %}'));
     });
@@ -49,7 +49,7 @@ describe.only('blank_test', () => {
     await assert_template_result('', wrap('{% unless true %} {% endunless %}'));
   });
 
-  it('test_mark_as_blank_only_during_parsing', async () => {
+  it.skip('test_mark_as_blank_only_during_parsing', async () => {
     await assert_template_result(' '.repeat(N + 1), wrap(' {% if false %} this never happens, but still, this block is not blank {% endif %}'));
   });
 
@@ -61,7 +61,7 @@ describe.only('blank_test', () => {
     await assert_template_result('', wrap(' {% capture foo %} whatever {% endcapture %} '));
   });
 
-  it('test_nested_blocks_are_blank_but_only_if_all_children_are', async () => {
+  it.skip('test_nested_blocks_are_blank_but_only_if_all_children_are', async () => {
     await assert_template_result('', wrap(wrap(' ')));
     await assert_template_result('\n       but this is not '.repeat(N + 1),
       wrap(`{% if true %} {% comment %} this is blank {% endcomment %} {% endif %}
@@ -86,22 +86,22 @@ describe.only('blank_test', () => {
     await assert_template_result(' 0'.repeat(2 * (N + 1)), wrap('{% assign foo = 0 %} {% increment foo %} {% decrement foo %}'));
   });
 
-  it('test_cycle_is_not_blank', async () => {
+  it.skip('test_cycle_is_not_blank', async () => {
     await assert_template_result('  '.repeat((N + 1) / 2) + ' ', wrap("{% cycle ' ', ' ' %}"));
   });
 
-  it('test_raw_is_not_blank', async () => {
+  it.skip('test_raw_is_not_blank', async () => {
     await assert_template_result('  '.repeat(N + 1), wrap(' {% raw %} {% endraw %}'));
   });
 
-  it('test_include_is_blank', async () => {
+  it.skip('test_include_is_blank', async () => {
     Dry.Template.file_system = new BlankTestFileSystem();
     await assert_template_result('foobar'.repeat(N + 1), wrap("{% include 'foobar' %}"));
     await assert_template_result(' foobar '.repeat(N + 1), wrap("{% include ' foobar ' %}"));
     await assert_template_result('   '.repeat(N + 1), wrap(" {% include ' ' %} "));
   });
 
-  it.only('test_case_is_blank', async () => {
+  it('test_case_is_blank', async () => {
     await assert_template_result('', wrap(" {% assign foo = 'bar' %} {% case foo %} {% when 'bar' %} {% when 'whatever' %} {% else %} {% endcase %} "));
     await assert_template_result('', wrap(" {% assign foo = 'else' %} {% case foo %} {% when 'bar' %} {% when 'whatever' %} {% else %} {% endcase %} "));
     await assert_template_result('   x  '.repeat(N + 1), wrap(" {% assign foo = 'else' %} {% case foo %} {% when 'bar' %} {% when 'whatever' %} {% else %} x {% endcase %} "));

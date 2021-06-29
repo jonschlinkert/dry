@@ -20,6 +20,7 @@
     "mocha": "^8.4.0",
     "nyc": "^15.1.0",
     "parser-front-matter": "^1.6.4",
+    "time-require": "github:jonschlinkert/time-require",
     "vinyl": "^2.2.1"
   },
   "dependencies": {
