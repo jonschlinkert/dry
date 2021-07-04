@@ -175,7 +175,13 @@ describe('variable_test', () => {
   });
 
   it('test_render_symbol', async () => {
-    await assert_template_result('bar', '{{ foo }}', { foo: Symbol('bar') });
+    await assert_template_result('foo', '{{ foo }}', { foo: Symbol('foo') });
+    await assert_template_result('bar', '{{ foo.bar }}', { foo: { bar: Symbol('bar') } });
+  });
+
+  it('test_bracket_accessor', async () => {
+    await assert_template_result('baz', '{{ foo["bar"] }}', { foo: { bar: 'baz' } });
+    await assert_template_result('baz', '{{ foo["bar"].baz }}', { foo: { bar: { baz: 'baz' } } });
   });
 
   it('test_dynamic_find_var', async () => {

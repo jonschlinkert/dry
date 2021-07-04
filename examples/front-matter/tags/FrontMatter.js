@@ -1,6 +1,6 @@
 'use strict';
 
-const Dry = require('../Dry');
+const Dry = require('../../..');
 
 class FrontMatter extends Dry.BlockTag {
   constructor(node, state) {

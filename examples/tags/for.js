@@ -59,15 +59,24 @@ const fixtures = {
   // {%- endfor -%}
   // `,
 
-  first: `
-  {% for product in products %}
-    {% if forloop.first == true %}
-      First time through!
-    {% else %}
-      Not the first time.
-    {% endif %}
-  {% endfor %}
-  `
+  kv: `
+  {%- for k, v in pkg -%}
+    {%- assign val = v | typeof -%}
+    {%- if val != 'object' %}
+  - {{k}} = {{v}}
+    {%- endif %}
+  {%- endfor -%}
+  `,
+
+  // first: `
+  // {% for product in products %}
+  //   {% if forloop.first == true %}
+  //     First time through!
+  //   {% else %}
+  //     Not the first time.
+  //   {% endif %}
+  // {% endfor %}
+  // `
 };
 
 const locals = {
@@ -90,9 +99,13 @@ const locals = {
   }
 };
 
-for (const [key, source] of Object.entries(fixtures)) {
-  process.stdout.write(`  --- ${key}`);
-  process.stdout.write(Dry.Template.render(source, locals) || '');
-  process.stdout.write('\n  ---\n');
-  console.log();
-}
+(async () => {
+  for (const [key, source] of Object.entries(fixtures)) {
+    process.stdout.write(`  --- ${key}`);
+    const output = await Dry.Template.render(source, locals) || '';
+    process.stdout.write(output);
+    process.stdout.write('\n  ---\n');
+    console.log();
+  }
+})();
+
