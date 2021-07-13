@@ -3,12 +3,7 @@
 const assert = require('assert').strict;
 const Dry = require('../..');
 const { Template } = Dry;
-const {
-  assert_raises,
-  assert_template_result,
-  IntegerDrop,
-  ThingWithToLiquid
-} = require('../test_helpers');
+const { assert_raises, assert_template_result } = require('../test_helpers');
 
 const pause = (ms = 1000, v) => new Promise(res => setTimeout(() => res(v), ms));
 
@@ -18,30 +13,7 @@ class CustomClass {
   }
 }
 
-class BooleanDrop extends Dry.Drop {
-  constructor(value) {
-    super();
-    this.value = value;
-  }
-
-  equals(value) {
-    return this.value === value;
-  }
-
-  to_liquid_value() {
-    return this.value;
-  }
-
-  to_s() {
-    return this.value ? 'Yay' : 'Nay';
-  }
-
-  toString() {
-    return this.to_s();
-  }
-}
-
-describe.only('variable_test', () => {
+describe('variable_test', () => {
   it('test_simple_async_variable', async () => {
     const template = Template.parse('a {{test}} b');
     assert.equal('a worked b', await template.render({ test: async () => 'worked' }));
@@ -133,21 +105,61 @@ describe.only('variable_test', () => {
     assert.equal('worked', await Template.parse('{{\ntest\n}}').render({ test: async () => 'worked' }));
   });
 
-  it('test_render_symbol', async () => {
+  it.skip('test_render_symbol', async () => {
     await assert_template_result('foo', '{{ foo }}', { foo: async () => Symbol('foo') });
     await assert_template_result('bar', '{{ foo.bar }}', { foo: { bar: async () => Symbol('bar') } });
+    await assert_template_result('bar', '{{ foo.bar }}', { foo: async () => ({ bar: async () => Symbol('bar') }) });
+    await assert_template_result('baz', '{{ foo.bar.baz }}', { foo: async () => ({ bar: async () => ({ baz: async () => Symbol('baz') }) }) });
   });
 
-  it('test_bracket_accessor', async () => {
+  it.skip('test_nested_variable', async () => {
+    await assert_template_result('baz', '{{ foo.bar }}', { foo: { bar: async () => 'baz' } });
+    await assert_template_result('bar', '{{ foo.bar }}', {
+      foo: async () => ({
+        bar: 'bar'
+      })
+    });
+
+    await assert_template_result('bar', '{{ foo.bar }}', {
+      foo: async () => ({
+        bar: async () => 'bar'
+      })
+    });
+
+    await assert_template_result('baz', '{{ foo.bar.baz }}', {
+      foo: async () => ({
+        bar: async () => ({ baz: 'baz' })
+      })
+    });
+
+    await assert_template_result('baz', '{{ foo.bar.baz }}', {
+      foo: async () => ({
+        bar: async () => ({
+          baz: async () => 'baz'
+        })
+      })
+    });
+
+    await assert_template_result('baz', '{{ foo.bar.baz }}', { foo: async () => ({ bar: async () => 'baz' }) });
+    await assert_template_result('baz', '{{ foo.bar.baz }}', { foo: { bar: { baz: async () => 'baz' } } });
+    await assert_template_result('baz', '{{ foo.bar.baz }}', { foo: { bar: async () => ({ baz: async () => 'baz' }) } });
+    await assert_template_result('baz', '{{ foo.bar.baz }}', { foo: async () => ({ bar: async () => ({ baz: async () => 'baz' }) }) });
+  });
+
+  it.skip('test_bracket_accessor', async () => {
     await assert_template_result('baz', '{{ foo["bar"] }}', { foo: { bar: async () => 'baz' } });
+    await assert_template_result('baz', '{{ foo["bar"] }}', { foo: () => ({ bar: async () => 'baz' }) });
+    await assert_template_result('baz', '{{ foo["bar"] }}', { foo: async () => ({ bar: async () => 'baz' }) });
     await assert_template_result('baz', '{{ foo["bar"].baz }}', { foo: { bar: { baz: async () => 'baz' } } });
+    await assert_template_result('baz', '{{ foo["bar"].baz }}', { foo: { bar: async () => ({ baz: async () => 'baz' }) } });
+    await assert_template_result('baz', '{{ foo["bar"].baz }}', { foo: async () => ({ bar: async () => ({ baz: async () => 'baz' }) }) });
   });
 
-  it.only('test_dynamic_find_var', async () => {
+  it.skip('test_dynamic_find_var', async () => {
     await assert_template_result('bar', '{{ [key] }}', { key: async () => 'foo', foo: async () => 'bar' });
   });
 
-  it('test_raw_value_variable', async () => {
+  it.skip('test_raw_value_variable', async () => {
     await assert_template_result('bar', '{{ [key] }}', { key: async () => 'foo', foo: async () => 'bar' });
   });
 });

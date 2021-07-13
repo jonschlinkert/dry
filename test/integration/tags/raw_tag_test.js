@@ -29,7 +29,7 @@ describe('raw_tag_tests', () => {
 
   it('test_invalid_raw', async () => {
     await assert.rejects(() => assert_template_result('', '{% raw %} foo'), /tag was never closed/);
-    await assert.rejects(() => assert_template_result('', '{% raw } foo {% endraw %}'), /Valid syntax/);
-    await assert.rejects(() => assert_template_result('', '{% raw } foo %}{% endraw %}'), /Valid syntax/);
+    await assert.rejects(() => assert_template_result('', '{% raw } foo {% endraw %}'), /Unrecognized/);
+    await assert.rejects(() => assert_template_result('', '{% raw } foo %}{% endraw %}'), /Unrecognized/);
   });
 });

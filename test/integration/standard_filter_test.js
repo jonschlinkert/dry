@@ -400,7 +400,7 @@ describe('standard_filters_test', () => {
   });
 
   it('test_map', async () => {
-    assert.deepEqual([1, 2, 3, 4], filters.map([{ a: 1 }, { a: 2 }, { a: 3 }, { a: 4 }], 'a'));
+    assert.deepEqual([1, 2, 3, 4], await filters.map([{ a: 1 }, { a: 2 }, { a: 3 }, { a: 4 }], 'a'));
     await assert_template_result('abc', "{{ ary | map:'foo' | map:'bar' }}", {
       ary: [{ foo: { bar: 'a' } }, { foo: { bar: 'b' } }, { foo: { bar: 'c' } }]
     });

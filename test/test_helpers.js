@@ -52,15 +52,14 @@ const assert_template_result = async (expected, input, assigns = {}, message = n
 const assert_template_result_matches = async (expected, input, assigns = {}, message = null) => {
   if (!(expected instanceof RegExp)) return assert_template_result(expected, input, assigns, message);
   const template = Template.parse(template, { line_numbers: true });
-  assert_match(expected, await template.render_strict(assigns), message);
+  assert.match(await template.render_strict(assigns), expected, message);
 };
 
 const assert_match_syntax_error = async (regex, template, assigns = {}, message) => {
   const exception = await assert_raises(Dry.SyntaxError, async () => {
     await Template.parse(template, { line_numbers: true }).render(assigns);
   });
-
-  assert_match(regex, exception && exception.message, message);
+  assert.match(exception && exception.message, regex, message);
 };
 
 const assert_usage_increment = async (name, ...rest) => {
@@ -155,16 +154,16 @@ class IntegerDrop extends Dry.Drop {
     this.value = Dry.utils.toInteger(value);
   }
 
-  equals(other) {
-    return this.value == other;
+  equals(value) {
+    return this.value == value;
   }
 
   to_s() {
-    return this.value.toString();
+    return this.toString();
   }
 
   toString() {
-    return this.to_s();
+    return this.value.toString();
   }
 
   to_liquid_value() {
@@ -197,23 +196,23 @@ class BooleanDrop extends Dry.Drop {
 
 class ErrorDrop extends Dry.Drop {
   standard_error() {
-    throw new Dry.StandardError('standard error');
+    return new Dry.StandardError('standard error');
   }
 
   argument_error() {
-    throw new Dry.ArgumentError('argument error');
+    return new Dry.ArgumentError('argument error');
   }
 
   syntax_error() {
-    throw new Dry.SyntaxError('syntax error');
+    return new Dry.SyntaxError('syntax error');
   }
 
   runtime_error() {
-    throw new Dry.DryError('runtime error');
+    return new Dry.DryError('runtime error');
   }
 
   exception() {
-    throw new Error('exception');
+    return new Error('exception');
   }
 }
 

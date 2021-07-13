@@ -19,10 +19,9 @@ const templates = {
     <link rel="stylesheet" href="style.css">
     <title>{% block title %}My amazing site{% endblock %}</title>
   </head>
-
   <body>
     <div id="sidebar">
-      {% block sidebar %}
+      {% block sidebar -%}
       <ul>
         <li><a href="/">Home</a></li>
         <li><a href="/blog/">Blog</a></li>
@@ -39,15 +38,19 @@ const templates = {
 
 const source = `
 {% extends "base.html" %}
-
-{% block title %}My amazing blog{% endblock %}
-
-{% block content %}
-{% for entry in blog_entries %}
-  <h2>{{ entry.title }}</h2>
-  <p>{{ entry.body }}</p>
-{% endfor %}
-{% endblock %}
+  {% block title %}My amazing blog{% endblock %}
+  {%- block content -%}
+    {% if blog_entries.size >= 2 %}
+    <ul>
+    {%- for entry in blog_entries %}
+      <li>
+        <h2>{{ entry.title }}</h2>
+        <p>{{ entry.body }}</p>
+      </li>
+    {% endfor -%}
+    </ul>
+    {% endif -%}
+  {% endblock %}
 `;
 
 Dry.Template.file_system = new FileSystem(templates);
@@ -60,5 +63,5 @@ const locals = {
 };
 
 Dry.Template.render_strict(source, locals, { strict_variables: true, strict_filters: true })
-  .then(console.log)
+  // .then(console.log)
   .catch(console.error);

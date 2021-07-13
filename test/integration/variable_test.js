@@ -163,7 +163,7 @@ describe('variable_test', () => {
     assert.equal('Hello Tobi', await template.render_strict(assigns));
     delete assigns['test'];
 
-    const e = await assert_raises(Error, () => {
+    const e = await assert_raises(Dry.Error, () => {
       return template.render(assigns);
     });
 
@@ -177,6 +177,7 @@ describe('variable_test', () => {
   it('test_render_symbol', async () => {
     await assert_template_result('foo', '{{ foo }}', { foo: Symbol('foo') });
     await assert_template_result('bar', '{{ foo.bar }}', { foo: { bar: Symbol('bar') } });
+    await assert_template_result('baz', '{{ foo.bar.baz }}', { foo: { bar: { baz: Symbol('baz') } } });
   });
 
   it('test_bracket_accessor', async () => {

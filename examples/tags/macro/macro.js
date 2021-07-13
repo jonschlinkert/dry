@@ -28,4 +28,6 @@ const source = `
 `;
 
 const template = Dry.Template.parse(source);
-console.log(template.render({ data: { foo: 'one', bar: 'two' }, variable: 'from context' }));
+template.render({ data: { foo: 'one', bar: 'two' }, variable: 'from context' })
+  .then(console.log)
+  .catch(console.error);

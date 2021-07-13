@@ -18,31 +18,31 @@ const parse_and_eval = (markup, assigns) => {
 };
 
 describe('expression_test', () => {
-  it('test_keyword_literals', () => {
-    assert.equal(true, parse_and_eval('true'));
-    assert.equal(true, parse_and_eval(' true '));
+  it('test_keyword_literals', async () => {
+    assert.equal(true, await parse_and_eval('true'));
+    assert.equal(true, await parse_and_eval(' true '));
   });
 
-  it('test_string', () => {
-    assert.equal('single quoted', parse_and_eval("'single quoted'"));
-    assert.equal('double quoted', parse_and_eval('"double quoted"'));
-    assert.equal('spaced', parse_and_eval(" 'spaced' "));
-    assert.equal('spaced2', parse_and_eval(' "spaced2" '));
+  it('test_string', async () => {
+    assert.equal('single quoted', await parse_and_eval("'single quoted'"));
+    assert.equal('double quoted', await parse_and_eval('"double quoted"'));
+    assert.equal('spaced', await parse_and_eval(" 'spaced' "));
+    assert.equal('spaced2', await parse_and_eval(' "spaced2" '));
   });
 
-  it('test_int', () => {
-    assert.equal(123, parse_and_eval('123'));
-    assert.equal(456, parse_and_eval(' 456 '));
-    assert.equal(12, parse_and_eval('012'));
+  it('test_int', async () => {
+    assert.equal(123, await parse_and_eval('123'));
+    assert.equal(456, await parse_and_eval(' 456 '));
+    assert.equal(12, await parse_and_eval('012'));
   });
 
-  it('test_float', () => {
-    assert.equal(1.5, parse_and_eval('1.5'));
-    assert.equal(2.5, parse_and_eval(' 2.5 '));
+  it('test_float', async () => {
+    assert.equal(1.5, await parse_and_eval('1.5'));
+    assert.equal(2.5, await parse_and_eval(' 2.5 '));
   });
 
-  it('test_range', () => {
-    assert.deepEqual([1, 2], parse_and_eval('(1..2)'));
-    assert.deepEqual([3, 4, 5], parse_and_eval(' ( 3 .. 5 ) '));
+  it('test_range', async () => {
+    assert.deepEqual([1, 2], await parse_and_eval('(1..2)'));
+    assert.deepEqual([3, 4, 5], await parse_and_eval(' ( 3 .. 5 ) '));
   });
 });
