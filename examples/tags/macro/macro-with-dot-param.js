@@ -20,4 +20,6 @@ const source = `
 // <div>{{ foo("one", false, foo.baz, 'd') }}</div>
 
 const template = Dry.Template.parse(source);
-console.log(template.render({ data: { foo: 'one', bar: 'two' }, foo: { bar: 'from context', baz: 'other from context' } }));
+template.render({ data: { foo: 'one', bar: 'two' }, foo: { bar: 'from context', baz: 'other from context' } })
+  .then(console.log)
+  .catch(console.error);
