@@ -10,8 +10,8 @@ const source = `
   {% if d %}d: {{d}}{% endif %}
 {% endmacro %}
 
-{% assign args1 = [undefined, foo.baz, 'gamma'] %}
-{% assign args = [...args1, "alpha", "beta"] %}
+{%- assign args1 = [undefined, foo.baz, 'gamma'] -%}
+{%- assign args = [...args1, "alpha", "beta"] -%}
 
 <div>{{ foo('doowb', ...args, "whatever") }}</div>
 `;

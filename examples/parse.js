@@ -7,37 +7,34 @@ const { Template } = Dry;
 const s1 = `
 <div class="sb-widget d-none d-lg-block">
   <div class="sb-menu">
-    {% unless section.settings.sb_categories_type == 'none' %}
+    {%- unless section.settings.sb_categories_type == 'none' -%}
+    {%- unless section.settings.sb_categories_title == blank %}
+    <h5 class="sb-title">{{ section.settings.sb_categories_title }}</h5>
+    {%- endunless %}
+    <ul class="categories-menu">
+      {%- if section.settings.sb_categories_type == 'categories' %}
 
-      {% unless section.settings.sb_categories_title == blank %}
-        <h5 class="sb-title">{{ section.settings.sb_categories_title }}</h5>
-      {% endunless %}
+        {% for collection in collections limit: section.settings.sb_categories_limit %}
+          {% unless collection.handle == 'frontpage' or collection.handle == 'all' %}
+            <li><a href="{{ collection.url }}">{{ collection.title }}</a></li>
+          {% endunless %}
+        {% endfor %}
 
-      <ul class="categories-menu">
-        {% if section.settings.sb_categories_type == 'categories' %}
+      {% else %}
+        {%- for l in linklists[section.settings.sb_categories_menu].links %}
+          {%- assign submenu = l.title | handleize %}
 
-          {% for collection in collections limit: section.settings.sb_categories_limit %}
-            {% unless collection.handle == 'frontpage' or collection.handle == 'all' %}
-              <li><a href="{{ collection.url }}">{{ collection.title }}</a></li>
-            {% endunless %}
-          {% endfor %}
+          {%- if linklists[submenu].links.size > 0 %}
+            {% include 'sb-dropdown-menu' %}
+          {% else %}
+      <li{% if l.active %} class="active"{% endif %}><a href="{{ l.url }}">{{ l.title }}</a></li>
+          {%- endif %}
 
-        {% else %}
-          {% for l in linklists[section.settings.sb_categories_menu].links %}
-            {% assign submenu = l.title | handleize %}
+        {%- endfor %}
 
-            {% if linklists[submenu].links.size > 0 %}
-              {% include 'sb-dropdown-menu' %}
-            {% else %}
-              <li{% if l.active %} class="active"{% endif %}><a href="{{ l.url }}">{{ l.title }}</a></li>
-            {% endif %}
-
-          {% endfor %}
-
-        {% endif %}
-      </ul>
-
-    {% endunless %}
+      {%- endif %}
+    </ul>
+    {%- endunless %}
   </div>
 </div>
 
@@ -171,38 +168,49 @@ const s1 = `
 
 const s2 = `
 <ul class="categories-menu">
-    Before If
-      {% if section.settings.sb_categories_type == 'categories' %}
-        Main condition;
-        {% for collection in collections limit: section.settings.sb_categories_limit %}
-          {% unless collection.handle == 'frontpage' or collection.handle == 'all' %}
-          {% endunless %}
-        {% endfor %}
-      {%
-      else
-      %}
-        Else condition;
+  Before If
+  {% if section.settings.sb_categories_type == 'categories' %}
+    Main condition;
+    {% for collection in collections limit: section.settings.sb_categories_limit %}
+      {% unless collection.handle == 'frontpage' or collection.handle == 'all' %}
+      {% endunless %}
+    {% endfor %}
+  {%
+  else
+  %}
+    Else condition;
 
-        {% for l in linklists[section.settings.sb_categories_menu].links %}
-          {% if linklists[submenu].links.size > 0 %}
-          {% else %}
-            <li{% if l.active %} class="active"{% endif %}><a href="{{ l.url }}">{{ l.title }}</a></li>
-          {% endif %}
-        {% endfor %}
-
+    {% for l in linklists[section.settings.sb_categories_menu].links %}
+      {% if linklists[submenu].links.size > 0 %}
+      {% else %}
+        <li{% if l.active %} class="active"{% endif %}><a href="{{ l.url }}">{{ l.title }}</a></li>
       {% endif %}
-    After If
+    {% endfor %}
+
+  {% endif %}
+  After If
 </ul>
 `;
 
 const template = Template.parse(s1);
 const parser = template.root;
 const ast = parser.ast;
-console.log(ast.nodes[1].nodes);
-// console.log(parser.stack.length);
 
 const collection = { handle: 'products', url: '/products', title: 'Start shopping' };
-console.log(template.render({ collections: [collection] }));
+const section = { settings: { sb_categories_title: 'Foo Bar', sb_categories_menu: 'main' } };
+const linklists = {
+  main: {
+    links: [
+      { title: 'Home', url: '/home', active: true },
+      { title: 'About', url: '/about', active: false },
+      { title: 'Contact', url: '/contact', active: false }
+    ]
+  }
+};
 
-// console.log(s2.split(/(\{%[\s\S]*?%\}|\{\{[\s\S]*?\}\}?|\{%|\{\{)/));
+template.render({ collections: [collection], linklists, section })
+  .then(console.log)
+  .catch(console.error);
+
+console.log(s2.split(/({%[\s\S]*?%}|{{[\s\S]*?}}?|{%|{{)/));
 // console.log('foo,bar,baz'.split(/(,)/));

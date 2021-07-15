@@ -53,5 +53,9 @@ title: Home
 };
 
 const template = Dry.Template.parse(file.contents, { path: file.path });
-console.log(template.render({}, { layouts }));
+
+template.render({}, { layouts })
+  .then(console.log)
+  .catch(console.error);
+
 // Dry.Template.parse(file.contents, { path: file.path });

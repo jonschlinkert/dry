@@ -5,17 +5,17 @@ const Dry = require('../../..');
 class FrontMatter extends Dry.BlockTag {
   constructor(node, state) {
     super(node, state);
-    this.type = 'front_matter';
+    this.type = this.name = 'front_matter';
   }
 
   parse() {
-    const lines = this.nodes.slice(1, -1).map(n => n.value);
+    const lines = this.nodes.slice(1, -1).map(n => n.value).join('\n').split('\n');
     const data = {};
 
     for (const line of lines) {
-      if (line !== '\n') {
-        const [key, value] = line.split(/:\s*/);
-        data[key.trim()] = value.trim();
+      if (line !== '' && line !== '\n') {
+        const [key, ...value] = line.split(/: */);
+        data[key.trim()] = value.join(': ').trim();
       }
     }
 

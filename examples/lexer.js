@@ -1,8 +1,8 @@
 'use strict';
 
 const File = require('vinyl');
-const utils = require('../lib/utils');
-const dry = require('..');
+// const utils = require('../lib/utils');
+const Dry = require('..');
 
 const options = {
   tags: {
@@ -57,7 +57,7 @@ const file = new File({
   ].join('\n'))
 });
 
-const res = dry(file, {
+const res = Dry.Lexer.lex(file.contents, {
   files: {
     'default.html': def,
     'base.html': base

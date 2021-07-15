@@ -12,13 +12,17 @@ The above import call imports the forms.html file (which can contain only macros
 
 The macros can then be called at will in the current template:
 
-<p>{{ forms.input('username') }}</p>
-<p>{{ forms.input('password', null, 'password') }}</p>
+<p>{{ forms.input('username') | trim }}</p>
+<p>{{ forms.input('password', null, 'password') | trim }}</p>
 
 <hr>
 
-<p>{{ forms.textarea('bio') }}</p>
+<p>{{ forms.textarea('bio') | trim }}</p>
 `;
 
+// const source2 = '{% import "signup" as forms %}<p>{{ forms.input("username") | trim }}</p>';
+
 const template = Dry.Template.parse(source);
-console.log(template.render({}, { registers: { file_system } }));
+template.render({}, { registers: { file_system } })
+  .then(console.log)
+  .catch(console.error);

@@ -5,7 +5,7 @@ const path = require('path');
 const File = require('vinyl');
 const handlebars = require('handlebars');
 const matter = require('parser-front-matter');
-const dry = require('..');
+const Dry = require('..');
 
 const options = {
   condense: true,
@@ -103,12 +103,11 @@ function parseMattter(file) {
   if (file.data.layout) file.layout = file.data.layout;
 }
 
-function render(file) {
-  const res = dry(file, options);
-  const str = res.contents.toString();
-  const fn = handlebars.compile(str);
+const render = async file => {
+  const res = await Dry.Template.render(file.contents, options);
+  const fn = handlebars.compile(res);
   return fn(file.data);
-}
+};
 
 const files = [def, file, base, qux];
 options.files = {
@@ -120,7 +119,9 @@ options.files = {
 
 files.forEach(function(file) {
   parseMattter(file);
-  dry.parse(file, options);
+  Dry.Template.parse(file, options);
 });
 
-console.log(render(file));
+render(file)
+  .then(console.log)
+  .catch(console.error);
