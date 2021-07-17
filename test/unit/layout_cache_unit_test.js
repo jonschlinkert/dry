@@ -12,7 +12,7 @@ describe('layout_cache_unit_test', () => {
       }
     });
 
-    const layout = Dry.LayoutCache.load('my_layout', {
+    const layout = Dry.PartialCache.load_type('layouts', 'my_layout', {
       context,
       state: new Dry.State()
     });
@@ -26,7 +26,7 @@ describe('layout_cache_unit_test', () => {
     const options = { context, state: new Dry.State() };
 
     times(2, () => {
-      Dry.LayoutCache.load('my_layout', options);
+      Dry.PartialCache.load_type('layouts', 'my_layout', options);
     });
 
     assert.equal(1, layouts.file_read_count);
@@ -39,10 +39,10 @@ describe('layout_cache_unit_test', () => {
     const context_two = Dry.Context.build({ registers: { layouts: shared_file_system } });
 
     times(2, () => {
-      Dry.LayoutCache.load('my_layout', { context: context_one, state });
+      Dry.PartialCache.load_type('layouts', 'my_layout', { context: context_one, state });
     });
 
-    Dry.LayoutCache.load('my_layout', { context: context_two, state });
+    Dry.PartialCache.load_type('layouts', 'my_layout', { context: context_two, state });
     assert.equal(2, shared_file_system.file_read_count);
   });
 
@@ -50,12 +50,12 @@ describe('layout_cache_unit_test', () => {
     const layouts = new StubFileSystem({ my_layout: 'some layout body' });
     const context = Dry.Context.build({ registers: { layouts } });
 
-    Dry.LayoutCache.load('my_layout', {
+    Dry.PartialCache.load_type('layouts', 'my_layout', {
       context,
       state: new Dry.State({ my_key: 'value one' })
     });
 
-    Dry.LayoutCache.load('my_layout', {
+    Dry.PartialCache.load_type('layouts', 'my_layout', {
       context,
       state: new Dry.State({ my_key: 'value two' })
     });
@@ -72,7 +72,7 @@ describe('layout_cache_unit_test', () => {
       }
     });
 
-    const layout = Dry.LayoutCache.load('my_layout', {
+    const layout = Dry.PartialCache.load_type('layouts', 'my_layout', {
       context,
       state: new Dry.State()
     });
@@ -81,22 +81,22 @@ describe('layout_cache_unit_test', () => {
   });
 
   it('test_uses_template_factory_register_if_present', async () => {
-    const layout_factory = new StubTemplateFactory();
+    const layouts_factory = new StubTemplateFactory();
 
     const context = Dry.Context.build({
       registers: {
         layouts: new StubFileSystem({ my_layout: 'my layout body' }),
-        layout_factory
+        layouts_factory
       }
     });
 
-    const layout = Dry.LayoutCache.load('my_layout', {
+    const layout = Dry.PartialCache.load_type('layouts', 'my_layout', {
       context,
       state: new Dry.State()
     });
 
     assert.equal('my layout body', await layout.render());
-    assert.equal(1, layout_factory.count);
+    assert.equal(1, layouts_factory.count);
   });
 });
 

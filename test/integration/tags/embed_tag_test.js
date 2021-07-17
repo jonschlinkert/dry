@@ -1,20 +1,11 @@
 'use strict';
 
-const { assert_template_result } = require('../../test_helpers');
+const { assert_template_result, StubFileSystem } = require('../../test_helpers');
 const { Template } = require('../../..');
-
-class FileSystem {
-  constructor(values) {
-    this.values = values;
-  }
-  read_template_file(template_path) {
-    return this.values[template_path];
-  }
-}
 
 describe('embed_tag_test', () => {
   beforeEach(() => {
-    Template.file_system = new FileSystem({
+    Template.file_system = new StubFileSystem({
       source: '{% block top %}top{% endblock %}{% block bottom %}bottom{% endblock %}'
     });
   });
@@ -24,7 +15,7 @@ describe('embed_tag_test', () => {
   });
 
   it('test_embeds_content', async () => {
-    Template.file_system = new FileSystem({ source: 'test string' });
+    Template.file_system = new StubFileSystem({ source: 'test string' });
     await assert_template_result('test string', "{% embed 'source' %}{% endembed %}", {});
   });
 

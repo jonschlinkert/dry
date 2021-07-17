@@ -9,6 +9,8 @@ const {
   with_error_mode
 } = require('../test_helpers');
 
+let error_mode;
+
 class ObjectWrapperDrop extends Dry.Drop {
   constructor(obj) {
     super(obj);
@@ -27,6 +29,10 @@ const assign_score_of = async obj => {
 };
 
 describe('set_test', () => {
+  before(() => {
+    error_mode = Dry.Template.error_mode;
+  });
+
   it('test_set_with_hyphen_in_variable_name', async () => {
     const template_source = `
     {% set this-thing = 'Print this-thing' %}
@@ -125,6 +131,14 @@ describe('set_test', () => {
   });
 
   describe('tests from liquidjs - tags/set', () => {
+    before(() => {
+      Dry.Template.error_mode = 'lax';
+    });
+
+    after(() => {
+      Dry.Template.error_mode = error_mode;
+    });
+
     it('should throw when variable expression illegal', () => {
       return assert.rejects(() => Dry.Template.parse('{% set / %}').render(), /syntax error/);
     });

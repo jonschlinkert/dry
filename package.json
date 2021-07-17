@@ -10,7 +10,18 @@
   "license": "MIT",
   "scripts": {
     "test": "mocha --recursive --ignore 'test/fixtures/**'",
-    "test:ci": "nyc --reporter=lcov npm run test"
+    "test:ci": "nyc --reporter=lcov npm run test",
+    "cover": "nyc --reporter=text --reporter=html npm run test"
+  },
+  "dependencies": {
+    "ansi-colors": "^4.1.1",
+    "expand-value": "file:../../js-utils/objects/expand-value",
+    "export-files": "^3.0.1",
+    "fill-range": "^7.0.1",
+    "is-number": "^7.0.0",
+    "kind-of": "^6.0.3",
+    "set-value": "^4.0.0",
+    "yaml": "^1.10.2"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.14.4",
@@ -24,14 +35,5 @@
     "time-require": "github:jonschlinkert/time-require",
     "verb-generate-readme": "^0.8.0",
     "vinyl": "^2.2.1"
-  },
-  "dependencies": {
-    "expand-value": "file:../../js-utils/objects/expand-value",
-    "export-files": "file:../../path-utils/export-files",
-    "fill-range": "^7.0.1",
-    "is-number": "^7.0.0",
-    "kind-of": "^6.0.3",
-    "set-value": "^4.0.0",
-    "yaml": "^1.10.2"
   }
 }

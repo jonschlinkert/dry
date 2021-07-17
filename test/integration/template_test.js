@@ -143,7 +143,7 @@ describe('template tests', () => {
     assert.equal('', await t.render({ bar: new SomethingWithLength() }));
   });
 
-  it.skip('test_resource_limits_render_length', async () => {
+  it('test_resource_limits_render_length', async () => {
     t = Template.parse('0123456789');
 
     t.resource_limits.render_length_limit = 9;
@@ -220,7 +220,7 @@ describe('template tests', () => {
     assert(t.resource_limits.render_score > 0);
   });
 
-  it.skip('test_render_length_persists_between_blocks', async () => {
+  it('test_render_length_persists_between_blocks', async () => {
     t = Template.parse('{% if true %}aaaa{% endif %}');
     t.resource_limits.render_length_limit = 3;
     assert.equal('Dry error: Memory limits exceeded', await t.render());
@@ -240,7 +240,7 @@ describe('template tests', () => {
     assert.equal('ababab', await t.render());
   });
 
-  it.skip('test_render_length_uses_number_of_bytes_not_characters', async () => {
+  it('test_render_length_uses_number_of_bytes_not_characters', async () => {
     t = Template.parse('{% if true %}すごい{% endif %}');
     t.resource_limits.render_length_limit = 8;
 

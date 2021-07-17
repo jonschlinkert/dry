@@ -23,7 +23,7 @@
 //   });
 
 //   it('test_varible_with_filter', () => {
-//     assert.deepEqual(['test', 'infilter'], visit('{{ test | split: infilter }}'));
+//     assert.deepEqual(['test', 'split', 'infilter'], visit('{{ test | split: infilter }}'));
 //   });
 
 //   it('test_dynamic_variable', () => {

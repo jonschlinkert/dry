@@ -9,6 +9,8 @@ const {
   with_error_mode
 } = require('../test_helpers');
 
+let error_mode;
+
 class ObjectWrapperDrop extends Dry.Drop {
   constructor(obj) {
     super(obj);
@@ -27,6 +29,10 @@ const assign_score_of = async obj => {
 };
 
 describe('assign_test', () => {
+  before(() => {
+    error_mode = Dry.Template.error_mode;
+  });
+
   it('test_assign_with_hyphen_in_variable_name', async () => {
     const template_source = `
     {% assign this-thing = 'Print this-thing' %}
@@ -80,10 +86,11 @@ describe('assign_test', () => {
     await assert_template_result('result', source, { a: { b: 'result' } });
   });
 
-  it.skip('test_assign_score_exceeding_resource_limit', async () => {
+  it('test_assign_score_exceeding_resource_limit', async () => {
     const t = Dry.Template.parse('{% assign foo = 42 %}{% assign bar = 23 %}');
     t.resource_limits.assign_score_limit = 1;
-    assert.equal('Dry error: Memory limits exceeded', await t.render());
+
+    await assert.rejects(() => t.render(), /Dry error: Memory limits exceeded/);
     assert(t.resource_limits.reached);
 
     t.resource_limits.assign_score_limit = 2;
@@ -91,11 +98,11 @@ describe('assign_test', () => {
     assert(t.resource_limits.assign_score > 0, t.resource_limits.assign_score);
   });
 
-  it.skip('test_assign_score_exceeding_limit_from_composite_object', async () => {
+  it('test_assign_score_exceeding_limit_from_composite_object', async () => {
     const t = Dry.Template.parse("{% assign foo = 'aaaa' | reverse %}");
 
     t.resource_limits.assign_score_limit = 3;
-    assert.equal('Dry error: Memory limits exceeded', await t.render());
+    await assert.rejects(() => t.render(), /Dry error: Memory limits exceeded/);
     assert(t.resource_limits.reached);
 
     t.resource_limits.assign_score_limit = 5;
@@ -125,6 +132,14 @@ describe('assign_test', () => {
   });
 
   describe('tests from liquidjs - tags/assign', () => {
+    before(() => {
+      Dry.Template.error_mode = 'lax';
+    });
+
+    after(() => {
+      Dry.Template.error_mode = error_mode;
+    });
+
     it('should throw when variable expression illegal', () => {
       return assert.rejects(() => Dry.Template.parse('{% assign / %}').render(), /syntax error/);
     });

@@ -151,7 +151,7 @@ describe('error_handling_test', () => {
     assert.equal('Dry syntax error (line 4): Unexpected character = in "1 =! 2"', err.message);
   });
 
-  it.skip('test_syntax_errors_in_nested_blocks_have_correct_line_number', async () => {
+  it('test_syntax_errors_in_nested_blocks_have_correct_line_number', async () => {
     const err = await assert_raises(Dry.SyntaxError, () => {
       Dry.Template.parse(`
           foobar

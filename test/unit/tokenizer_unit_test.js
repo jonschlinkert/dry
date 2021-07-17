@@ -10,19 +10,14 @@ const new_tokenizer = (source, { state = new State(), start_line_number = null }
 
 const tokenize = source => {
   const tokenizer = new_tokenizer(source);
-  const tokens    = [];
-  let t;
-  // shift is private in Dry.C.Tokenizer, since it is only for unit testing
-  while ((t = tokenizer.shift())) {
-    tokens.push(t);
-  }
-  return tokens;
+  return tokenizer.tokens.filter(Boolean);
 };
 
 const tokenize_line_numbers = source => {
   const tokenizer    = new_tokenizer(source, { start_line_number: 1 });
   const line_numbers = [];
   let line_number;
+
   do {
     if (line_number) line_numbers.push(line_number);
     line_number = tokenizer.line_number;

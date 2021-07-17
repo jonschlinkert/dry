@@ -147,7 +147,7 @@ describe('include_tag_test', () => {
       "{% include 'nested_product_template' for products %}", { 'products': [{ 'title': 'Draft 151cm' }, { 'title': 'Element 155cm' } ] });
   });
 
-  it.skip('test_recursively_included_template_does_not_produce_endless_loop', () => {
+  it('test_recursively_included_template_does_not_produce_endless_loop', async () => {
     class InfiniteFileSystem {
       read_template_file(_template_path) {
         return "-{% include 'loop' %}";

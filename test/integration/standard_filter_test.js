@@ -441,18 +441,18 @@ describe('standard_filters_test', () => {
     await assert_template_result('testfoo', templ, { procs: [p] });
   });
 
-  it('test_map_over_drops_returning_procs', () => {
+  it('test_map_over_drops_returning_procs', async () => {
     const drops = [
       { proc: () => 'foo' },
       { proc: () => 'bar' }
     ];
 
     const templ = '{{ drops | map: "proc" }}';
-    assert_template_result('foobar', templ, { drops: drops });
+    await assert_template_result('foobar', templ, { drops: drops });
   });
 
-  it('test_map_works_on_enumerables', () => {
-    assert_template_result('123', '{{ foo | map: "foo" }}', { foo: new TestEnumerable() });
+  it('test_map_works_on_enumerables', async () => {
+    await assert_template_result('123', '{{ foo | map: "foo" }}', { foo: new TestEnumerable() });
   });
 
   it('test_map_returns_empty_on_2d_input_array', async () => {
@@ -465,17 +465,17 @@ describe('standard_filters_test', () => {
     await assert.rejects(async () => filters.map(foo, null), Dry.ArgumentError);
   });
 
-  it('test_sort_works_on_enumerables', () => {
-    assert_template_result('213', '{{ foo | sort: "bar" | map: "foo" }}', { foo: new TestEnumerable() });
+  it('test_sort_works_on_enumerables', async () => {
+    await assert_template_result('213', '{{ foo | sort: "bar" | map: "foo" }}', { foo: new TestEnumerable() });
   });
 
-  it('test_first_and_last_call_to_liquid', () => {
-    assert_template_result('foobar', '{{ foo | first }}', { foo: [new ThingWithToLiquid()] });
-    assert_template_result('foobar', '{{ foo | last }}', { foo: [new ThingWithToLiquid()] });
+  it('test_first_and_last_call_to_liquid', async () => {
+    await assert_template_result('foobar', '{{ foo | first }}', { foo: [new ThingWithToLiquid()] });
+    await assert_template_result('foobar', '{{ foo | last }}', { foo: [new ThingWithToLiquid()] });
   });
 
-  it('test_truncate_calls_to_liquid', () => {
-    assert_template_result('wo...', '{{ foo | truncate: 5 }}', { foo: new TestThing() });
+  it('test_truncate_calls_to_liquid', async () => {
+    await assert_template_result('wo...', '{{ foo | truncate: 5 }}', { foo: new TestThing() });
   });
 
   it('test_date', cb => {
@@ -518,12 +518,12 @@ describe('standard_filters_test', () => {
     assert.equal(filters.last([]), undefined);
   });
 
-  it('test_replace', () => {
+  it('test_replace', async () => {
     assert.equal('2 2 2 2', filters.replace('1 1 1 1', '1', 2));
     assert.equal('2 2 2 2', filters.replace('1 1 1 1', 1, 2));
     assert.equal('2 1 1 1', filters.replace_first('1 1 1 1', '1', 2));
     assert.equal('2 1 1 1', filters.replace_first('1 1 1 1', 1, 2));
-    assert_template_result('2 1 1 1', "{{ '1 1 1 1' | replace_first: '1', 2 }}");
+    await assert_template_result('2 1 1 1', "{{ '1 1 1 1' | replace_first: '1', 2 }}");
   });
 
   it('test_remove', async () => {
@@ -711,39 +711,39 @@ describe('standard_filters_test', () => {
     }
   });
 
-  it('test_prepend', () => {
+  it('test_prepend', async () => {
     const assigns = { 'a': 'bc', 'b': 'a' };
-    assert_template_result('abc', "{{ a | prepend: 'a'}}", assigns);
-    assert_template_result('abc', '{{ a | prepend: b}}', assigns);
+    await assert_template_result('abc', "{{ a | prepend: 'a'}}", assigns);
+    await assert_template_result('abc', '{{ a | prepend: b}}', assigns);
   });
 
-  it('test_default', () => {
+  it('test_default', async () => {
     assert.equal('foo', filters.default('foo', 'bar'));
     assert.equal('bar', filters.default(null, 'bar'));
     assert.equal('bar', filters.default('', 'bar'));
     assert.equal('bar', filters.default(false, 'bar'));
     assert.equal('bar', filters.default([], 'bar'));
     assert.equal('bar', filters.default({}, 'bar'));
-    assert_template_result('bar', "{{ false | default: 'bar' }}");
+    await assert_template_result('bar', "{{ false | default: 'bar' }}");
   });
 
-  it('test_default_handle_false', () => {
+  it('test_default_handle_false', async () => {
     assert.equal('foo', filters.default('foo', 'bar', { 'allow_false': true }));
     assert.equal('bar', filters.default(null, 'bar', { 'allow_false': true }));
     assert.equal('bar', filters.default('', 'bar', { 'allow_false': true }));
     assert.equal(false, filters.default(false, 'bar', { 'allow_false': true }));
     assert.equal('bar', filters.default([], 'bar', { 'allow_false': true }));
     assert.equal('bar', filters.default({}, 'bar', { 'allow_false': true }));
-    assert_template_result('false', "{{ false | default: 'bar', allow_false: true }}");
+    await assert_template_result('false', "{{ false | default: 'bar', allow_false: true }}");
   });
 
-  it('test_cannot_access_private_methods', () => {
-    assert_template_result('a', "{{ 'a' | to_number }}");
+  it('test_cannot_access_private_methods', async () => {
+    await assert_template_result('a', "{{ 'a' | to_number }}");
   });
 
-  it('test_date_raises_nothing', () => {
-    assert_template_result('', "{{ '' | date: '%D' }}");
-    assert_template_result('abc', "{{ 'abc' | date: '%D' }}");
+  it('test_date_raises_nothing', async () => {
+    await assert_template_result('', "{{ '' | date: '%D' }}");
+    await assert_template_result('abc', "{{ 'abc' | date: '%D' }}");
   });
 
   it('test_where', () => {

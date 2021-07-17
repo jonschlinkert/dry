@@ -13,7 +13,7 @@ class CustomClass {
   }
 }
 
-describe('variable_test', () => {
+describe('variable_async_test', () => {
   it('test_simple_async_variable', async () => {
     const template = Template.parse('a {{test}} b');
     assert.equal('a worked b', await template.render({ test: async () => 'worked' }));
