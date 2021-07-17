@@ -1,13 +1,13 @@
 'use strict';
 
-var fs = require('fs');
-var path = require('path');
-var File = require('vinyl');
-var Lexer = require('./lib/lexer');
-var compile = require('./lib/compile');
-var parse = require('./lib/parser');
+const fs = require('fs');
+const path = require('path');
+const File = require('vinyl');
+const Lexer = require('./lib/lexer');
+const compile = require('./lib/compile');
+const parse = require('./lib/parser');
 
-var options = {
+const options = {
   tags: {
     layout: {
       name: 'layout',
@@ -20,47 +20,47 @@ var options = {
   }
 };
 
-var def = new File({
+const def = new File({
   path: 'default.html',
-  contents: new Buffer([
+  contents: Buffer.from([
     '<!DOCTYPE html>',
     '<html lang="en">',
     'Default before',
     '{% block "body" %}',
     '{% endblock %}',
     'Default after',
-    '</html>',
+    '</html>'
   ].join('\n'))
 });
 
-var base = new File({
+const base = new File({
   path: 'base.html',
-  contents: new Buffer([
+  contents: Buffer.from([
     '{% layout "default.html" %}',
-    '  <head>',
-    '    <meta charset="UTF-8">',
-    '    <title>Base layout</title>',
-    '  </head>',
-    '  <body>',
-    '    Base before',
-    '    {% block "body" %}',
-    '    {% endblock %}',
-    '    Base after',
-    '  </body>',
+    '<head>',
+    '  <meta charset="UTF-8">',
+    '  <title>Base layout</title>',
+    '</head>',
+    '<body>',
+    '  Base before',
+    '  {% block "body" %}',
+    '  {% endblock %}',
+    '  Base after',
+    '</body>'
   ].join('\n'))
 });
 
-var foo = new File({
+const foo = new File({
   path: 'foo.html',
-  contents: new Buffer([
+  contents: Buffer.from([
     '{% layout "base.html" %}',
     'This is foo',
     '{% block "footer" %}',
-    '{% endblock %}',
+    '{% endblock %}'
   ].join('\n'))
 });
 
-var files = [def, foo, base];
+const files = [def, foo, base];
 options.files = {
   'foo.html': foo,
   'base.html': base,
@@ -72,5 +72,5 @@ files.forEach(function(file) {
 });
 
 compile(foo, options);
-foo.fn()
+foo.fn();
 console.log(foo.contents.toString());

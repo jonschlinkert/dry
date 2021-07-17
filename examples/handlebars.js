@@ -1,13 +1,13 @@
 'use strict';
 
-var fs = require('fs');
-var path = require('path');
-var File = require('vinyl');
-var handlebars = require('handlebars');
-var matter = require('parser-front-matter');
-var dry = require('..');
+const fs = require('fs');
+const path = require('path');
+const File = require('vinyl');
+const handlebars = require('handlebars');
+const matter = require('parser-front-matter');
+const Dry = require('..');
 
-var options = {
+const options = {
   condense: true,
   trim: true,
   tags: {
@@ -22,9 +22,9 @@ var options = {
   }
 };
 
-var def = new File({
+const def = new File({
   path: 'default.html',
-  contents: new Buffer([
+  contents: Buffer.from([
     '<!DOCTYPE html>',
     '<html lang="en">',
     '  Default before',
@@ -32,13 +32,13 @@ var def = new File({
     '  Nothing yet.',
     '  {% endblock %}',
     '  Default after',
-    '</html>',
+    '</html>'
   ].join('\n'))
 });
 
-var base = new File({
+const base = new File({
   path: 'base.html',
-  contents: new Buffer([
+  contents: Buffer.from([
     '---',
     'title: BASE',
     '---',
@@ -54,13 +54,13 @@ var base = new File({
     '    {% block "body" %}',
     '    {% endblock %}',
     '    Base after',
-    '  </body>',
+    '  </body>'
   ].join('\n'))
 });
 
-var qux = new File({
+const qux = new File({
   path: 'qux.html',
-  contents: new Buffer([
+  contents: Buffer.from([
     '---',
     'title: QUX',
     '---',
@@ -76,13 +76,13 @@ var qux = new File({
     '    {% block "body" %}',
     '    {% endblock %}',
     '    {{title}} after',
-    '  </body>',
+    '  </body>'
   ].join('\n'))
 });
 
-var file = new File({
+const file = new File({
   path: 'foo.html',
-  contents: new Buffer([
+  contents: Buffer.from([
     '---',
     'title: Foo',
     'layout: qux.html',
@@ -92,35 +92,36 @@ var file = new File({
     '  <title>{{title}}</title>',
     '{% endblock %}',
     '{% block "footer" %}',
-    '{% endblock %}',
+    '{% endblock %}'
   ].join('\n'))
 });
 
 function parseMattter(file) {
   file = matter.parseSync(file);
-  file.contents = new Buffer(file.content);
+  file.contents = Buffer.from(file.content);
   if (file.data.extends) file.extends = file.data.extends;
   if (file.data.layout) file.layout = file.data.layout;
 }
 
-function render(file) {
-  var res = dry(file, options);
-  var str = res.contents.toString();
-  var fn = handlebars.compile(str);
+const render = async file => {
+  const res = await Dry.Template.render(file.contents, options);
+  const fn = handlebars.compile(res);
   return fn(file.data);
-}
+};
 
-var files = [def, file, base, qux];
+const files = [def, file, base, qux];
 options.files = {
   'foo.html': file,
   'base.html': base,
   'default.html': def,
-  'qux.html': qux,
+  'qux.html': qux
 };
 
 files.forEach(function(file) {
   parseMattter(file);
-  dry.parse(file, options);
+  Dry.Template.parse(file, options);
 });
 
-console.log(render(file));
+render(file)
+  .then(console.log)
+  .catch(console.error);
