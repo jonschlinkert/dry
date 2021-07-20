@@ -79,7 +79,7 @@ describe('standard_filters_test', () => {
     for (const [key, value] of Object.entries(orig_filters)) {
       filters[key] = function(...args) {
         const ctx = this || {};
-        ctx.context = ctx.context || new Context();
+        ctx.context ||= new Context();
         return value.call(ctx, ...args);
       };
     }

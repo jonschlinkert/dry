@@ -2,8 +2,7 @@
 
 const assert = require('assert').strict;
 const Dry = require('../..');
-const { Context, State, Tag, expressions } = Dry;
-const { Tokenizer } = expressions;
+const { Context, State, Tag, Tokenizer } = Dry;
 
 describe('tag_unit_test', () => {
   it('test_tag', async () => {
