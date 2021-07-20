@@ -39,4 +39,6 @@ const source = `
 `;
 
 const template = Template.parse(source);
-console.log(template.render({}, { layouts }));
+template.render({}, { layouts })
+  .then(console.log)
+  .catch(console.error);

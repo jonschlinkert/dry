@@ -40,6 +40,14 @@ describe('variable_test', () => {
     assert.equal('a worked wonderfully b', await template.render({ test: 'worked wonderfully' }));
   });
 
+  it('test_variable_with_extra_curly_braces', async () => {
+    assert.equal('a worked}} b', await Template.render('a {{test}}}} b', { test: 'worked' }));
+    assert.equal('a worked}}} b', await Template.render('a {{test}}}}} b', { test: 'worked' }));
+    assert.equal('a worked}}}}} b', await Template.render('a {{test}}}}}}} b', { test: 'worked' }));
+    assert.equal('a {{{{worked}}} b', await Template.render('a {{{{{{test}}}}} b', { test: 'worked' }));
+    assert.equal('a worked wonderfully}} b', await Template.render('a {{test}}}} b', { test: 'worked wonderfully' }));
+  });
+
   it('test_variable_render_calls_to_liquid', async () => {
     await assert_template_result('foobar', '{{ foo }}', { foo: new ThingWithToLiquid() });
   });

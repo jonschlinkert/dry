@@ -10,25 +10,38 @@ describe('if_else_tag_test', () => {
     await assert_template_result('  you rock ?', '{% if false %} you suck {% endif %} {% if true %} you rock {% endif %}?');
   });
 
-  it.only('test_literal_comparisons', async () => {
-    // await assert_template_result(' NO ', '{% assign v = false %}{% if v %} YES {% else %} NO {% endif %}');
-    // await assert_template_result(' YES ', '{% assign v = null %}{% if v == null %} YES {% else %} NO {% endif %}');
-    // await assert_template_result(' YES ', '{% if v == true %} YES {% endif %}', { v: true });
-    // await assert_template_result(' YES ', '{% if v is true %} YES {% endif %}', { v: true });
+  it('test_if_not', async () => {
+    const assigns = { user: false, truthy: '' };
+    await assert_template_result('Not authenticated', '{% if !user %}Not authenticated{% endif %}', assigns);
+    await assert_template_result('Not authenticated', '{% if not user %}Not authenticated{% endif %}', assigns);
+    await assert_template_result('', '{% if user %}this text should not go into the output{% endif %}', assigns);
+    await assert_template_result('this text should go into the output', '{% if not truthy %}this text should go into the output{% endif %}', assigns);
+    await assert_template_result('you rock?', '{% if !!truthy %}you suck{% endif %}{% if true %}you rock{% endif %}?', assigns);
+  });
+
+  it('test_literal_comparisons', async () => {
+    await assert_template_result(' NO ', '{% assign v = false %}{% if v %} YES {% else %} NO {% endif %}');
+    await assert_template_result(' YES ', '{% assign v = null %}{% if v == null %} YES {% else %} NO {% endif %}');
+    await assert_template_result(' YES ', '{% if v == true %} YES {% endif %}', { v: true });
+    await assert_template_result(' YES ', '{% if v is true %} YES {% endif %}', { v: true });
     await assert_template_result('', '{% if v isnt true %} YES {% endif %}', { v: true });
   });
 
   it('test_defined_keyword', async () => {
-    await assert_template_result(' YES ', '{% if v is defined %} YES {% endif %}', { v: true });
+    await assert_template_result(' YES ', '{% if is === true %} YES {% endif %}', { is: true });
+    await assert_template_result(' YES ', '{% if not === true %} YES {% endif %}', { not: true });
     await assert_template_result('', '{% if v is defined %} YES {% endif %}');
     await assert_template_result(' YES ', '{% if v isnt defined %} YES {% endif %}');
     await assert_template_result('', '{% if v isnt defined %} YES {% endif %}', { v: true });
-
-    await assert_template_result('', '{% if v == defined %} YES {% endif %}', { v: true });
-    await assert_template_result('', '{% if v === defined %} YES {% endif %}', { v: true });
-
+    await assert_template_result(' YES ', '{% if v == defined %} YES {% endif %}', { v: true });
+    await assert_template_result(' YES ', '{% if v === defined %} YES {% endif %}', { v: true });
+    await assert_template_result('', '{% if v === defined %} YES {% endif %}', { v: 1, defined: 2 });
     await assert_template_result(' YES ', '{% if v == defined %} YES {% endif %}', { v: true, defined: true });
     await assert_template_result('', '{% if v == defined %} YES {% endif %}', { v: true, defined: false });
+  });
+
+  it('test_undefined', async () => {
+    await assert_template_result(' YES ', '{% if v is undefined %} YES {% endif %}', { v: undefined });
   });
 
   it('test_if_else', async () => {
@@ -65,10 +78,10 @@ describe('if_else_tag_test', () => {
   });
 
   it('test_comparison_of_expressions_starting_with_and*_or_or*_or_is*', async () => {
-    const assigns = { order: { items_count: 0 }, android: { name: 'Roy' }, island: 'Maui' };
+    const assigns = { order: { items: { count: 0 } }, android: { name: 'Roy' }, island: 'Maui' };
     await assert_template_result('YES', "{% if island == 'Maui' %}YES{% endif %}", assigns);
     await assert_template_result('YES', "{% if android.name == 'Roy' %}YES{% endif %}", assigns);
-    await assert_template_result('YES', '{% if order.items_count == 0 %}YES{% endif %}', assigns);
+    await assert_template_result('YES', '{% if order.items.count == 0 %}YES{% endif %}', assigns);
   });
 
   it('test_if_and', async () => {

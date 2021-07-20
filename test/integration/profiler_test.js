@@ -120,7 +120,7 @@ describe.skip('profiler_test', () => {
 
       const profiler = context.profiler;
       const children = profiler.children;
-      console.log(profiler[0].total_time, (0.001 + first_render_time))
+      // console.log(profiler[0].total_time, (0.001 + first_render_time));
       assert(first_render_time >= 0.001);
       assert(profiler.total_time >= (0.001 + first_render_time));
       assert.equal(['index', 'layout'], children.map(c => c.template_name));

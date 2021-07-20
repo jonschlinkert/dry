@@ -15,6 +15,7 @@ class StubFileSystem {
 // register custom lexer and tag
 Dry.Lexer = require('./Lexer');
 Dry.Template.register_tag('frontmatter', require('./tags/FrontMatter'));
+Dry.nodes.Root = require('./nodes/Root');
 
 Dry.Template.layouts = new StubFileSystem({
   'default.html': 'Before{% content %}After'

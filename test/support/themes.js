@@ -12,7 +12,7 @@ const themes = async (dir, options) => {
       const contents = fs.readFileSync(file.path);
       const template = Dry.Template.parse(contents);
       const output = template.render();
-      console.log(output);
+      // console.log(output);
       // console.log(file.path);
       // if (file.name === 'abs.md') {
       // }

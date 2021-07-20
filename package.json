@@ -24,6 +24,7 @@
     "yaml": "^1.10.2"
   },
   "devDependencies": {
+    "@babel/parser": "^7.14.7",
     "@babel/eslint-parser": "^7.14.4",
     "@babel/eslint-plugin": "^7.13.16",
     "@folder/readdir": "^3.1.0",

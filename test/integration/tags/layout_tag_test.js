@@ -4,7 +4,7 @@ const assert = require('assert').strict;
 const { Template } = require('../../..');
 const { StubFileSystem } = require('../../test_helpers');
 
-describe('layout_tag_test', () => {
+describe.skip('layout_tag_test', () => {
   it('test_content_variable', async () => {
     const fixture = `
       {%- layout "default" -%}

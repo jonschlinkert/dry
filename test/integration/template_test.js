@@ -1,6 +1,7 @@
 'use strict';
 
 const assert = require('assert').strict;
+const { with_error_mode } = require('../test_helpers');
 const Dry = require('../..');
 const { Template } = Dry;
 
@@ -40,15 +41,7 @@ class DropWithUndefinedMethod extends Dry.Drop {
 }
 
 describe('template tests', () => {
-  let mode, t;
-
-  before(() => {
-    mode = Template.error_mode;
-  });
-
-  afterEach(() => {
-    Template.error_mode = mode;
-  });
+  let t;
 
   it('test_instance_assigns_persist_on_same_template_object_between_parses', async () => {
     t = new Template();
@@ -334,13 +327,14 @@ describe('template tests', () => {
     assert.equal('33  32  ', result);
   });
 
-  it('test_nil_value_does_not_raise', async () => {
-    Template.error_mode = 'strict';
-    t = Template.parse('some{{x}}thing');
-    const result = await t.render({ x: null }, { strict_variables: true });
+  it('test_nil_value_does_not_raise', () => {
+    return with_error_mode('strict', async () => {
+      t = Template.parse('some{{x}}thing');
+      const result = await t.render({ x: null }, { strict_variables: true });
 
-    assert.equal(0, t.errors.length);
-    assert.equal('something', result);
+      assert.equal(0, t.errors.length);
+      assert.equal('something', result);
+    });
   });
 
   it('test_undefined_variables_raise', async () => {

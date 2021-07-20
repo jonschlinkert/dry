@@ -1,9 +1,20 @@
 ---
   errors:
+    argument:
+      extends: "Argument error in tag 'extends' - Illegal template name"
+      include: "Argument error in tag 'include' - Illegal template name"
+      layout: "Argument error in tag 'layout' - Illegal template name"
+      template: "Argument error in tag '%{type}' - Illegal template name"
+
+    disabled:
+      tag: "usage is not allowed in this context"
+
     file_system:
-      missing: "Cannot locate template: '%{template_name}'"
+      missing: "Cannot locate %{type}: '%{template_name}'"
+
     layout:
       exponential: 'Exponentially recursive layout defined: "%{expression}"'
+
     syntax:
       assign: "Syntax Error in 'assign' - Valid syntax: assign <var> = [source]"
       block: "Syntax Error in 'block' - Valid syntax: block <var>"
@@ -31,9 +42,3 @@
       unexpected_outer_tag: "Unexpected outer '%{tag_name}' tag"
       unknown_tag: "Unknown tag '%{tag_name}'"
       variable_termination: "Variable '%{token}' was not properly terminated with: '%{tag_end}'"
-    argument:
-      include: "Argument error in tag 'include' - Illegal template name"
-      extends: "Argument error in tag 'extends' - Illegal template name"
-      layout: "Argument error in tag 'layout' - Illegal template name"
-    disabled:
-      tag: "usage is not allowed in this context"

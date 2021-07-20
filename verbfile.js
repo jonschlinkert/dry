@@ -1,9 +1,7 @@
 'use strict';
 
-module.exports = function(verb) {
+module.exports = verb => {
   verb.use(require('verb-generate-readme'));
-  verb.helper('wrap', function(str) {
-    return '{% ' + str + ' %}';
-  });
+  verb.helper('wrap', input => `{% ${input} %}`);
   verb.task('default', ['readme']);
 };

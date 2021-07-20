@@ -87,10 +87,19 @@ describe('macro_tag_test', () => {
     });
   });
 
-  describe('import', () => {
+  describe('import tag', () => {
     it('test_should_import_macros_from_file_system', async () => {
       const assigns = { name: 'doowb' };
       await assert_template_result('Hello, doowb!', '{% import "simple" %}' + usage('simple.hello'), assigns);
+    });
+
+    it('test_should_throw_when_file_is_not_found', async () => {
+      const fixture = '{% import "doesnt" %}' + usage('doesnt.exist');
+      const template = Template.parse(fixture, { strict_errors: true });
+
+      return assert.rejects(() => {
+        return template.render_strict();
+      }, /Dry error \(line 1\): Cannot locate template: 'doesnt'/);
     });
 
     it('test_should_import_macros_from_file_system', async () => {

@@ -564,8 +564,8 @@ ${whitespace}
     assert.equal('B', await template.render());
   });
 
-  it('test_trim_blank', async () => {
-    await assert_template_result('foobar', 'foo {{-}} bar');
+  it('test_trim_blank', () => {
+    return assert_template_result('foobar', 'foo {{-}} bar');
   });
 });
 
