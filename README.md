@@ -4,6 +4,8 @@
 
 Please consider following this project's author, [Jon Schlinkert](https://github.com/jonschlinkert), and consider starring the project to show your :heart: and support.
 
+<br>
+
 ## Install
 
 Install with [npm](https://www.npmjs.com/):
@@ -11,6 +13,8 @@ Install with [npm](https://www.npmjs.com/):
 ```sh
 $ npm install --save dry
 ```
+
+<br>
 
 ## Getting started
 
@@ -27,9 +31,13 @@ Using the code above, you can do almost everything you need to do with Dry.
 
 See the docs for [Shopify's Liquid](https://shopify.github.io/liquid/basics/introduction/) to learn about all of the features in the Liquid templating language. If you can do it with Liquid, you should be able to do it with Dry. _(and if you can't do it with Dry, it's a bug, and we kindly ask that you please create an issue, thanks!)_
 
+<br>
+
 ## Full Documentation
 
 Docs are on the way. In the meantime, you can use [this Liquid docs](https://shopify.github.io/liquid/basics/introduction/) to learn about all language features, and use the code snippet above to render your templates!
+
+<br>
 
 ## 2.0 Notes
 
@@ -52,13 +60,15 @@ Dry is A Superset of Shopify's Liquid with first-class support for template inhe
 **Highlights of this PR**
 
 * Ported directly from [Shopify/liquid](https://github.com/Shopify/liquid) - Wherever possible, and practical, I attempted to retain the same structure and code decisions as Shopify's Liquid. Since Ruby has a number of language features that aren't available in JavaScript, I had to find arounds or do things differently in a few places.
-* Powerful template inheritance: layouts, extends, blocks, macros, embed, imports, and even complex reassignments like `{% from 'fields' import input as input_field, textarea %}`
+* Powerful template inheritance: layouts, extends, blocks, macros, embed, imports, and even complex reassignments like `{\\% from 'fields' import input as input_field, textarea %}`
 * More than 750 unit tests so far
 * Filters: >70 filters, including **all Liquid filters** and more
 * Tags: >30 Tags, including **all Liquid tags** and a several new ones! See the list below!
 * More powerful comparisons and conditionals (more about this soon!)
 
 Lots more!
+
+<br>
 
 ## Tags
 
