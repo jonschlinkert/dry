@@ -24,9 +24,10 @@
   },
   "dependencies": {
     "ansi-colors": "^4.1.1",
-    "expand-value": "file:../../js-utils/objects/expand-value",
+    "expand-value": "^1.0.0",
     "export-files": "^3.0.2",
     "fill-range": "^7.0.1",
+    "get-value": "^3.0.1",
     "is-number": "^7.0.0",
     "kind-of": "^6.0.3",
     "set-value": "^4.0.0",
@@ -44,7 +45,6 @@
     "parser-front-matter": "^1.6.4",
     "remarkable": "^2.0.1",
     "time-require": "github:jonschlinkert/time-require",
-    "verb-generate-readme": "^0.8.0",
     "vinyl": "^2.2.1"
   },
   "verb": {
