@@ -1,14 +1,12 @@
-# dry [![NPM version](https://img.shields.io/npm/v/dry.svg?style=flat)](https://www.npmjs.com/package/dry) [![NPM monthly downloads](https://img.shields.io/npm/dm/dry.svg?style=flat)](https://npmjs.org/package/dry) [![NPM total downloads](https://img.shields.io/npm/dt/dry.svg?style=flat)](https://npmjs.org/package/dry) [![Linux Build Status](https://img.shields.io/travis/jonschlinkert/dry.svg?style=flat&label=Travis)](https://travis-ci.org/jonschlinkert/dry)
+# dry [![NPM version](https://img.shields.io/npm/v/dry.svg?style=flat)](https://www.npmjs.com/package/dry) [![NPM monthly downloads](https://img.shields.io/npm/dm/dry.svg?style=flat)](https://npmjs.org/package/dry) [![NPM total downloads](https://img.shields.io/npm/dt/dry.svg?style=flat)](https://npmjs.org/package/dry)
 
 > Dry is superset of the Liquid templating language, with first-class support for advanced inheritance features, and more.
 
 Please consider following this project's author, [Jon Schlinkert](https://github.com/jonschlinkert), and consider starring the project to show your :heart: and support.
 
-<br>
-
 ## Install
 
-Install with [npm](https://www.npmjs.com/):
+Install with [npm](https://www.npmjs.com/) (requires [Node.js](https://nodejs.org/en/) >=14):
 
 ```sh
 $ npm install --save dry
@@ -60,7 +58,7 @@ Dry is A Superset of Shopify's Liquid with first-class support for template inhe
 **Highlights of this PR**
 
 * Ported directly from [Shopify/liquid](https://github.com/Shopify/liquid) - Wherever possible, and practical, I attempted to retain the same structure and code decisions as Shopify's Liquid. Since Ruby has a number of language features that aren't available in JavaScript, I had to find arounds or do things differently in a few places.
-* Powerful template inheritance: layouts, extends, blocks, macros, embed, imports, and even complex reassignments like `{\\% from 'fields' import input as input_field, textarea %}`
+* Powerful template inheritance: layouts, extends, blocks, macros, embed, imports, and even complex reassignments like `{% from 'fields' import input as input_field, textarea %}`
 * More than 750 unit tests so far
 * Filters: >70 filters, including **all Liquid filters** and more
 * Tags: >30 Tags, including **all Liquid tags** and a several new ones! See the list below!

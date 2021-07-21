@@ -1,6 +1,17 @@
-# Contributing to dry
+# Contributing to Dry
 
-First and foremost, thank you! We appreciate that you want to contribute to dry, your time is valuable, and your contributions mean a lot to us.
+First and foremost, thank you! We appreciate that you want to contribute to Dry, your time is valuable, and your contributions mean a lot to us.
+
+## Important!
+
+By contributing to this project, you:
+
+* Agree that you have authored 100% of the content
+* Agree that you have the necessary rights to the content
+* Agree that you have received the necessary permissions from your employer to make the contributions (if applicable)
+* Agree that the content you contribute may be provided under the Project license(s)
+
+## Getting started
 
 **What does "contributing" mean?**
 
@@ -12,14 +23,14 @@ Creating an issue is the simplest form of contributing to a project. But there a
 
 If you'd like to learn more about contributing in general, the [Guide to Idiomatic Contributing](https://github.com/jonschlinkert/idiomatic-contributing) has a lot of useful information.
 
-**Showing support for dry**
+**Showing support for Dry**
 
 Please keep in mind that open source software is built by people like you, who spend their free time creating things the rest the community can use.
 
-Don't have time to contribute? No worries, here are some other ways to show your support for dry:
+Don't have time to contribute? No worries, here are some other ways to show your support for Dry:
 
 - star the [project](https://github.com/jonschlinkert/dry)
-- tweet your support for dry
+- tweet your support for Dry
 
 ## Issues
 
@@ -37,21 +48,34 @@ Try to follow these guidelines
 
 Please be as descriptive as possible when creating an issue. Give us the information we need to successfully answer your question or address your issue by answering the following in your issue:
 
-- **version**: please note the version of dry are you using
+- **version**: please note the version of Dry are you using
 - **extensions, plugins, helpers, etc** (if applicable): please list any extensions you're using
 - **error messages**: please paste any error messages into the issue, or a [gist](https://gist.github.com/)
 
-## Above and beyond
+### Closing issues
 
-Here are some tips for creating idiomatic issues. Taking just a little bit extra time will make your issue easier to read, easier to resolve, more likely to be found by others who have the same or similar issue in the future.
+The original poster or the maintainer's of Dry may close an issue at any time. Typically, but not exclusively, issues are closed when:
 
-- read the [Guide to Idiomatic Contributing](https://github.com/jonschlinkert/idiomatic-contributing)
-- take some time to learn basic markdown. This [markdown cheatsheet](https://gist.github.com/jonschlinkert/5854601) is super helpful, as is the GitHub guide to [basic markdown](https://help.github.com/articles/markdown-basics/).
+- The issue is resolved
+- The project's maintainers have determined the issue is out of scope
+- An issue is clearly a duplicate of another issue, in which case the duplicate issue will be linked.
+- A discussion has clearly run its course
+
+
+## Next steps
+
+**Tips for creating idiomatic issues**
+
+Spending just a little extra time to review best practices and brush up on your contributing skills will, at minimum, make your issue easier to read, easier to resolve, and more likely to be found by others who have the same or similar issue in the future. At best, it will open up doors and potential career opportunities by helping you be at your best.
+
+The following resources were hand-picked to help you be the most effective contributor you can be:
+
+- The [Guide to Idiomatic Contributing](https://github.com/jonschlinkert/idiomatic-contributing) is a great place for newcomers to start, but there is also information for experienced contributors there.
+- Take some time to learn basic markdown. We can't stress this enough. Don't start pasting code into GitHub issues before you've taken a moment to review this [markdown cheatsheet](https://gist.github.com/jonschlinkert/5854601)
+- The GitHub guide to [basic markdown](https://help.github.com/articles/markdown-basics/) is another great markdown resource.
 - Learn about [GitHub Flavored Markdown](https://help.github.com/articles/github-flavored-markdown/). And if you want to really go above and beyond, read [mastering markdown](https://guides.github.com/features/mastering-markdown/).
-- use backticks to wrap code. This ensures that code will retain its format, making it much more readable to others
-- use syntax highlighting by adding the correct language name after the first "code fence"
 
+At the very least, please try to:
 
-[node-glob]: https://github.com/isaacs/node-glob
-[micromatch]: https://github.com/jonschlinkert/micromatch
-[so]: http://stackoverflow.com/questions/tagged/dry
+- Use backticks to wrap code. This ensures that it retains its formatting and isn't modified when it's rendered by GitHub, and makes the code more readable to others
+- When applicable, use syntax highlighting by adding the correct language name after the first "code fence"
