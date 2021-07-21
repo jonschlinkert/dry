@@ -17,14 +17,8 @@ $ npm install --save dry
 The simplest way to get started is with the `render` method, which takes a template string and a data object (the "context").
 
 ```js
-const { render } = require('dry');
-
-// render is async
-render('Hello, {{ name }}!', { name: 'Brian' })
-  .then(output => {
-    console.log(output);
-    //=> Hello, Brian!
-  });
+const { render } = require('dry'); // render is async
+console.log(await render('Hello, {{ name }}!', { name: 'Brian' })); //=> Hello, Brian!
 ```
 
 Using the code above, you can do almost everything you need to do with Dry.
