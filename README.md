@@ -1,347 +1,161 @@
-# dry [![NPM version](https://img.shields.io/npm/v/dry.svg?style=flat)](https://www.npmjs.com/package/dry) [![NPM monthly downloads](https://img.shields.io/npm/dm/dry.svg?style=flat)](https://npmjs.org/package/dry)  [![NPM total downloads](https://img.shields.io/npm/dt/dry.svg?style=flat)](https://npmjs.org/package/dry) [![Linux Build Status](https://img.shields.io/travis/jonschlinkert/dry.svg?style=flat&label=Travis)](https://travis-ci.org/jonschlinkert/dry)
+# dry [![NPM version](https://img.shields.io/npm/v/dry.svg?style=flat)](https://www.npmjs.com/package/dry) [![NPM monthly downloads](https://img.shields.io/npm/dm/dry.svg?style=flat)](https://npmjs.org/package/dry) [![NPM total downloads](https://img.shields.io/npm/dt/dry.svg?style=flat)](https://npmjs.org/package/dry) [![Linux Build Status](https://img.shields.io/travis/jonschlinkert/dry.svg?style=flat&label=Travis)](https://travis-ci.org/jonschlinkert/dry)
 
-> Template engine with support for block helpers, advanced inheritance features, and more.
+> Dry is superset of the Liquid templating language, with first-class support for advanced inheritance features, and more.
 
-WIP. This isn't production-ready, but the inheritance features are implemented if you feel like playing around with the [unit tests](test).
+Please consider following this project's author, [Jon Schlinkert](https://github.com/jonschlinkert), and consider starring the project to show your :heart: and support.
 
-## Why another engine?
+## Install
 
-Since the main focus of this library is template inheritance, this is probably more of a "layout engine" than a template engine.
+Install with [npm](https://www.npmjs.com/):
 
-Ideally you should be able to use `dry` to apply layouts and blocks as a pre-render step, then use any template engine of your choosing to actually compile and render templates.
-
-**What kind of "template inheritance"?**
-
-With dry, you can create templates with common, re-usable code or content, and define "layouts", and "blocks" that act like placeholders or _default content_, which other templates can prepend, append or override. Layouts and blocks may also be infinitely nested.
-
-## Examples
-
-### Blocks
-
-Define blocks in a template:
-
-```html
-<!-- parent.html -->
-<!DOCTYPE html>
-  <html lang="en">
-  <head>
-    {% block "head" %}
-    <meta charset="UTF-8">
-    <title>Document</title>
-    {% endblock %}
-  </head>
-  <body>
-    {% block "body" %}
-    Default body.
-    {% endblock %}
-
-    {% block "footer" %}
-    Default footer.
-    {% endblock %}
-  </body>
-</html>
-```
-
-You can extend the `parent.html` template like this:
-
-```html
-{% extends "parent.html" %}
-
-{% block "head" %}
-<meta charset="UTF-8">
-<title>Inherited!</title>
-<script src="script.js"></script>
-{% endblock %}
-
-{% block "body" %}
-<div>This is the body</div>
-{% endblock %}
-
-{% block "footer" %}
-<div>This is the footer</div>
-{% endblock %}
-```
-
-Resulting in:
-
-```html
-<!-- parent.html -->
-<!DOCTYPE html>
-  <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <title>Inherited!</title>
-    <script src="script.js"></script>
-  </head>
-  <body>
-    <div>This is the body</div>
-    <div>This is the footer</div>
-  </body>
-</html>
-```
-
-**Text nodes**
-
-Note that when using `{% extend %}`, in child templates any content that is not inside a `{% block %}` (e.g. text nodes) will not be rendered.
-
-Given the following example:
-
-```html
-{% extends "parent.html" %}
-
-{% block "footer" %}
-I will be included in `parent.html`
-{% endblock %}
-
-I will NOT be included in `parent.html`
-```
-
-**Unknown blocks**
-
-Additionally, for blocks to render they must be defined in the parent template. Otherwise the blocks are simply discarded.
-
-For example, given the following:
-
-```html
-<!-- parent.html -->
-{% block "head" %}{% endblock %}
-{% block "footer" %}{% endblock %}
-
-<!-- child.html -->
-{% block "footer" %}
-I will render
-{% endblock %}
-
-{% block "flslslsl" %}
-I will NOT render
-{% endblock %}
-```
-
-### Layouts
-
-Layouts are used for "wrapping" files with common code or content. Layouts can also use [blocks](#blocks), but the _strategy for merging them is different_. Unlike blocks, when using layouts:
-
-* text nodes from child and parent templates are preserved
-* text nodes from child templates that do not belong to a specific block will be rendered into the `body` block of the parent layout
-* layouts may be defined using a `{% body %}` tag, **or** a `{% block "body" %} {% endblock %}` tag
-
-**Example**
-
-```html
-<!-- some-layout.html -->
-<!DOCTYPE html>
-  <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <title>Document</title>
-  </head>
-  <body>
-    {% body %}
-  </body>
-</html>
-```
-
-And are used like this:
-
-```html
-<!-- some-file.html -->
-{% layout "some-layout.html" %}
-This is content.
-```
-
-**Resulting in:**
-
-```html
-<!DOCTYPE html>
-  <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <title>Document</title>
-  </head>
-  <body>
-    This is content.
-  </body>
-</html>
-```
-
-If you need to define placeholder content, you can define a `block` instead:
-
-```html
-<!-- some-layout.html -->
-<!DOCTYPE html>
-  <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <title>Document</title>
-  </head>
-  <body>
-  {% block "body" %}
-    Nothing yet
-  {% endblock %}
-  </body>
-</html>
+```sh
+$ npm install --save dry
 ```
 
 ## Getting started
 
-The simplest way to get started is with the main export, which handles both parsing and rendering.
+The simplest way to get started is with the `render` method, which takes a template string and a data object (the "context").
 
 ```js
-var dry = require('dry');
+const { render } = require('dry');
+
+// render is async
+render('Hello, {{ name }}!', { name: 'Brian' })
+  .then(output => {
+    console.log(output);
+    //=> Hello, Brian!
+  });
 ```
 
-## API
+Using the code above, you can do almost everything you need to do with Dry.
 
-```js
-dry(file[, options]);
+**Tags, Filters, Variables, and more!**
+
+See the docs for [Shopify's Liquid](https://shopify.github.io/liquid/basics/introduction/) to learn about all of the features in the Liquid templating language. If you can do it with Liquid, you should be able to do it with Dry. _(and if you can't do it with Dry, it's a bug, and we kindly ask that you please create an issue, thanks!)_
+
+## Full Documentation
+
+Docs are on the way. In the meantime, you can use [this Liquid docs](https://shopify.github.io/liquid/basics/introduction/) to learn about all language features, and use the code snippet above to render your templates!
+
+## 2.0 Notes
+
+🎉  This release took a while. Here are some highlights!
+
+**First things first**
+
+I'm back! I know I haven't been around a lot lately, but all of that is about to change! Thank you to @doowb all of my sponsors and friends on GitHub who have provided the encouragement and support I needed to begin making this comeback.
+
+Please consider following me and this repository to receive updates, and consider contributing to Dry so we can make this the most powerful templating library in Node.js!
+
+**Why Dry? Aren't React and Vue the future?**
+
+Yes, yes they are. Dry doesn't compete with them. We use Dry the same way Shopify and Jekyll use Liquid, many end-users don't know how to write JavaScript, and many developers would prefer not to write JavaScript - I love writing JavaScript, and I enjoy Vue and React, but there is something satisfying about deploying a site in 5 minutes using plain text html templates. We also use Dry to design and render email templates, configuration-based system messages, and so on.
+
+**What's different about Dry?**
+
+Dry is A Superset of Shopify's Liquid with first-class support for template inheritance (ahem... so you don't have to repeat yourself. So it's "dry". I know... it's all I have at the moment).
+
+**Highlights of this PR**
+
+* Ported directly from [Shopify/liquid](https://github.com/Shopify/liquid) - Wherever possible, and practical, I attempted to retain the same structure and code decisions as Shopify's Liquid. Since Ruby has a number of language features that aren't available in JavaScript, I had to find arounds or do things differently in a few places.
+* Powerful template inheritance: layouts, extends, blocks, macros, embed, imports, and even complex reassignments like `{% from 'fields' import input as input_field, textarea %}`
+* More than 750 unit tests so far
+* Filters: >70 filters, including **all Liquid filters** and more
+* Tags: >30 Tags, including **all Liquid tags** and a several new ones! See the list below!
+* More powerful comparisons and conditionals (more about this soon!)
+
+Lots more!
+
+## Tags
+
+The tags with leading `+` were added to Dry:
+
+_(We'll be adding more tags soon! Like `section` and other tags used by Shopify)_
+
+```diff
++Apply
+Assign
++Block
+Break
+Capture
+Case
+Comment
++Content
+Continue
+Cycle
+Decrement
+Echo
++Embed
++Extends
+For
++From
+If
+Ifchanged
++Import
+Include
+Increment
++Layout
+Liquid
++Macro
++Paginate
+Raw
+Render
++Set
++Switch
+TableRow
+Unless
++Verbatim
++With
 ```
-
-### Params
-
-* `file` **{Object}**: object with `path` and `contents` buffer or string. [vinyl](https://github.com/gulpjs/vinyl) files may optionally be used.
-* `options` **{Object}**: object with `files` to use for layouts and blocks
-
-**Example**
-
-```js
-var fs = require('fs');
-var dry = require('dry');
-var layout = {path: 'some-layout.html', contents: fs.readFileSync('some-layout.html')};
-var file = {path: 'some-file.html', contents: fs.readFileSync('some-file.html')};
-
-var str = dry(file, {files: {'some-layout.html': layout}});
-```
-
-**Example**
-
-```js
-var fs = require('fs');
-var dry = require('dry');
-var layout = {path: 'some-layout.html', contents: fs.readFileSync('some-layout.html')};
-var file = {path: 'some-file.html', contents: fs.readFileSync('some-file.html')};
-
-var str = dry(file, {
-  // pass an object of `files` to use as blocks or layouts
-  files: {
-    'some-layout.html': layout,
-    'some-file.html': file,
-  }
-});
-```
-
-**Layouts**
-
-Basic layouts are defined using a `{% body %}` tag. For example:
-
-```html
-<!-- some-layout.html -->
-<!DOCTYPE html>
-  <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <title>Document</title>
-  </head>
-  <body>
-    {% body %}
-  </body>
-</html>
-```
-
-To define a layout, you can either add a layout tag, like this:
-
-```html
-<!-- some-file.html -->
-{% layout "some-layout.html" %}
-This is content.
-```
-
-Or define the layout name directly on the `file` object:
-
-```js
-var file = {
-  path: 'some-file.html',
-  contents: fs.readFileSync('some-file.html'),
-  layout: 'some-layout.html' //<= layout
-};
-```
-
-## Template inheritance
-
-Let's say you define a template like this:
-
-```html
-<!DOCTYPE html>
-  <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <title>Some title</title>
-  </head>
-  <body>
-    {% block "header" %}
-    <section>Header content</section>
-    {% endblock %}
-
-    {% block "body" %}
-    <div>Body content.</div>
-    {% endblock %}
-
-    {% block "footer" %}
-    <footer>Footer content</footer>
-    {% endblock %}
-  </body>
-</html>
-```
-
-```html
-{% extends "foo.html" %}
-
-{% block "head" %}
-<title>Head content</title>
-{% endblock %}
-
-{% block "body" %}
-This is body content.
-{% endblock %}
-
-{% block "footer" %}
-<footer>Footer content</footer>
-{% endblock %}
-```
-
-**Layouts**
-
-## Acknowledgements
-
-I've learned a lot from [tj](https://github.com/tj)'s code over the past few years. Some of the code in Dry is inspired by [pug](http://jade-lang.com) and [css](https://github.com/reworkcss/css).
 
 ## About
 
-### Contributing
+<details>
+<summary><strong>Contributing</strong></summary>
 
 Pull requests and stars are always welcome. For bugs and feature requests, [please create an issue](../../issues/new).
 
-Please read the [contributing guide](.github/contributing.md) for avice on opening issues, pull requests, and coding standards.
+Please read the [contributing guide](.github/contributing.md) for advice on opening issues, pull requests, and coding standards.
 
-### Running tests
+</details>
 
-Install dev dependencies:
+<details>
+<summary><strong>Running Tests</strong></summary>
+
+Running and reviewing unit tests is a great way to get familiarized with a library and its API. You can install dependencies and run tests with the following command:
 
 ```sh
-$ npm install -d && npm test
+$ npm install && npm test
 ```
+
+</details>
+
+<details>
+<summary><strong>Building docs</strong></summary>
+
+_(This project's readme.md is generated by [verb](https://github.com/verbose/verb-generate-readme), please don't edit the readme directly. Any changes to the readme must be made in the [.verb.md](.verb.md) readme template.)_
+
+To generate the readme, run the following command:
+
+```sh
+$ npm install -g verbose/verb#dev verb-generate-readme && verb
+```
+
+</details>
 
 ### Author
 
 **Jon Schlinkert**
 
-* [github/jonschlinkert](https://github.com/jonschlinkert)
-* [twitter/jonschlinkert](http://twitter.com/jonschlinkert)
+* [GitHub Profile](https://github.com/jonschlinkert)
+* [Twitter Profile](https://twitter.com/jonschlinkert)
+* [LinkedIn Profile](https://linkedin.com/in/jonschlinkert)
 
 ### License
 
-Copyright © 2016, [Jon Schlinkert](https://github.com/jonschlinkert).
-Released under the [MIT license](https://github.com/jonschlinkert/dry/blob/master/LICENSE).
+Copyright © 2021, [Jon Schlinkert](https://github.com/jonschlinkert).
+Released under the [MIT License](LICENSE).
 
 ***
 
-_This file was generated by [verb-generate-readme](https://github.com/verbose/verb-generate-readme), v0.2.0, on December 28, 2016._
+_This file was generated by [verb-generate-readme](https://github.com/verbose/verb-generate-readme), v0.8.0, on July 20, 2021._
