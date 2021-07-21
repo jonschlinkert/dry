@@ -76,7 +76,7 @@ describe('condition_unit_test', () => {
     return assert_evaluates_argument_error(1, '~~', 0);
   });
 
-  it.skip('test_comparation_of_int_and_str', async () => {
+  it('test_comparation_of_int_and_str', async () => {
     await assert_evaluates_argument_error('1', '>', 0);
     await assert_evaluates_argument_error('1', '<', 0);
     await assert_evaluates_argument_error('1', '>=', 0);

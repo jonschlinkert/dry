@@ -27,6 +27,7 @@ const render_strict = async (input, assigns, options) => {
 const assert_raises = async (ErrorClass, callback) => {
   try {
     await callback();
+    // throw new Error(`Expected a "${ErrorClass}" to be thrown`);
   } catch (err) {
     if (ErrorClass instanceof RegExp) {
       assert(ErrorClass.test(err.message));
@@ -59,7 +60,8 @@ const assert_match_syntax_error = async (regex, template, assigns = {}, message)
   const exception = await assert_raises(Dry.SyntaxError, async () => {
     await Template.parse(template, { line_numbers: true }).render(assigns);
   });
-  assert.match(exception && exception.message, regex, message);
+
+  assert.match(exception.message, regex, message);
 };
 
 const assert_usage_increment = async (name, ...rest) => {

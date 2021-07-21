@@ -3,11 +3,12 @@
 const Dry = require('../..');
 
 class FileSystem {
-  constructor(values) {
-    this.values = values;
+  constructor(files) {
+    this.files = files;
   }
-  read_template_file(template_path) {
-    return this.values[template_path];
+
+  read_template_file(path) {
+    return this.files[path];
   }
 }
 
@@ -43,19 +44,19 @@ const templates2 = {
   </html>
     `,
     'foo.html': `
-    {% extends "layouts/base.html" %}
-    {% block content %}Foo content{% endblock %}
-    {% block footer %}Foo footer{% endblock %}
+    {%- extends "layouts/base.html" -%}
+    {% block content %}{{ parent() }}Foo content{% endblock %}
+    {% block footer %}{{ parent() }}Foo footer{% endblock %}
     `,
     'bar.html': `
-    {% extends "layouts/foo.html" %}
-    {% block content %}Bar content{% endblock %}
-    {% block footer %}{{ block.super() }}Bar footer{% endblock %}
+    {%- extends "layouts/foo.html" %}
+    {% block content mode="append" %}{{ parent() }}Bar content{% endblock %}
+    {% block footer mode="append" %}{{ parent() }}Bar footer{% endblock %}
     `,
     'baz.html': `
-    {% extends "layouts/bar.html" %}
-    {% block content %}Baz content{% endblock %}
-    {% block footer %}Baz footer{% endblock %}
+    {%- extends "layouts/bar.html" %}
+    {% block content mode="append" %}Baz content{% endblock %}
+    {% block footer mode="append" %}Baz footer{% endblock %}
     `
   }
 };
@@ -63,8 +64,9 @@ const templates2 = {
 Dry.Template.file_system = new FileSystem(templates2);
 
 const source = `
-{% extends "layouts/foo.html" %}
-{% block content mode="append" %} New content {% endblock %}
+{%- extends "layouts/foo.html" -%}
+{%- block head %} <title>Home</title> {% endblock -%}
+{%- block content mode="append" %} New content {% endblock -%}
 `;
 
 // const block = `

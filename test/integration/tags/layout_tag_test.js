@@ -4,7 +4,7 @@ const assert = require('assert').strict;
 const { Template } = require('../../..');
 const { StubFileSystem } = require('../../test_helpers');
 
-describe.skip('layout_tag_test', () => {
+describe('layout_tag_test', () => {
   it('test_content_variable', async () => {
     const fixture = `
       {%- layout "default" -%}
@@ -68,6 +68,8 @@ describe.skip('layout_tag_test', () => {
 
     return assert.rejects(() => {
       return Template.render_strict(fixture, undefined, { registers: { layouts } });
-    }, /Dry error: Exponentially recursive layout defined: "\{% layout "a" %\}"/);
+    }, err => {
+      return /Dry error: Exponentially recursive layout defined: "{% layout "a" %}"/.test(err.message);
+    });
   });
 });

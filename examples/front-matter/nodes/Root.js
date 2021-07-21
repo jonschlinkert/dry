@@ -19,7 +19,6 @@ class Root extends Dry.BlockTag {
     const layout_string = Dry.tags.Layout.toString(layout_name);
     const template = Dry.Template.parse(layout_string);
     const layout = template.root.ast.nodes.find(node => node.name === 'layout');
-    console.log({ layout });
     return layout.render_content(nodes, context);
   }
 

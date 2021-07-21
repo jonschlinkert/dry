@@ -16,7 +16,7 @@
   "dependencies": {
     "ansi-colors": "^4.1.1",
     "expand-value": "file:../../js-utils/objects/expand-value",
-    "export-files": "^3.0.1",
+    "export-files": "^3.0.2",
     "fill-range": "^7.0.1",
     "is-number": "^7.0.0",
     "kind-of": "^6.0.3",
@@ -24,9 +24,9 @@
     "yaml": "^1.10.2"
   },
   "devDependencies": {
-    "@babel/parser": "^7.14.7",
     "@babel/eslint-parser": "^7.14.4",
     "@babel/eslint-plugin": "^7.13.16",
+    "@babel/parser": "^7.14.7",
     "@folder/readdir": "^3.1.0",
     "handlebars": "^4.7.7",
     "mocha": "^8.4.0",

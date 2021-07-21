@@ -1,19 +1,19 @@
-{% macro one() %}
+{% macro one() -%}
   This is macro "one"
 {% endmacro %}
 
-{% macro two() %}
+{% macro two() -%}
   This is macro "two"
 {% endmacro %}
 
-{% macro three() %}
+{% macro three() -%}
   This is macro "three"
 {% endmacro %}
 
-{% macro four(name="four") %}
+{% macro four(name="four") -%}
   This is macro "{{ name }}"
 {% endmacro %}
 
-{% macro hello(name="friend") %}
+{% macro hello(name="friend") -%}
   Hello, {{ name }}!
 {% endmacro %}
