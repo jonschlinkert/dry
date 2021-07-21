@@ -67,8 +67,6 @@ vendor
 .DS_Store
 *.sublime-*
 
-test/fixtures
-
 docs
 brandscale
 expressions
