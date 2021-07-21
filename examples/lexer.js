@@ -1,10 +1,10 @@
 'use strict';
 
-var File = require('vinyl');
-var utils = require('../lib/utils');
-var dry = require('..');
+const File = require('vinyl');
+// const utils = require('../lib/utils');
+const Dry = require('..');
 
-var options = {
+const options = {
   tags: {
     layout: {
       name: 'layout',
@@ -17,9 +17,9 @@ var options = {
   }
 };
 
-var def = new File({
+const def = new File({
   path: 'default.html',
-  contents: new Buffer([
+  contents: Buffer.from([
     '<!DOCTYPE html>',
     '<html lang="en">',
     'Default before',
@@ -30,9 +30,9 @@ var def = new File({
   ].join('\n'))
 });
 
-var base = new File({
+const base = new File({
   path: 'base.html',
-  contents: new Buffer([
+  contents: Buffer.from([
     '{% layout "default.html" %}',
     '  <head>',
     '    <meta charset="UTF-8">',
@@ -47,9 +47,9 @@ var base = new File({
   ].join('\n'))
 });
 
-var file = new File({
+const file = new File({
   path: 'foo.html',
-  contents: new Buffer([
+  contents: Buffer.from([
     '{% layout "base.html" %}',
     'This is foo',
     '{% block "footer" %}',
@@ -57,12 +57,12 @@ var file = new File({
   ].join('\n'))
 });
 
-var res = dry(file, {
+const res = Dry.Lexer.lex(file.contents, {
   files: {
     'default.html': def,
-    'base.html': base,
+    'base.html': base
   }
 });
 
-console.log(res)
+console.log(res);
 

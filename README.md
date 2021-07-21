@@ -175,7 +175,7 @@ If you need to define placeholder content, you can define a `block` instead:
     <title>Document</title>
   </head>
   <body>
-  {% block "body" %} 
+  {% block "body" %}
     Nothing yet
   {% endblock %}
   </body>
@@ -259,7 +259,7 @@ Or define the layout name directly on the `file` object:
 
 ```js
 var file = {
-  path: 'some-file.html', 
+  path: 'some-file.html',
   contents: fs.readFileSync('some-file.html'),
   layout: 'some-layout.html' //<= layout
 };

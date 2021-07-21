@@ -1,11 +1,11 @@
 'use strict';
 
-var fs = require('fs');
-var path = require('path');
-var File = require('vinyl');
-var dry = require('..');
+const fs = require('fs');
+const path = require('path');
+const File = require('vinyl');
+const dry = require('..');
 
-var options = {
+const options = {
   tags: {
     layout: {
       name: 'layout',
@@ -18,22 +18,22 @@ var options = {
   }
 };
 
-var def = new File({
+const def = new File({
   path: 'default.html',
-  contents: new Buffer([
+  contents: Buffer.from([
     '<!DOCTYPE html>',
     '<html lang="en">',
     'Default before',
     '{% block "body" %}',
     '{% endblock %}',
     'Default after',
-    '</html>',
+    '</html>'
   ].join('\n'))
 });
 
-var base = new File({
+const base = new File({
   path: 'base.html',
-  contents: new Buffer([
+  contents: Buffer.from([
     '{% layout "default.html" %}',
     '  <head>',
     '    <meta charset="UTF-8">',
@@ -44,21 +44,21 @@ var base = new File({
     '    {% block "body" %}',
     '    {% endblock %}',
     '    Base after',
-    '  </body>',
+    '  </body>'
   ].join('\n'))
 });
 
-var foo = new File({
+const foo = new File({
   path: 'foo.html',
-  contents: new Buffer([
+  contents: Buffer.from([
     '{% layout "base.html" %}',
     'This is foo',
     '{% block "footer" %}',
-    '{% endblock %}',
+    '{% endblock %}'
   ].join('\n'))
 });
 
-var files = [def, foo, base];
+const files = [def, foo, base];
 options.files = {
   'foo.html': foo,
   'base.html': base,
@@ -69,5 +69,5 @@ files.forEach(function(file) {
   dry.parse(file, options);
 });
 
-var res = dry(foo, options);
+const res = dry(foo, options);
 console.log(res.contents.toString());

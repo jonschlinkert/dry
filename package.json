@@ -1,69 +1,40 @@
 {
   "name": "dry",
-  "description": "Template engine with support for block helpers, advanced inheritance features, and more.",
-  "version": "1.0.1",
-  "homepage": "https://github.com/jonschlinkert/dry",
-  "author": "Jon Schlinkert (https://github.com/jonschlinkert)",
-  "repository": "jonschlinkert/dry",
-  "bugs": {
-    "url": "https://github.com/jonschlinkert/dry/issues"
-  },
-  "license": "MIT",
-  "files": [
-    "index.js",
-    "lib"
-  ],
+  "description": "Node.js library and API for dry",
+  "version": "0.0.0",
+  "private": true,
   "main": "index.js",
   "engines": {
-    "node": ">=0.10.0"
+    "node": ">=10"
   },
+  "license": "MIT",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha --recursive --ignore 'test/fixtures/**'",
+    "test:ci": "nyc --reporter=lcov npm run test",
+    "cover": "nyc --reporter=text --reporter=html npm run test"
   },
   "dependencies": {
-    "clone-deep": "^0.2.4",
-    "debug": "^2.5.2",
-    "extend-shallow": "^2.0.1",
-    "get-value": "^2.0.6",
-    "isobject": "^3.0.0",
-    "lazy-cache": "^2.0.2",
-    "mixin-deep": "^1.1.3",
-    "repeat-string": "^1.6.1",
-    "source-map": "^0.5.6",
-    "source-map-resolve": "^0.5.0"
+    "ansi-colors": "^4.1.1",
+    "expand-value": "file:../../js-utils/objects/expand-value",
+    "export-files": "^3.0.2",
+    "fill-range": "^7.0.1",
+    "is-number": "^7.0.0",
+    "kind-of": "^6.0.3",
+    "set-value": "^4.0.0",
+    "yaml": "^1.10.2"
   },
   "devDependencies": {
-    "gulp-format-md": "^0.1.11",
-    "handlebars": "^4.0.6",
-    "matched": "^0.4.4",
-    "mocha": "^3.2.0",
-    "parser-front-matter": "^1.6.2",
-    "should": "^11.1.2",
-    "vinyl": "^2.0.1"
-  },
-  "keywords": [
-    "dry"
-  ],
-  "verb": {
-    "toc": false,
-    "layout": "common-minimal",
-    "tasks": [
-      "readme"
-    ],
-    "plugins": [
-      "gulp-format-md"
-    ],
-    "lint": {
-      "reflinks": true
-    },
-    "related": {
-      "list": []
-    },
-    "reflinks": [
-      "css",
-      "pug",
-      "verb",
-      "verb-generate-readme"
-    ]
+    "@babel/eslint-parser": "^7.14.4",
+    "@babel/eslint-plugin": "^7.13.16",
+    "@babel/parser": "^7.14.7",
+    "@folder/readdir": "^3.1.0",
+    "handlebars": "^4.7.7",
+    "mocha": "^8.4.0",
+    "nyc": "^15.1.0",
+    "parser-front-matter": "^1.6.4",
+    "remarkable": "^2.0.1",
+    "time-require": "github:jonschlinkert/time-require",
+    "verb-generate-readme": "^0.8.0",
+    "vinyl": "^2.2.1"
   }
 }
