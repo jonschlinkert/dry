@@ -101,11 +101,6 @@ describe('extends_tag_test', () => {
       </html>`;
 
     Template.file_system = new StubFileSystem(layouts);
-
-    // console.log({
-    //   actual: await Template.render(fixture, assigns)
-    // });
-
     return assert_template_result(expected, fixture, assigns);
   });
 
