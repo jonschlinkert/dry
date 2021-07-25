@@ -2,9 +2,10 @@
 'use strict';
 
 const assert = require('assert').strict;
-const { assert_raises, assert_template_result, ThingWithToLiquid } = require('../test_helpers');
 const Dry = require('../..');
+const { assert_raises, assert_template_result, ThingWithToLiquid } = require('../test_helpers');
 const { Context, StandardFilters, Template, utils } = Dry;
+
 const orig_filters = { ...StandardFilters };
 let filters;
 
@@ -521,17 +522,37 @@ describe('standard_filters_test', () => {
   it('test_replace', async () => {
     assert.equal('2 2 2 2', filters.replace('1 1 1 1', '1', 2));
     assert.equal('2 2 2 2', filters.replace('1 1 1 1', 1, 2));
+  });
+
+  it('test_replace_first', async () => {
     assert.equal('2 1 1 1', filters.replace_first('1 1 1 1', '1', 2));
     assert.equal('2 1 1 1', filters.replace_first('1 1 1 1', 1, 2));
     await assert_template_result('2 1 1 1', "{{ '1 1 1 1' | replace_first: '1', 2 }}");
   });
 
+  it('test_replace_last', async () => {
+    assert.equal('a a a b', filters.replace_last('a a a a', 'a', 'b'));
+    assert.equal('1 1 1 2', filters.replace_last('1 1 1 1', 1, 2));
+    await assert_template_result('a a a b', "{{ 'a a a a' | replace_last: 'a', 'b' }}");
+    await assert_template_result('1 1 1 2', "{{ '1 1 1 1' | replace_last: 1, 2 }}");
+  });
+
   it('test_remove', async () => {
     assert.equal('   ', filters.remove('a a a a', 'a'));
     assert.equal('   ', filters.remove('1 1 1 1', 1));
-    assert.equal('a a a', filters.remove_first('a a a a', 'a '));
-    assert.equal(' 1 1 1', filters.remove_first('1 1 1 1', 1));
+  });
+
+  it('test_remove_first', async () => {
+    assert.equal('b a a', filters.remove_first('a b a a', 'a '));
+    assert.equal(' 2 1 1', filters.remove_first('1 2 1 1', 1));
     await assert_template_result('a a a', "{{ 'a a a a' | remove_first: 'a ' }}");
+  });
+
+  it('test_remove_last', async () => {
+    assert.equal('a a b', filters.remove_last('a a b a', ' a'));
+    assert.equal('1 1 2 ', filters.remove_last('1 1 2 1', 1));
+    await assert_template_result('a a b', "{{ 'a a b a' | remove_last: ' a' }}");
+    await assert_template_result('1 1 2 ', "{{ '1 1 2 1' | remove_last: 1 }}");
   });
 
   it('test_pipes_in_string_arguments', async () => {
@@ -715,6 +736,13 @@ describe('standard_filters_test', () => {
     const assigns = { 'a': 'bc', 'b': 'a' };
     await assert_template_result('abc', "{{ a | prepend: 'a'}}", assigns);
     await assert_template_result('abc', '{{ a | prepend: b}}', assigns);
+    await assert_template_result('helloworld', '{{ "world" | prepend: "hello" }}', assigns);
+    await assert_template_result('helloworld', '{{ "world" | prepend : "hello" }}', assigns);
+
+    // should throw when : is missing from filter
+    await assert_raises(Dry.SyntaxError, () => {
+      return Template.parse('{{ "world" | prepend "hello" }}');
+    });
   });
 
   it('test_default', async () => {
@@ -737,10 +765,6 @@ describe('standard_filters_test', () => {
     await assert_template_result('false', "{{ false | default: 'bar', allow_false: true }}");
   });
 
-  it('test_cannot_access_private_methods', async () => {
-    await assert_template_result('a', "{{ 'a' | to_number }}");
-  });
-
   it('test_date_raises_nothing', async () => {
     await assert_template_result('', "{{ '' | date: '%D' }}");
     await assert_template_result('abc', "{{ 'abc' | date: '%D' }}");
@@ -761,6 +785,23 @@ describe('standard_filters_test', () => {
 
     assert.deepEqual(expectation, filters.where(input, 'ok', true));
     assert.deepEqual(expectation, filters.where(input, 'ok'));
+  });
+
+  it('test_where_deep', () => {
+    const input = [
+      { item: { handle: 'alpha', ok: true } },
+      { item: { handle: 'beta', ok: false } },
+      { item: { handle: 'gamma', ok: false } },
+      { item: { handle: 'delta', ok: true } }
+    ];
+
+    const expected = [
+      { item: { handle: 'alpha', ok: true } },
+      { item: { handle: 'delta', ok: true } }
+    ];
+
+    assert.deepEqual(expected, filters.where(input, 'item.ok', true));
+    assert.deepEqual(expected, filters.where(input, 'item.ok'));
   });
 
   it('test_where_no_key_set', () => {
