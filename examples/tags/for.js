@@ -66,7 +66,7 @@ const fixtures = {
   - {{k}} = {{v}}
     {%- endif %}
   {%- endfor -%}
-  `,
+  `
 
   // first: `
   // {% for product in products %}
@@ -90,10 +90,10 @@ const locals = {
 
   page: {
     links: {
-      'demo': 'http://www.github.com/copperegg/mongo-scaling-demo',
-      'more': 'http://www.github.com/copperegg/mongo-scaling-more',
-      'deps': {
-        'version': 'v1.0.1'
+      demo: 'http://www.github.com/copperegg/mongo-scaling-demo',
+      more: 'http://www.github.com/copperegg/mongo-scaling-more',
+      deps: {
+        version: 'v1.0.1'
       }
     }
   }
