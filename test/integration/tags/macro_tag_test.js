@@ -99,7 +99,7 @@ describe('macro_tag_test', () => {
         + usage('simple.hello');
 
       const assigns = { name: 'doowb' };
-      await assert_template_result('\n  <input type="text" name="doowb" value="" size="20"/>\nHello, doowb!', fixture, assigns);
+      await assert_template_result('\n  <input type="text" name="doowb" value="" size="20"/>\nHello, doowb!', fixture.replace(/\r/g, ''), assigns);
     });
 
     it('test_should_throw_when_file_is_not_found', async () => {
