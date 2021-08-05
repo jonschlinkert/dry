@@ -8,6 +8,7 @@ const { Template, FileSystem: { LocalFileSystem }, utils } = require('../../..')
 const macros_path = path.resolve(__dirname, '../../fixtures/_macros');
 const file_system = Template.file_system;
 
+const replace = s => s.replace(/\s+/g, '');
 const usage = (name, args = []) => `{{ ${name}(${args.join(', ')}) }}`;
 const macro = (name, text, args = []) => {
   return `{% macro ${name}(${args.join(', ')}) %}${text}{% endmacro %}`;
@@ -98,8 +99,10 @@ describe('macro_tag_test', () => {
         + usage('fields.input')
         + usage('simple.hello');
 
+      const expected = '<input type="text" name="doowb" value="" size="20"/>Hello, doowb!';
+
       const assigns = { name: 'doowb' };
-      await assert_template_result('\n  <input type="text" name="doowb" value="" size="20"/>\nHello, doowb!', fixture.replace(/\r/g, ''), assigns);
+      await assert_template_result(replace(expected), fixture, assigns, replace);
     });
 
     it('test_should_throw_when_file_is_not_found', async () => {
