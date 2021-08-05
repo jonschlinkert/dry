@@ -50,6 +50,10 @@ describe('filters_test', () => {
   });
 
   describe('filters', () => {
+    it('test_missing_filters', () => {
+      return assert.rejects(() => render_strict('{{var | foo | bar}}', {}, { strict_filters: true }));
+    });
+
     it('test_local_filter', async () => {
       context['var'] = 1000;
       context.add_filters(MoneyFilter);

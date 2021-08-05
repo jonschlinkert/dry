@@ -1,13 +1,13 @@
 'use strict';
 
-const Dry = require('..');
+const { Template } = require('..');
 
 class FileSystem {
   constructor(values) {
     this.values = values;
   }
-  read_template_file(template_path) {
-    return this.values[template_path];
+  read_template_file(name) {
+    return this.values[name];
   }
 }
 
@@ -40,7 +40,7 @@ const source = `
 {% extends "base.html" %}
   {% block title %}My amazing blog{% endblock %}
   {%- block content -%}
-    {% if blog_entries.size >= 2 %}
+    {% if blog_entries.length >= 2 %}
     <ul>
     {%- for entry in blog_entries %}
       <li>
@@ -53,7 +53,7 @@ const source = `
   {% endblock %}
 `;
 
-Dry.Template.file_system = new FileSystem(templates);
+Template.file_system = new FileSystem(templates);
 
 const locals = {
   blog_entries: [
@@ -62,6 +62,6 @@ const locals = {
   ]
 };
 
-Dry.Template.render_strict(source, locals, { strict_variables: true, strict_filters: true })
-  // .then(console.log)
+Template.render_strict(source, locals, { strict_variables: true, strict_filters: true })
+  .then(console.log)
   .catch(console.error);

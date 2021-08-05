@@ -3,7 +3,7 @@
 
 const assert = require('assert').strict;
 const Dry = require('../..');
-const { assert_raises, assert_template_result, ThingWithToLiquid } = require('../test_helpers');
+const { assert_raises, assert_template_result, ThingWithToLiquid, with_error_mode } = require('../test_helpers');
 const { Context, StandardFilters, Template, utils } = Dry;
 
 const orig_filters = { ...StandardFilters };
@@ -46,6 +46,9 @@ class TestDrop extends Dry.Drop {
 class TestEnumerable extends Dry.Drop {
   each(block) {
     return [{ foo: 1, bar: 2 }, { foo: 2, bar: 1 }, { foo: 3, bar: 3 }].map(block);
+  }
+  map(block) {
+    return this.each(block);
   }
 }
 
@@ -738,10 +741,13 @@ describe('standard_filters_test', () => {
     await assert_template_result('abc', '{{ a | prepend: b}}', assigns);
     await assert_template_result('helloworld', '{{ "world" | prepend: "hello" }}', assigns);
     await assert_template_result('helloworld', '{{ "world" | prepend : "hello" }}', assigns);
+  });
 
-    // should throw when : is missing from filter
-    await assert_raises(Dry.SyntaxError, () => {
-      return Template.parse('{{ "world" | prepend "hello" }}');
+  it('test_throws_when_missing_between_filter_name_and_filter_arguments', () => {
+    return with_error_mode('strict', () => {
+      return assert_raises(Dry.SyntaxError, () => {
+        return Template.parse('{{ "world" | prepend "hello" }}');
+      });
     });
   });
 

@@ -65,7 +65,7 @@ describe('for_tag_test', () => {
     await assert_template_result(' 1  2  3 ', '{%for item in (1..3) %} {{item}} {%endfor%}');
 
     await assert_raises(Dry.RangeError, async () => {
-      await Template.parse('{% for i in (a..2) %}{% endfor %}').render({ a: [1, 2] });
+      await Template.parse('{% for i in (a..2) %}{% endfor %}').render_strict({ a: [1, 2] });
     });
 
     await assert_template_result(' 0  1  2  3 ', '{% for item in (a..3) %} {{item}} {% endfor %}', { a: 'invalid integer' });

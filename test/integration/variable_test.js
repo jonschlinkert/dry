@@ -200,4 +200,18 @@ describe('variable_test', () => {
   it('test_raw_value_variable', async () => {
     await assert_template_result('bar', '{{ [key] }}', { key: 'foo', foo: 'bar' });
   });
+
+  it('test_supports_this_keyword', async () => {
+    await assert_template_result('brian', '{{ this.name }}', { name: 'brian' }, { allow_this_variable: true });
+  });
+
+  it('test_throws_when_this_keyword_is_not_enabled', async () => {
+    await assert_raises(Dry.SyntaxError, () => {
+      return assert_template_result('brian', '{{ this.name }}', { name: 'brian' });
+    });
+
+    await assert_raises(Dry.SyntaxError, () => {
+      return assert_template_result('brian', '{{ this.name }}', { name: 'brian' }, { allow_this_variable: 'with' });
+    });
+  });
 });

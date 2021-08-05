@@ -141,10 +141,18 @@ describe('variable_unit_test', () => {
     assert.deepEqual(new VariableLookup('foo-bar'), create_variable('foo-bar').name);
     assert.deepEqual(new VariableLookup('foo-bar-2'), create_variable('foo-bar-2').name);
 
-    await with_error_mode(() => {
+    await with_error_mode('strict', () => {
+      assert.throws(() => create_variable('-5-5'), Dry.SyntaxError);
       assert.throws(() => create_variable('foo - bar'), Dry.SyntaxError);
       assert.throws(() => create_variable('-foo'), Dry.SyntaxError);
       assert.throws(() => create_variable('2foo'), Dry.SyntaxError);
+    });
+
+    await with_error_mode('lax', () => {
+      assert.doesNotThrow(() => create_variable('-5-5'), Dry.SyntaxError);
+      assert.doesNotThrow(() => create_variable('foo - bar'), Dry.SyntaxError);
+      assert.doesNotThrow(() => create_variable('-foo'), Dry.SyntaxError);
+      assert.doesNotThrow(() => create_variable('2foo'), Dry.SyntaxError);
     });
   });
 

@@ -66,7 +66,7 @@ describe('set_test', () => {
   });
 
   it('test_set_syntax_error', async () => {
-    await assert_match_syntax_error(/assign/, '{% set foo not values %}.', { values: 'foo,bar,baz' });
+    await assert_match_syntax_error(/assign/, '{% set foo not bar %}.');
   });
 
   it('test_set_uses_error_mode', async () => {

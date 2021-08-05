@@ -4,7 +4,7 @@
 const assert = require('assert').strict;
 const path = require('path');
 const Dry = require('..');
-const { Template } = Dry;
+const { Template, utils } = Dry;
 
 Template.error_mode = process.env['LIQUID_PARSER_MODE'] || 'strict';
 
@@ -27,7 +27,7 @@ const render_strict = async (input, assigns, options) => {
 const assert_raises = async (ErrorClass, callback) => {
   try {
     await callback();
-    // throw new Error(`Expected a "${ErrorClass}" to be thrown`);
+    throw new Error('Expected an error to be thrown');
   } catch (err) {
     if (ErrorClass instanceof RegExp) {
       assert(ErrorClass.test(err.message));
@@ -45,9 +45,23 @@ const assert_match = (regex, string, message) => {
   assert(regex.test(string), message);
 };
 
-const assert_template_result = async (expected, input, assigns = {}, message = null) => {
+const assert_template_result = async (expected, input, assigns = {}, options, message, onRender) => {
+  if (!utils.isPlainObject(options)) {
+    onRender = message;
+    message = options;
+    options = {};
+  }
+
+  if (typeof message === 'function') {
+    onRender = message;
+    message = undefined;
+  }
+
+  if (typeof onRender !== 'function') onRender = v => v;
   const template = Template.parse(input, { line_numbers: true });
-  assert.equal(expected, await template.render_strict(assigns), message);
+  const opts = { strict_filters: true, strict_variables: false, ...options };
+
+  assert.equal(expected, await onRender(await template.render_strict(assigns, opts)), message);
 };
 
 const assert_template_result_matches = async (expected, input, assigns = {}, message = null) => {
@@ -119,6 +133,7 @@ const with_error_mode = async (mode, callback) => {
     await callback();
   } catch (err) {
     if (process.env.DEBUG) console.error(err);
+    return Promise.reject(err);
   } finally {
     Template.error_mode = old_mode;
   }
@@ -153,7 +168,7 @@ class ThingWithToLiquid {
 class IntegerDrop extends Dry.Drop {
   constructor(value) {
     super();
-    this.value = Dry.utils.toInteger(value);
+    this.value = utils.toInteger(value);
   }
 
   equals(value) {
