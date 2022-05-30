@@ -33,19 +33,19 @@ const render = (expected, input, context) => {
 
 describe('assign_test', () => {
   describe('conditionally_assigned_variables', () => {
-    it.skip('test_if', async () => {
+    it('test_if', async () => {
       const input = '{% assign linkpost = true if post["external-url"] %}{{ linkpost }}';
       await assert_template_result('true', input, { post: { 'external-url': '...' } });
       await assert_template_result('', input, { post: { 'external-url': false } });
     });
 
-    it.skip('test_unless', async () => {
+    it('test_unless', async () => {
       const input = '{% assign comments = true unless post.comments == false %}{{ comments }}';
       await assert_template_result('', input, { post: { comments: false } });
       await assert_template_result('true', input, { post: { comments: true } });
     });
 
-    it.skip('test_ternary', async () => {
+    it('test_ternary', async () => {
       const input = '{% assign url = (post ? post.url : page.url) %}text:{{ url }}';
       await assert_template_result('text:true', input, { post: { url: 'true' } });
       await assert_template_result('text:page', input, { page: { url: 'page' } });

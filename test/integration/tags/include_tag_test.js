@@ -193,7 +193,9 @@ describe('include_tag_test', () => {
 
   it('test_custom_include_tag', async () => {
     const original_tag = Dry.Template.tags.get('include');
+
     Dry.Template.tags.set('include', CustomInclude);
+
     try {
       assert.equal('custom_foo', await Template.parse("{% include 'custom_foo' %}").render_strict());
     } catch (err) {

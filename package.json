@@ -36,7 +36,6 @@
   "devDependencies": {
     "@babel/eslint-parser": "^7.14.4",
     "@babel/eslint-plugin": "^7.13.16",
-    "@babel/parser": "^7.14.7",
     "@folder/readdir": "^3.1.0",
     "gulp-format-md": "^2.0.0",
     "handlebars": "^4.7.7",

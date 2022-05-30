@@ -1,5 +1,6 @@
 'use strict';
 
+// const { unstyle } = require('ansi-colors');
 const assert = require('assert').strict;
 const { assert_raises, ErrorDrop, with_error_mode } = require('../test_helpers');
 const Dry = require('../..');
@@ -116,7 +117,7 @@ describe('error_handling_test', () => {
     assert.match(err.message, /Dry syntax error \(line 4\)/);
   });
 
-  it.skip('test_parsing_warn_with_line_numbers_adds_numbers_to_lexer_errors', () => {
+  it('test_parsing_warn_with_line_numbers_adds_numbers_to_lexer_errors', () => {
     const template = Dry.Template.parse(`
         foobar
 
@@ -126,14 +127,15 @@ describe('error_handling_test', () => {
             `,
     {
       error_mode: 'warn',
+      eager_parse_tags: true,
       line_numbers: true
     });
 
-    assert.deepEqual(['Dry syntax error (line 4): Unexpected character = in "1 =! 2"'],
+    assert.deepEqual(['Dry syntax error (line 4): Unexpected character ! in "1 =! 2"'],
       template.warnings.map(e => e.message));
   });
 
-  it.skip('test_parsing_strict_with_line_numbers_adds_numbers_to_lexer_errors', async () => {
+  it('test_parsing_strict_with_line_numbers_adds_numbers_to_lexer_errors', async () => {
     const err = await assert_raises(Dry.SyntaxError, () => {
       Dry.Template.parse(`
           foobar
@@ -144,11 +146,12 @@ describe('error_handling_test', () => {
                 `,
       {
         error_mode: 'strict',
+        eager_parse_tags: true,
         line_numbers: true
       });
     });
 
-    assert.equal('Dry syntax error (line 4): Unexpected character = in "1 =! 2"', err.message);
+    assert.equal('Dry syntax error (line 4): Unexpected character ! in "1 =! 2"', err.message);
   });
 
   it('test_syntax_errors_in_nested_blocks_have_correct_line_number', async () => {
@@ -168,37 +171,38 @@ describe('error_handling_test', () => {
     assert.equal("Dry syntax error (line 5): Unknown tag 'foo'", err.message);
   });
 
-  it.skip('test_strict_error_messages', async () => {
+  it('test_strict_error_messages', async () => {
     let err = await assert_raises(Dry.SyntaxError, () => {
-      Dry.Template.parse(' {% if 1 =! 2 %}ok{% endif %} ', { error_mode: 'strict' });
+      Dry.Template.parse(' {% if 1 =! 2 %}ok{% endif %} ', { error_mode: 'strict', eager_parse_tags: true });
     });
 
-    assert.equal('Dry syntax error: Unexpected character = in "1 =! 2"', err.message);
+    assert.equal('Dry syntax error (line 1): Unexpected character ! in "1 =! 2"', err.message);
 
     err = await assert_raises(Dry.SyntaxError, () => {
       Dry.Template.parse('{{%%%}}', { error_mode: 'strict' });
     });
 
-    assert.equal('Dry syntax error: Unexpected character % in "{{%%%}}"', err.message);
+    assert.equal('Dry syntax error (line 1): "%%%" is not a valid expression in "{{%%%}}"', err.message);
   });
 
-  it.skip('test_warnings', async () => {
-    const template = Dry.Template.parse('{% if ~~~ %}{{%%%}}{% else %}{{ hello. }}{% endif %}', { error_mode: 'warn' });
+  it('test_warnings', async () => {
+    const template = Dry.Template.parse('{% if ~~~ %}{{%%%}}{% else %}{{ hello. }}{% endif %}', { error_mode: 'warn', eager_parse_tags: true });
 
     assert.equal(3, template.warnings.length);
-    assert.equal('Unexpected character ~ in "~~~"', template.warnings[0].toString(false));
-    assert.equal('Unexpected character % in "{{%%%}}"', template.warnings[1].toString(false));
-    assert.equal('Expected id but found end_of_string in "{{ hello. }}"', template.warnings[2].toString(false));
+    assert.equal('"%%%" is not a valid expression in "{{%%%}}"', template.warnings[0].toString(false));
+    assert.equal('Expected id but found end_of_string in "{{ hello. }}"', template.warnings[1].toString(false));
+    assert.equal('"~~~" is not a valid expression in "~~~"', template.warnings[2].toString(false));
     assert.equal('', await template.render());
   });
 
-  it.skip('test_warning_line_numbers', async () => {
-    const template = Dry.Template.parse('{% if ~~~ %}\n{{%%%}}{% else %}\n{{ hello. }}{% endif %}', { error_mode: 'warn', line_numbers: true });
-    assert.equal('Dry syntax error (line 1): Unexpected character ~ in "~~~"', template.warnings[0].message);
-    assert.equal('Dry syntax error (line 2): Unexpected character % in "{{%%%}}"', template.warnings[1].message);
-    assert.equal('Dry syntax error (line 3): Expected id but found end_of_string in "{{ hello. }}"', template.warnings[2].message);
+  it('test_warning_line_numbers', async () => {
+    const template = Dry.Template.parse('{% if ~~~ %}\n{{%%%}}{% else %}\n{{ hello. }}{% endif %}', { error_mode: 'warn', line_numbers: true, eager_parse_tags: true });
+    const warnings = template.warnings.map(w => w.message).sort();
+    assert.equal('Dry syntax error (line 1): "~~~" is not a valid expression in "~~~"', warnings[0]);
+    assert.equal('Dry syntax error (line 2): "%%%" is not a valid expression in "{{%%%}}"', warnings[1]);
+    assert.equal('Dry syntax error (line 3): Expected id but found end_of_string in "{{ hello. }}"', warnings[2]);
     assert.equal(3, template.warnings.length);
-    assert.deepEqual([1, 2, 3], template.warnings.map(e => e.line_number));
+    assert.deepEqual([1, 2, 3], template.warnings.map(e => e.line_number).sort());
   });
 
   // Dry should not catch Exceptions that are not subclasses of Dry.StandardError,
@@ -210,13 +214,15 @@ describe('error_handling_test', () => {
     });
   });
 
-  it.skip('test_default_exception_renderer_with_internal_error', async () => {
-    const template = Dry.Template.parse('This is a runtime error: {{ errors.runtime_error }}', { line_numbers: true });
+  it('test_default_exception_renderer_with_internal_error', async () => {
+    const template = Dry.Template.parse('This is a runtime error: {{ errors.runtime_error }}', {
+      line_numbers: true,
+      eager_parse_tags: true
+    });
 
     const output = await template.render({ 'errors': new ErrorDrop() });
-
-    assert.equal('This is a runtime error: Dry error (line 1): internal', output);
-    assert.deepEqual([Dry.InternalError], template.errors.map(e => e.constructor));
+    assert.equal('This is a runtime error: Dry error (line 1): runtime error', output);
+    assert.deepEqual([Dry.Error], template.errors.map(e => e.constructor));
   });
 
   // it('test_setting_default_exception_renderer', async () => {
@@ -238,9 +244,10 @@ describe('error_handling_test', () => {
   // //   Dry.Template.default_exception_renderer = old_exception_renderer if (old_exception_renderer) {
   // });
 
-  it.skip('test_exception_renderer_exposing_non_liquid_error', async () => {
+  it('test_exception_renderer_exposing_non_liquid_error', async () => {
     const template = Dry.Template.parse('This is a runtime error: {{ errors.runtime_error }}', {
-      line_numbers: true
+      line_numbers: true,
+      eager_parse_tags: true
     });
 
     const exceptions = [];
@@ -251,10 +258,10 @@ describe('error_handling_test', () => {
 
     const output = await template.render({ 'errors': new ErrorDrop() }, { exception_renderer: handler });
 
-    assert.equal('This is a runtime error: runtime error', output);
-    assert.deepEqual([Dry.InternalError], exceptions.map(e => e.constructor));
+    assert.equal('This is a runtime error: Dry error (line 1): runtime error', output);
+    assert.deepEqual([Dry.Error], exceptions.map(e => e.constructor));
     assert.deepEqual(exceptions, template.errors);
-    assert.equal('#<RuntimeError: runtime error>', exceptions[0].message);
+    assert.equal('Dry error: runtime error', exceptions[0].message);
   });
 
   class TestFileSystem {
@@ -263,7 +270,7 @@ describe('error_handling_test', () => {
     }
   }
 
-  it.skip('test_included_template_name_with_line_numbers', async () => {
+  it('test_included_template_name_with_line_numbers', async () => {
     const old_file_system = Dry.Template.file_system;
     let template;
     let page;
@@ -285,7 +292,7 @@ describe('error_handling_test', () => {
       .parse("{% assign x = 0 %}{% if 1 < '2' %}not blank{% assign x = 3 %}{% endif %}{{ x }}")
       .render();
 
-    assert.equal('Dry error: comparison of Integer with String failed0', output);
+    assert.equal('Dry error: Invalid comparison: number to string0', output);
 
     output = await Dry.Template
       .parse("{% assign x = 0 %}{% if 1 < '2' %}{% assign x = 3 %}{% endif %}{{ x }}")

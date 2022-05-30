@@ -13,10 +13,8 @@
   "parser": "@babel/eslint-parser",
   "parserOptions": {
     "sourceType": "script",
-    "ecmaVersion": 12,
-    "babelOptions": {
-      "configFile": "./.babelrc.json"
-    }
+    "requireConfigFile": false,
+    "ecmaVersion": 12
   },
 
   "rules": {

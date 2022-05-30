@@ -1,5 +1,6 @@
 'use strict';
 
+const { unstyle } = require('ansi-colors');
 const assert = require('assert').strict;
 const { with_error_mode } = require('../test_helpers');
 const Dry = require('../..');
@@ -320,9 +321,9 @@ describe('template tests', () => {
     assert(t.errors[0] instanceof Dry.UndefinedVariable);
     assert.equal('Dry error: undefined variable y', t.errors[0].message);
     assert(t.errors[1] instanceof Dry.UndefinedVariable);
-    assert.equal('Dry error: undefined variable b', t.errors[1].message);
+    assert(unstyle(t.errors[1].message).includes('Dry error: undefined variable: z.b'));
     assert(t.errors[2] instanceof Dry.UndefinedVariable);
-    assert.equal('Dry error: undefined variable d', t.errors[2].message);
+    assert(unstyle(t.errors[2].message).includes('Dry error: undefined variable: z.c.d'));
 
     assert.equal('33  32  ', result);
   });
