@@ -27,9 +27,6 @@ const assign_score_of = async obj => {
 };
 
 const trim = s => s.replace(/\s+/g, '');
-const render = (expected, input, context) => {
-  return Dry.Template.render(input, context);
-};
 
 describe('assign_test', () => {
   describe('conditionally_assigned_variables', () => {
@@ -83,19 +80,28 @@ describe('assign_test', () => {
   });
 
   describe('operators', () => {
-    it.skip('test_or', async () => {
+    it('test_or', async () => {
+      const input = '{% assign author = post.author or page.author or site.author %}{{ author }}';
+      await assert_template_result('doowb', input, { site: { author: 'doowb' } });
+    });
+
+    it('test ||', async () => {
       const input = '{% assign author = post.author || page.author || site.author %}{{ author }}';
       await assert_template_result('doowb', input, { site: { author: 'doowb' } });
     });
 
-    it.skip('test_logical_or', async () => {
-      const assigns = { site: { name: 'brandscale' }, bar: 'baz' };
-      console.log([await render('brandscale', '{% assign foo ||= site.name %}{{ foo }}', assigns)]);
-      console.log([await render('baz', '{% assign bar ||= site.name %}{{ bar }}', assigns)]);
+    it('test_logical_or', async () => {
+      const assigns = { foo: 'bar', site: { name: 'brandscale' }, bar: 'baz' };
+      await assert_template_result('bar', '{% assign foo ||= site.name %}{{ foo }}', assigns);
+      await assert_template_result('baz', '{% assign bar ||= site.name %}{{ bar }}', assigns);
     });
 
-    it.skip('test_addition_assignment', async () => {
-      console.log([await render(' →', '{% assign text += " →" if post %}{{ text }}', { post: true })]);
+    it('test_conditional_assignment', async () => {
+      await assert_template_result(' →', '{% assign text = " →" if post %}{{ text }}', { post: true });
+    });
+
+    it('test_additional_assignment', async () => {
+      await assert_template_result('blog →', '{% assign text += " →" if post %}{{ text }}', { post: true, text: 'blog' });
     });
 
     it('test_advanced_assign_features', async () => {

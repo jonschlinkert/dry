@@ -76,18 +76,18 @@ describe('with_tag_test', () => {
     return assert_template_result('42', template.trim(), { data: {} }, replace);
   });
 
-  it.skip('test_with_object_defined_inline', () => {
+  it('test_with_object_defined_inline', () => {
     const template = `
-      {% with { foo: 42 } %}
+      {% with { "foo": 42 } %}
         {{ foo }} {# foo is 42 here #}
       {% endwith %}
     `;
     return assert_template_result('42', template.trim(), { data: {} }, trim);
   });
 
-  it.skip('test_works_with_value_from_assign_in_parent_scope', () => {
+  it('test_works_with_value_from_assign_in_parent_scope', () => {
     const template = `
-      {% assign vars = { foo: 42 } %}
+      {% assign vars = { "foo": 42 } %}
       {% with vars %}
         {{ foo }}
       {% endwith %}
@@ -165,7 +165,7 @@ describe('with_tag_test', () => {
     await assert_template_result('one|onetwo|onetwothree|only=...|not_only=three', template.trim(), { ctx: {} }, replace);
   });
 
-  it.skip('test_dot_should_expose_this_context', async () => {
+  it('test_dot_should_expose_this_context', async () => {
     const options = { allow_this_variable: true };
     const template = `
       {% assign name = 'one' %}
@@ -180,7 +180,7 @@ describe('with_tag_test', () => {
     await assert_template_result('one', template.trim(), { ctx: {} }, options, replace);
   });
 
-  it.skip('test_dot_should_expose_this_context', async () => {
+  it('test_dot_should_expose_this_context', async () => {
     const options = { allow_this_variable: true };
     const template = `
       {% assign name = 'one' %}
@@ -192,23 +192,26 @@ describe('with_tag_test', () => {
     await assert_template_result('onetwo', template.trim(), { ctx: {} }, options, replace);
   });
 
-  // it.only('test_dot_should_expose_this_context', async () => {
-  //   const options = { allow_this_variable: true };
-  //   const template = `
-  //     {% assign name = 'one' %}
-  //     {% with . %}
-  //       1:{{ name }}
-  //       {% assign name = 'two' %}
-  //       {% with .. %}
-  //         |2:{{ name }}
-  //         {% with .. %}
-  //           |3:{{ name }}
-  //         {% endwith %}
-  //       {% endwith %}
-  //     {% endwith %}
-  //   `;
-  //   await assert_template_result('two', template.trim(), { ctx: {} }, options, replace);
-  // });
+  it.skip('test_dot_should_expose_this_context', async () => {
+    const options = { allow_this_variable: true };
+    const template = `
+      {% assign name = 'one' %}
+      {% with . %}
+        1:{{ name }}
+        {% assign name = 'two' %}
+        {% with .. %}
+        |2:{{ name }}
+        |2:{{ ../name }}
+          {% assign name = 'three' %}
+          {% with .. %}
+            |3:{{ name }}
+            |3:{{ ../name }}
+          {% endwith %}
+        {% endwith %}
+      {% endwith %}
+    `;
+    await assert_template_result('1:one|2:two|2:one|3:three|3:two', template.trim(), { ctx: {} }, options, replace);
+  });
 
   it('test_dot_should_expose_this_context', async () => {
     const options = { allow_this_variable: true };

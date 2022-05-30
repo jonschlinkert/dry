@@ -86,9 +86,9 @@ describe('layout_tag_test', () => {
     Template.file_system = new StubFileSystem(templates);
     Template.layouts = new StubFileSystem({ base: 'before {% content %} after' });
 
-    console.log(await Template.render(fixture, { name: 'base' }));
+    // console.log(await Template.render(fixture, { name: 'base' }));
 
-    // return assert_template_result(expected, fixture, { name: 'base' });
+    return assert_template_result(expected, fixture, { name: 'base' });
   });
 
   it('test_nested_layouts', async () => {
