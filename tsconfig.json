@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "checkJs": false,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "moduleResolution": "node",
+    "noEmit": true,
+    "forceConsistentCasingInFileNames": true,
+    "lib": [
+      "ES2022"
+    ],
+    "resolveJsonModule": true,
+    "strict": true,
+    "target": "ES2022",
+    "types": [
+      "node"
+    ]
+  },
+  "ts-node": {
+    "transpileOnly": true
+  }
+}

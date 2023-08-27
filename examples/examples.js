@@ -1,5 +1,4 @@
 /* eslint-disable no-unused-vars */
-'use strict';
 
 const Lexer = require('../lib/Lexer');
 const Parser = require('../lib/Parser');
@@ -154,7 +153,7 @@ const output = template.render({
     ['f', 'f', 'f'],
     ['g', 'g', 'g']
   ],
-  outer: [ [1, 1, 1], [1, 1, 1] ],
+  outer: [[1, 1, 1], [1, 1, 1]],
   test: false
 });
 

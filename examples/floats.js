@@ -1,5 +1,4 @@
 /* eslint-disable no-unused-vars */
-'use strict';
 
 const Dry = require('..');
 const { Template } = Dry;

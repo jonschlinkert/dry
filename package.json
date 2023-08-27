@@ -23,6 +23,8 @@
     "cover": "nyc --reporter=text --reporter=html npm run test"
   },
   "dependencies": {
+    "@types/jest": "^29.5.4",
+    "@types/node": "^20.5.6",
     "ansi-colors": "^4.1.1",
     "expand-value": "^1.0.0",
     "export-files": "^3.0.2",
@@ -37,6 +39,8 @@
     "@babel/eslint-parser": "^7.14.4",
     "@babel/eslint-plugin": "^7.13.16",
     "@folder/readdir": "^3.1.0",
+    "@typescript-eslint/eslint-plugin": "^6.4.1",
+    "@typescript-eslint/parser": "^6.4.1",
     "gulp-format-md": "^2.0.0",
     "handlebars": "^4.7.7",
     "mocha": "^8.4.0",

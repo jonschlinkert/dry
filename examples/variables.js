@@ -1,4 +1,3 @@
-'use strict';
 
 const { render_strict, Template } = require('..');
 const pause = (v, ms = 1000) => new Promise(res => setTimeout(() => res(v), ms));
