@@ -1,5 +1,4 @@
 /* eslint-disable no-case-declarations */
-'use strict';
 
 const Dry = require('../../..');
 

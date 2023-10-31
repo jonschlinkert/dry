@@ -1,4 +1,3 @@
-'use strict';
 
 const Dry = require('../..');
 const pkg = require('../../package');
@@ -102,7 +101,8 @@ const locals = {
 (async () => {
   for (const [key, source] of Object.entries(fixtures)) {
     process.stdout.write(`  --- ${key}`);
-    const output = await Dry.Template.render(source, locals) || '';
+    // console.log({ source, locals });
+    const output = await Dry.Template.render_strict(source, locals) || '';
     process.stdout.write(output);
     process.stdout.write('\n  ---\n');
     console.log();

@@ -35,6 +35,21 @@ describe('layout_tag_test', () => {
     assert.equal(actual, expected);
   });
 
+  it('test_literal_layout_name', async () => {
+    const fixture = '{% layout "bar" %}This is content';
+
+    Template.layouts = new StubFileSystem({
+      base: 'foo {% content %} foo',
+      bar: 'bar {% content %} bar',
+      baz: 'baz {% content %} baz'
+    });
+
+    const expected = 'bar This is content bar';
+    const template = Template.parse(fixture);
+    const actual = await template.render_strict();
+    assert.equal(actual, expected);
+  });
+
   it('test_variable_layout_name', async () => {
     const fixture = '{% layout name %}This is content';
 
@@ -48,30 +63,30 @@ describe('layout_tag_test', () => {
     assert.equal(actual, expected);
   });
 
-  it.skip('test_layout_with_extends_with_multiple_blocks_with_modes', async () => {
+  it('test_layout_with_extends_with_multiple_blocks_with_modes', async () => {
     const templates = {
       default: `
       <!DOCTYPE html>
       <html lang="en">
         <head>
-          <title>{% block head %}Default Head{% endblock %}</title>
+          <title>{% block "head" %}Default Head{% endblock %}</title>
         </head>
         <body>
-          {%- block content -%}{%- endblock %}
-          {% block body %}Default Content{% endblock %}
-          {% block footer %}Default footer{% endblock %}
+          {%- block "content" -%}{%- endblock %}
+          {% block "body" %}Default Content{% endblock %}
+          {% block "footer" %}Default footer{% endblock %}
         </body>
       </html>`
     };
 
-    const fixture = `{%- layout name -%}{% extends "default" %}
-      {% block head mode="append" %} | The title{% endblock %}
-      {% block body mode="prepend" %}The body content | {% endblock %}
-      {% block footer mode="replace" %}The footer{% endblock %}
-      This is content
+    const fixture = `{%- layout name -%} {% extends "default" %}
+      {% block "head" mode="append" %} | The title{% endblock %}
+      {% block "body" mode="prepend" %}The body content | {% endblock %}
+      {% block "footer" mode="replace" %}The footer{% endblock %}
+      This content should not be rendered.
     `;
 
-    const expected = `
+    const expected = `before .
       <!DOCTYPE html>
       <html lang="en">
         <head>
@@ -81,13 +96,17 @@ describe('layout_tag_test', () => {
           The body content | Default Content
           The footer
         </body>
-      </html>`;
+      </html>. after`;
+
+    Template.layouts = new StubFileSystem({
+      base: 'before .{% content %}. after'
+    });
 
     Template.file_system = new StubFileSystem(templates);
-    Template.layouts = new StubFileSystem({ base: 'before {% content %} after' });
 
-    // console.log(await Template.render(fixture, { name: 'base' }));
-
+    const template = Template.parse(fixture, { line_numbers: true });
+    const opts = { strict_filters: true, strict_variables: false };
+    const actual = await template.render({ name: 'base' }, opts)
     return assert_template_result(expected, fixture, { name: 'base' });
   });
 
@@ -112,7 +131,7 @@ describe('layout_tag_test', () => {
     assert.equal(actual, expected);
   });
 
-  it('test_should_throw_on_exponentially_recursive_layouts', async () => {
+  it('test_should_throw_on_exponent_recursive_layouts', async () => {
     const fixture = '{%- layout "a" -%} This is content';
 
     Template.layouts = new StubFileSystem({
@@ -124,7 +143,7 @@ describe('layout_tag_test', () => {
     return assert.rejects(() => {
       return Template.render_strict(fixture);
     }, err => {
-      return /Dry error: Exponentially recursive layout defined: "{% layout "a" %}"/.test(err.message);
+      return /Dry error(.*?): Exponentially recursive layout defined: "/.test(err.message);
     });
   });
 });

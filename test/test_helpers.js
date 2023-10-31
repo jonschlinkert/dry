@@ -60,8 +60,10 @@ const assert_template_result = async (expected, input, assigns = {}, options, me
   if (typeof onRender !== 'function') onRender = v => v;
   const template = Template.parse(input, { line_numbers: true });
   const opts = { strict_filters: true, strict_variables: false, ...options };
+  const output = await onRender(await template.render_strict(assigns, opts));
 
-  assert.equal(expected, await onRender(await template.render_strict(assigns, opts)), message);
+  // console.log({ expected, output });
+  assert.equal(expected, output, message);
 };
 
 const assert_template_result_matches = async (expected, input, assigns = {}, message = null) => {
@@ -238,14 +240,14 @@ class ErrorDrop extends Dry.Drop {
  */
 
 class StubFileSystem {
-  constructor(values) {
+  constructor(files) {
     this.file_read_count = 0;
-    this.values = values;
+    this.files = files;
   }
 
   read_template_file(template_path) {
     this.file_read_count++;
-    return this.values[template_path];
+    return this.files[template_path];
   }
 }
 

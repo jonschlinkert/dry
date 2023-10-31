@@ -1,4 +1,3 @@
-'use strict';
 
 const Dry = require('../..');
 
@@ -18,4 +17,4 @@ This should not render:{{ apply }}
 `;
 
 const template = Dry.Template.parse(source);
-console.log(template.render());
+template.render({}).then(console.log).catch(console.error);

@@ -1,11 +1,11 @@
-'use strict';
 
 const Dry = require('../..');
 const { Remarkable } = require('remarkable');
 
 class Markdown extends Dry.Tag {
-  render(context) {
-    const value = context.evaluate(Dry.Expression.parse(this.match[3]));
+  async render(context) {
+    const node = Dry.Expression.parse(this.match[3]);
+    const value = await context.evaluate(node);
     const md = new Remarkable();
     return md.render(value);
   }
@@ -24,7 +24,7 @@ Let's see if this works.
 
   console.log({
     expected: '<doowb>',
-    actual: await Dry.Template.render('foo {% markdown value %} bar', { value })
+    actual: await Dry.Template.render_strict('foo {% markdown value %} bar', { value })
   });
 
 })();

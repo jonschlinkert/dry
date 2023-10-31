@@ -1,4 +1,3 @@
-'use strict';
 
 const Dry = require('../..');
 
@@ -30,21 +29,20 @@ const files = {
 };
 
 const source = `
-{% extends "base.html" %}
-
-{% block 'title' %}{{ page.title }}{% endblock %}
-{% block 'head' %}
-  {{ super() }}
-  <style type="text/css">
-    .important { color: #336699; }
-  </style>
-{% endblock %}
-{% block 'content' %}
-  <h1>Index</h1>
-  <p class="important">
-    Welcome on my awesome homepage.
-  </p>
-{% endblock %}
+  {% extends "base.html" %}
+  {% block 'title' %}{{ page.title }}{% endblock %}
+  {% block 'head' %}
+    {{ super() }}
+    <style type="text/css">
+      .important { color: #336699; }
+    </style>
+  {% endblock %}
+  {% block 'content' %}
+    <h1>Index</h1>
+    <p class="important">
+      Welcome on my awesome homepage.
+    </p>
+  {% endblock %}
 `;
 
 const layouts = Dry.Template.file_system = new FileSystem(files);

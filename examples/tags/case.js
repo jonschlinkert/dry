@@ -1,4 +1,3 @@
-'use strict';
 
 const Dry = require('../..');
 
@@ -14,5 +13,11 @@ const source = `{% case shipping_method.title %}
 {% endcase %}`;
 
 const template = Dry.Template.parse(source);
-console.log(template.render({ shipping_method: { title: 'Domestic Shipping' } }));
-console.log(template.render({ shipping_method: { title: 'Local Pick-Up' } }));
+
+template.render_strict({ shipping_method: { title: 'Domestic Shipping' } })
+  .then(console.log)
+  .catch(console.error);
+
+template.render_strict({ shipping_method: { title: 'Local Pick-Up' } })
+  .then(console.log)
+  .catch(console.error);

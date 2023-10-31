@@ -1,4 +1,3 @@
-'use strict';
 
 const Dry = require('../..');
 
@@ -48,8 +47,8 @@ const source = `
 `;
 
 const layouts = Dry.Template.layouts = new FileSystem(files);
-
 const template = Dry.Template.parse(source);
-template.render({}, { registers: { layouts } })
+
+template.render_strict({}, { registers: { layouts } })
   .then(console.log)
   .catch(console.error);

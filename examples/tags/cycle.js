@@ -1,4 +1,3 @@
-'use strict';
 
 const Dry = require('../..');
 const { Template } = Dry;
@@ -15,4 +14,5 @@ const source = `
 `;
 
 const template = Template.parse(source, { path: 'source.html' });
-console.log(template.render({}));
+template.render({}).then(console.log).catch(console.error);
+

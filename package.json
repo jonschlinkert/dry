@@ -30,6 +30,7 @@
     "export-files": "^3.0.2",
     "fill-range": "^7.0.1",
     "get-value": "^3.0.1",
+    "hash-sum": "^2.0.0",
     "is-number": "^7.0.0",
     "kind-of": "^6.0.3",
     "set-value": "^4.0.0",

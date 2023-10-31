@@ -1,4 +1,3 @@
-'use strict';
 
 const Dry = require('../..');
 
@@ -14,9 +13,13 @@ const source = `
   {%- capture title %}★ {{ post.title }}{% endcapture -%}
 {% endif -%}
 {{ title }}
-{% if linkpost %}→{% else %}★{% endif %} {{ post.title }}
+{% if linkpost %}→{% else %}★{% endif %} [{{ post.title }}](#{{ post.id }})
 `;
 
 const template = Dry.Template.parse(source);
 const locals = { line_item: { grams: 19000, weight: 1001 }, customer_address: { city: 'Ottawa' } };
-console.log(template.render({ linkpost: false, post: { title: 'My Blog' } }));
+
+template.render_strict({ linkpost: false, post: { title: 'My Blog', id: 'abc' } })
+  .then(console.log)
+  .catch(console.error);
+
