@@ -1,12 +1,10 @@
-'use strict';
 
 const Dry = require('../..');
 const { assert_template_result, with_custom_tag } = require('../test_helpers');
 
 class FoobarTag extends Dry.Tag {
   render(_context, output = '') {
-    output += ' ';
-    return output;
+    return output + ' ';
   }
 }
 

@@ -112,29 +112,31 @@ Template.register_filter({
 });
 
 const fixture = `
-{% for inner in outer %}
-  {% for k in inner -%}
-    {{ forloop.parentloop.index0 }}
-  {%- endfor %}
-{% endfor %}
+{%- for inner in outer %}
+  {%- if forloop.last %}-{% endif -%}
+  {%- for k in inner -%}
+    {{ forloop.parentloop.index0 | add: 2 }}
+  {%- endfor -%}
+{% endfor -%}
 `;
 
 const caseTag = `
-{% assign handle = 1 %}
-{% case handle %}
-  {% when "cake" %}
+{%- assign handle = 1 %}
+{%- case handle %}
+  {%- when "cake" -%}
     This is a cake
-  {% when "cookie", "biscuit" %}
+  {%- when "cookie", "biscuit" -%}
     This is a cookie
-  {% when (1..9) %}
+  {%- when (1..9) -%}
     This is a number
-  {% else %}
+  {%- else -%}
     This is not a cake nor a cookie
-{% endfoo %}
+{% endcase -%}
 `;
 
 const template = new Template();
-template.parse(caseTag);
+// template.parse(caseTag);
+template.parse(fixture);
 // console.log(template.root.ast.value.toString() === input2b);
 // const { root } = template;
 // console.log(root);
@@ -142,7 +144,7 @@ template.parse(caseTag);
 // console.log(root.nodes[1].nodes);
 // console.log(root.nodes[1].nodes[2].nodes[2].nodes[2].nodes[2]);
 
-const output = template.render({
+template.render({
   // letters: ['a', 'b', 'c', 'd', 'e', 'f', 'g']
   letters: [
     ['a', 'a', 'a'],
@@ -155,9 +157,9 @@ const output = template.render({
   ],
   outer: [[1, 1, 1], [1, 1, 1]],
   test: false
+}).then(output => {
+  console.log({ output });
 });
-
-console.log(output);
 
 // const rangeRegex = /^\s*\(\s*(?:(\S+)\s*\.\.)\s*(\S+)\s*\)\s*/;
 // console.log(rangeRegex.exec('(1.2.a.b)'));

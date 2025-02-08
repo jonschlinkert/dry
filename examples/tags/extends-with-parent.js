@@ -46,8 +46,8 @@ const source = `
 `;
 
 const layouts = Dry.Template.file_system = new FileSystem(files);
-
+console.log(layouts);
 const template = Dry.Template.parse(source);
 template.render({ page: { title: 'Home' } }, { registers: { layouts } })
-  .then(console.log)
+  .then(v => console.log({ v }))
   .catch(console.error);
