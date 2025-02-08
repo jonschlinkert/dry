@@ -637,7 +637,8 @@ describe('standard_filters_test', () => {
   });
 
   it('test_divided_by_errors', async () => {
-    assert.equal('Dry error: cannot divide by zero', await Template.parse('{{ 5 | divided_by:0 }}').render());
+    assert.equal('Dry error (line 1): divided_by - cannot divide by zero', await Template.parse('{{ 5 | divided_by:0 }}').render());
+
     await assert.rejects(async () => assert_template_result('', '{{ 5 | divided_by:0 }}'), Dry.ZeroDivisionError);
     await assert.rejects(async () => assert_template_result('4', '{{ 1 | modulo: 0 }}'), Dry.ZeroDivisionError);
   });
