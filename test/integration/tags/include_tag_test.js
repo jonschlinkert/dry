@@ -1,6 +1,5 @@
-'use strict';
 
-const assert = require('assert').strict;
+const assert = require('node:assert/strict');
 const { assert_raises, assert_template_result, with_error_mode } = require('../../test_helpers');
 const Dry = require('../../..');
 const { Template, utils: { r } } = Dry;
@@ -144,7 +143,7 @@ describe('include_tag_test', () => {
       "{% include 'nested_product_template' with product %}", { 'product': { 'title': 'Draft 151cm' } });
 
     await assert_template_result('Product: Draft 151cm details Product: Element 155cm details ',
-      "{% include 'nested_product_template' for products %}", { 'products': [{ 'title': 'Draft 151cm' }, { 'title': 'Element 155cm' } ] });
+      "{% include 'nested_product_template' for products %}", { 'products': [{ 'title': 'Draft 151cm' }, { 'title': 'Element 155cm' }] });
   });
 
   it('test_recursively_included_template_does_not_produce_endless_loop', async () => {
@@ -172,18 +171,18 @@ describe('include_tag_test', () => {
   it('test_include_tag_caches_second_read_of_same_partial', async () => {
     const file_system = new CountingFileSystem();
     assert.equal('from CountingFileSystemfrom CountingFileSystem',
-      await Template.parse("{% include 'pick_a_source' %}{% include 'pick_a_source' %}").render_strict({}, { registers: { file_system: file_system } }));
+      await Template.parse("{% include 'pick_a_source' %}{% include 'pick_a_source' %}").render_strict({}, { registers: { file_system } }));
     assert.equal(1, file_system.count);
   });
 
   it('test_include_tag_doesnt_cache_partials_across_renders', async () => {
     const file_system = new CountingFileSystem();
     assert.equal('from CountingFileSystem',
-      await Template.parse("{% include 'pick_a_source' %}").render_strict({}, { registers: { file_system: file_system } }));
+      await Template.parse("{% include 'pick_a_source' %}").render_strict({}, { registers: { file_system } }));
     assert.equal(1, file_system.count);
 
     assert.equal('from CountingFileSystem',
-      await Template.parse("{% include 'pick_a_source' %}").render_strict({}, { registers: { file_system: file_system } }));
+      await Template.parse("{% include 'pick_a_source' %}").render_strict({}, { registers: { file_system } }));
     assert.equal(2, file_system.count);
   });
 

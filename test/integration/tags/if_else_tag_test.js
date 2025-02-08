@@ -1,4 +1,3 @@
-'use strict';
 
 const { assert_raises, assert_template_result } = require('../../test_helpers');
 const Dry = require('../../..');
@@ -215,7 +214,7 @@ describe('if_else_tag_test', () => {
 
     for (const [vals, expected] of tests) {
       const [a, b, c] = vals;
-      const assigns = { a: a, b: b, c: c };
+      const assigns = { a, b, c };
       await assert_template_result(expected.toString(), tpl, assigns);
     }
   });

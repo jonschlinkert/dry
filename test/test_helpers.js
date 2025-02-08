@@ -1,7 +1,6 @@
 /* eslint-disable eqeqeq, no-useless-catch */
-'use strict';
 
-const assert = require('assert').strict;
+const assert = require('node:assert/strict');
 const path = require('path');
 const Dry = require('..');
 const { Template, utils } = Dry;
@@ -143,6 +142,7 @@ const with_error_mode = async (mode, callback) => {
 
 const with_custom_tag = async (tag_name, tag_class, callback) => {
   const old_tag = Template.tags.get(tag_name);
+
   try {
     Template.register_tag(tag_name, tag_class);
     await callback();

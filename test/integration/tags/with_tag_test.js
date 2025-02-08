@@ -1,4 +1,3 @@
-'use strict';
 
 const { assert_template_result } = require('../../test_helpers');
 const trim = s => s.trim();

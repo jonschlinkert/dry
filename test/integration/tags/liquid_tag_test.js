@@ -1,4 +1,3 @@
-'use strict';
 
 const Dry = require('../../..');
 const { assert_template_result, assert_match_syntax_error } = require('../../test_helpers');

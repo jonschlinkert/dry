@@ -1,7 +1,6 @@
-'use strict';
 
 require('mocha');
-const assert = require('assert').strict;
+const assert = require('node:assert/strict');
 const { with_error_mode } = require('../test_helpers');
 const Dry = require('../..');
 const { VariableLookup, Variable, State } = Dry;
@@ -49,7 +48,7 @@ describe('variable_unit_test', () => {
 
     v = create_variable('hello | textileze | paragraph');
     assert.deepEqual(new VariableLookup('hello'), v.name);
-    assert_equal_filters([['textileze', []], ['paragraph', []] ], v.filters);
+    assert_equal_filters([['textileze', []], ['paragraph', []]], v.filters);
 
     v = create_variable('hello | strftime: "%Y"');
     assert.deepEqual(new VariableLookup('hello'), v.name);
@@ -93,15 +92,15 @@ describe('variable_unit_test', () => {
   it('test_filters_without_whitespace', () => {
     let v = create_variable('hello | textileze | paragraph');
     assert.deepEqual(new VariableLookup('hello'), v.name);
-    assert_equal_filters([['textileze', []], ['paragraph', []] ], v.filters);
+    assert_equal_filters([['textileze', []], ['paragraph', []]], v.filters);
 
     v = create_variable('hello|textileze|paragraph');
     assert.deepEqual(new VariableLookup('hello'), v.name);
-    assert_equal_filters([['textileze', []], ['paragraph', []] ], v.filters);
+    assert_equal_filters([['textileze', []], ['paragraph', []]], v.filters);
 
     v = create_variable("hello|replace:'foo','bar'|textileze");
     assert.deepEqual(new VariableLookup('hello'), v.name);
-    assert_equal_filters([['replace', ['foo', 'bar']], ['textileze', []] ], v.filters);
+    assert_equal_filters([['replace', ['foo', 'bar']], ['textileze', []]], v.filters);
   });
 
   it('test_symbol', () => {

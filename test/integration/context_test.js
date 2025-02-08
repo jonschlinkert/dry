@@ -1,6 +1,5 @@
-'use strict';
 
-const assert = require('assert').strict;
+const assert = require('node:assert/strict');
 const { with_error_mode, with_global_filter } = require('../test_helpers');
 const Dry = require('../..');
 const { Context, Drop, ResourceLimits, StaticRegisters, Template } = Dry;
@@ -292,7 +291,7 @@ describe('context_test', () => {
     context['hash'] = { first: 'Hello' };
 
     assert.equal(1, await context['array.first']);
-    assert(await (context['array["first"]']) === undefined);
+    assert(await context['array["first"]'] === undefined);
     assert.equal(1, await context['array.first']);
     assert.equal('Hello', await context['hash["first"]']);
     assert.equal(undefined, await context['array["first"]']);
@@ -422,7 +421,7 @@ describe('context_test', () => {
     let count = 0;
 
     context['callcount'] = {
-      lambda: function() {
+      lambda() {
         count++;
         return String(count);
       }
@@ -436,11 +435,14 @@ describe('context_test', () => {
   it('test_lambda_in_array_is_called_once', async () => {
     let count = 0;
 
-    context['callcount'] = [0, 1,
+    context['callcount'] = [0,
+      1,
       function() {
         count++;
         return String(count);
-      }, 4, 5];
+      },
+      4,
+      5];
 
     assert.equal('1', await context['callcount[2]']);
     assert.equal('1', await context['callcount[2]']);
@@ -457,14 +459,14 @@ describe('context_test', () => {
 
   it('test_to_liquid_and_context_at_first_level', async () => {
     context['category'] = new Category('foobar');
-    assert((await context.category) instanceof CategoryDrop, 'expected an instance of CategoryDrop');
-    assert.deepEqual({ ...context }, { ...(await context['category'].context) });
+    assert(await context.category instanceof CategoryDrop, 'expected an instance of CategoryDrop');
+    assert.deepEqual({ ...context }, { ...await context['category'].context });
   });
 
   it('test_context_initialization_with_a_function_in_environment', async () => {
-    context = new Context({ environments: [ { test: c => c.poutine } ], outer_scope: { test: 'foo' } });
+    context = new Context({ environments: [{ test: c => c.poutine }], outer_scope: { test: 'foo' } });
     assert(context);
-    assert(await (context['poutine']) == null);
+    assert(await context['poutine'] == null);
   });
 
   it('test_apply_global_filter', async () => {

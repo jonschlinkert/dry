@@ -187,7 +187,7 @@ module.exports = {
     'space-infix-ops': 1,
     'space-unary-ops': [1, { words: true, nonwords: false }],
     'spaced-comment': [0, 'always', { markers: ['global', 'globals', 'eslint', 'eslint-disable', '*package', '!', ','] }],
-    'strict': 2,
+    'strict': 0,
     'switch-colon-spacing': 1,
     'symbol-description': 1,
     'template-curly-spacing': [2, 'never'],
@@ -209,8 +209,8 @@ module.exports = {
     'dist',
     'tmp',
     'temp',
-    'lib/templates',
     'support',
+    'vendor',
     'test/fixtures',
     'test/support'
   ]

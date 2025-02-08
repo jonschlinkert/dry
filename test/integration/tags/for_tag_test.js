@@ -1,6 +1,5 @@
-'use strict';
 
-const assert = require('assert').strict;
+const assert = require('node:assert/strict');
 const { ErrorDrop, assert_raises, assert_template_result, assert_usage_increment } = require('../../test_helpers');
 const Dry = require('../../..');
 const { Context, Template } = Dry;
@@ -172,7 +171,7 @@ describe('for_tag_test', () => {
   });
 
   it('test_nested_for', async () => {
-    const assigns = { array: [ [1, 2], [3, 4], [5, 6] ] };
+    const assigns = { array: [[1, 2], [3, 4], [5, 6]] };
     await assert_template_result('123456', '{%for item in array%}{%for i in item%}{{ i }}{%endfor%}{%endfor%}', assigns);
   });
 
@@ -272,7 +271,7 @@ describe('for_tag_test', () => {
     await assert_template_result(expected, markup, assigns);
 
     // tests to ensure it only breaks out of the local for loop and not all of them.
-    assigns = { array: [ [1, 2], [3, 4], [5, 6] ] };
+    assigns = { array: [[1, 2], [3, 4], [5, 6]] };
     markup = `{% for item in array %}
                {% for i in item %}
                  {% if i == 1 %}
@@ -317,7 +316,7 @@ describe('for_tag_test', () => {
     await assert_template_result(expected, markup, assigns);
 
     // tests to ensure it only continues the local for loop and not all of them.
-    assigns = { array: [ [1, 2], [3, 4], [5, 6] ] };
+    assigns = { array: [[1, 2], [3, 4], [5, 6]] };
     markup = `{% for item in array %}
                {% for i in item %}
                  {% if i == 1 %}
@@ -363,14 +362,14 @@ describe('for_tag_test', () => {
   });
 
   it('test_for_parentloop_references_parent_loop', async () => {
-    const assigns = { outer: [ [1, 1, 1], [1, 1, 1] ] };
+    const assigns = { outer: [[1, 1, 1], [1, 1, 1]] };
     const fixture = '{% for inner in outer %}{% for k in inner %}{{ forloop.parentloop.index }}.{{ forloop.index }} {% endfor %}{% endfor %}';
 
     await assert_template_result('1.1 1.2 1.3 2.1 2.2 2.3 ', fixture, assigns);
   });
 
   it('test_for_parentloop_nil_when_not_present', async () => {
-    const assigns = { outer: [ [1, 1, 1], [1, 1, 1] ] };
+    const assigns = { outer: [[1, 1, 1], [1, 1, 1]] };
     const fixture = '{% for inner in outer %}{{ forloop.parentloop.index }}.{{ forloop.index }} {% endfor %}';
     await assert_template_result('.1 .2 ', fixture, assigns);
   });

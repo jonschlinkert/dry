@@ -1,7 +1,6 @@
-'use strict';
 
 require('mocha');
-const assert = require('assert').strict;
+const assert = require('node:assert/strict');
 const { assert_raises, with_global_filter } = require('../test_helpers');
 const Dry = require('../..');
 const { Context } = Dry;

@@ -1,7 +1,6 @@
-'use strict';
 
 const fill = require('fill-range');
-const assert = require('assert').strict;
+const assert = require('node:assert/strict');
 const Dry = require('../..');
 const { render_strict } = require('../test_helpers');
 

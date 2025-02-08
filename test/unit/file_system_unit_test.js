@@ -1,6 +1,5 @@
-'use strict';
 
-const assert = require('assert').strict;
+const assert = require('node:assert/strict');
 const Dry = require('../..');
 const { FileSystem, FileSystemError } = Dry;
 const { BlankFileSystem, LocalFileSystem } = FileSystem;

@@ -1,4 +1,3 @@
-'use strict';
 
 const { assert_template_result, StubFileSystem } = require('../../test_helpers');
 const { State, Template } = require('../../..');

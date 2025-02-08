@@ -1,6 +1,5 @@
-'use strict';
 
-const assert = require('assert').strict;
+const assert = require('node:assert/strict');
 const Dry = require('../../..');
 
 describe('case_tag_unit_test', () => {

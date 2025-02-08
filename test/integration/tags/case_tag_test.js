@@ -1,7 +1,6 @@
-'use strict';
 
 const { assert_template_result, render_strict } = require('../../test_helpers');
-const assert = require('assert').strict;
+const assert = require('node:assert/strict');
 const Dry = require('../../..');
 
 describe('case_tag_test', () => {

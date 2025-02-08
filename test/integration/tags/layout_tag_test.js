@@ -1,6 +1,5 @@
-'use strict';
 
-const assert = require('assert').strict;
+const assert = require('node:assert/strict');
 const { assert_template_result, StubFileSystem } = require('../../test_helpers');
 const { Template } = require('../../..');
 
@@ -103,10 +102,6 @@ describe('layout_tag_test', () => {
     });
 
     Template.file_system = new StubFileSystem(templates);
-
-    const template = Template.parse(fixture, { line_numbers: true });
-    const opts = { strict_filters: true, strict_variables: false };
-    const actual = await template.render({ name: 'base' }, opts)
     return assert_template_result(expected, fixture, { name: 'base' });
   });
 

@@ -1,6 +1,5 @@
-'use strict';
 
-const assert = require('assert').strict;
+const assert = require('node:assert/strict');
 const { with_custom_tag } = require('../test_helpers');
 const Dry = require('../..');
 

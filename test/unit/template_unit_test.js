@@ -1,6 +1,5 @@
-'use strict';
 
-const assert = require('assert').strict;
+const assert = require('node:assert/strict');
 const { fixture } = require('../test_helpers');
 const Dry = require('../..');
 const { I18n, Template } = Dry;

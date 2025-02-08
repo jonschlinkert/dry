@@ -1,7 +1,6 @@
 /* eslint-disable no-useless-catch */
-'use strict';
 
-const assert = require('assert').strict;
+const assert = require('node:assert/strict');
 const Dry = require('../..');
 const { assert_raises, assert_template_result, ThingWithToLiquid, with_error_mode } = require('../test_helpers');
 const { Context, StandardFilters, Template, utils } = Dry;
@@ -14,7 +13,7 @@ class TestThing {
     this.foo = 0;
     return new Proxy(this, {
       get(target, key) {
-        return (key in target || typeof key !== 'string') ? target[key] : target.get(key);
+        return key in target || typeof key !== 'string' ? target[key] : target.get(key);
       }
     });
   }
@@ -452,7 +451,7 @@ describe('standard_filters_test', () => {
     ];
 
     const templ = '{{ drops | map: "proc" }}';
-    await assert_template_result('foobar', templ, { drops: drops });
+    await assert_template_result('foobar', templ, { drops });
   });
 
   it('test_map_works_on_enumerables', async () => {
@@ -868,6 +867,7 @@ describe('standard_filters_test', () => {
       0.0,
       -1234.003030303,
       -99999999,
+      // eslint-disable-next-line no-loss-of-precision
       1234.38383000383830003838300,
       null,
       true,

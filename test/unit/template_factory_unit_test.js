@@ -1,6 +1,5 @@
-'use strict';
 
-const assert = require('assert').strict;
+const assert = require('node:assert/strict');
 const Dry = require('../..');
 
 describe('template_factory_unit_test', () => {

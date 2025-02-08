@@ -1,7 +1,6 @@
-'use strict';
 
 const util = require('util');
-const assert = require('assert').strict;
+const assert = require('node:assert/strict');
 const { with_global_filter } = require('../test_helpers');
 const Dry = require('../..');
 

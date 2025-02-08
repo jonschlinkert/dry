@@ -1,6 +1,5 @@
-'use strict';
 
-const assert = require('assert').strict;
+const assert = require('node:assert/strict');
 const Dry = require('../..');
 const { Condition, VariableLookup } = Dry;
 let context;
@@ -14,7 +13,7 @@ const assert_evaluates_true = async (left, op, right) => {
 };
 
 const assert_evaluates_false = async (left, op, right) => {
-  assert(!(await evaluate(left, op, right, context)), `Evaluated true: ${left} ${op} ${right}`);
+  assert(!await evaluate(left, op, right, context), `Evaluated true: ${left} ${op} ${right}`);
 };
 
 const assert_evaluates_argument_error = (left, op, right) => {
@@ -84,8 +83,8 @@ describe('condition_unit_test', () => {
   });
 
   it('test_hash_compare_backwards_compatibility', async () => {
-    assert(!(await new Condition({}, '>', 2).evaluate()));
-    assert(!(await new Condition(2, '>', {}).evaluate()));
+    assert(!await new Condition({}, '>', 2).evaluate());
+    assert(!await new Condition(2, '>', {}).evaluate());
     assert.equal(false, await new Condition({}, '==', 2).evaluate());
     assert.equal(true, await new Condition({ a: 1 }, '==', { a: 1 }).evaluate());
     assert.equal(true, await new Condition({ a: 2 }, 'contains', 'a').evaluate());

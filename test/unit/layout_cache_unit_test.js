@@ -1,6 +1,5 @@
-'use strict';
 
-const assert = require('assert').strict;
+const assert = require('node:assert/strict');
 const { StubFileSystem, StubTemplateFactory, times } = require('../test_helpers');
 const Dry = require('../..');
 

@@ -1,7 +1,6 @@
-'use strict';
 
 // const { unstyle } = require('ansi-colors');
-const assert = require('assert').strict;
+const assert = require('node:assert/strict');
 const { assert_raises, ErrorDrop, with_error_mode } = require('../test_helpers');
 const Dry = require('../..');
 
