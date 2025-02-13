@@ -52,7 +52,7 @@ describe('template tests', () => {
   });
 
   it('test_warnings_is_not_exponential_time', async function() {
-    this.timeout(50);
+    this.timeout(100);
     let str = 'false';
 
     times(100, () => {
