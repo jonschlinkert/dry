@@ -2,11 +2,15 @@
 
 const assert = require('node:assert/strict');
 const Dry = require('../..');
-const { assert_raises, assert_template_result, ThingWithToLiquid, with_error_mode } = require('../test_helpers');
-const { Context, StandardFilters, Template, utils } = Dry;
+const {
+  assert_raises,
+  assert_template_result,
+  ThingWithToLiquid,
+  with_error_mode
+} = require('../test_helpers');
 
+const { Context, StandardFilters, Template, utils } = Dry;
 const orig_filters = { ...StandardFilters };
-let filters;
 
 class TestThing {
   constructor() {
@@ -44,7 +48,11 @@ class TestDrop extends Dry.Drop {
 
 class TestEnumerable extends Dry.Drop {
   each(block) {
-    return [{ foo: 1, bar: 2 }, { foo: 2, bar: 1 }, { foo: 3, bar: 3 }].map(block);
+    return [
+      { foo: 1, bar: 2 },
+      { foo: 2, bar: 1 },
+      { foo: 3, bar: 3 }
+    ].map(block);
   }
   map(block) {
     return this.each(block);
@@ -62,7 +70,7 @@ class NumberLikeThing extends Dry.Drop {
   }
 }
 
-const w = s => !s ? [] : s.split(' ');
+const w = s => (!s ? [] : s.split(' '));
 
 const with_timezone = (tz, callback) => {
   const old_tz = process.env['TZ'];
@@ -77,15 +85,29 @@ const with_timezone = (tz, callback) => {
 };
 
 describe('standard_filters_test', () => {
+  let context;
+  let filters;
+
   beforeEach(() => {
+    context = new Context({
+      environments: {},
+      registers: {},
+      strict_filters: false
+    });
+
+    const createFilter = filterFn => function(...args) {
+      return filterFn.call({ context }, ...args);
+    };
+
     filters = {};
     for (const [key, value] of Object.entries(orig_filters)) {
-      filters[key] = function(...args) {
-        const ctx = this || {};
-        ctx.context ||= new Context();
-        return value.call(ctx, ...args);
-      };
+      filters[key] = createFilter(value);
     }
+  });
+
+  afterEach(() => {
+    context = null;
+    filters = null;
   });
 
   it('test_size', () => {
@@ -168,7 +190,10 @@ describe('standard_filters_test', () => {
   });
 
   it('test_escape_once', () => {
-    assert.equal('&lt;strong&gt;Hulk&lt;/strong&gt;', filters.escape_once('&lt;strong&gt;Hulk</strong>'));
+    assert.equal(
+      '&lt;strong&gt;Hulk&lt;/strong&gt;',
+      filters.escape_once('&lt;strong&gt;Hulk</strong>')
+    );
   });
 
   it('test_base64_encode', () => {
@@ -183,21 +208,31 @@ describe('standard_filters_test', () => {
   });
 
   it('test_base64_url_safe_encode', () => {
-    const fixture = 'abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 1234567890 !@#$%^&*()-=_+/?.:;[]{}\\|';
-    const expected = 'YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXogQUJDREVGR0hJSktMTU5PUFFSU1RVVldYWVogMTIzNDU2Nzg5MCAhQCMkJV4mKigpLT1fKy8_Ljo7W117fVx8';
+    const fixture =
+      'abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 1234567890 !@#$%^&*()-=_+/?.:;[]{}\\|';
+    const expected =
+      'YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXogQUJDREVGR0hJSktMTU5PUFFSU1RVVldYWVogMTIzNDU2Nzg5MCAhQCMkJV4mKigpLT1fKy8_Ljo7W117fVx8';
 
     assert.equal(expected, filters.base64_url_safe_encode(fixture));
     assert.equal('', filters.base64_url_safe_encode(null));
   });
 
   it('test_base64_url_safe_decode', async () => {
-    assert.equal('abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 1234567890 !@#$%^&*()-=_+/?.:;[]{}\\|', filters.base64_url_safe_decode('YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXogQUJDREVGR0hJSktMTU5PUFFSU1RVVldYWVogMTIzNDU2Nzg5MCAhQCMkJV4mKigpLT1fKy8_Ljo7W117fVx8'));
+    assert.equal(
+      'abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 1234567890 !@#$%^&*()-=_+/?.:;[]{}\\|',
+      filters.base64_url_safe_decode(
+        'YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXogQUJDREVGR0hJSktMTU5PUFFSU1RVVldYWVogMTIzNDU2Nzg5MCAhQCMkJV4mKigpLT1fKy8_Ljo7W117fVx8'
+      )
+    );
 
     const exception = await assert_raises(Dry.ArgumentError, () => {
       filters.base64_url_safe_decode('invalidbase64');
     });
 
-    assert.equal('Dry error: invalid base64 provided to base64_url_safe_decode', exception.message);
+    assert.equal(
+      'Dry error: invalid base64 provided to base64_url_safe_decode',
+      exception.message
+    );
   });
 
   it('test_url_encode', () => {
@@ -225,7 +260,13 @@ describe('standard_filters_test', () => {
     assert.equal('one two three', filters.truncatewords('one two three', 4));
     assert.equal('one two...', filters.truncatewords('one two three', 2));
     assert.equal('one two three', filters.truncatewords('one two three'));
-    assert.equal('Two small (13&//8221; x 5.5&//8221; x 10&//8221; high) baskets fit inside one large basket (13&//8221;...', filters.truncatewords('Two small (13&//8221; x 5.5&//8221; x 10&//8221; high) baskets fit inside one large basket (13&//8221; x 16&//8221; x 10.5&//8221; high) with cover.', 15));
+    assert.equal(
+      'Two small (13&//8221; x 5.5&//8221; x 10&//8221; high) baskets fit inside one large basket (13&//8221;...',
+      filters.truncatewords(
+        'Two small (13&//8221; x 5.5&//8221; x 10&//8221; high) baskets fit inside one large basket (13&//8221; x 16&//8221; x 10.5&//8221; high) with cover.',
+        15
+      )
+    );
     assert.equal('测试测试测试测试', filters.truncatewords('测试测试测试测试', 5));
     assert.equal('one two1', filters.truncatewords('one two three', 2, 1));
     assert.equal('one two three...', filters.truncatewords('one  two\tthree\nfour', 3));
@@ -235,14 +276,25 @@ describe('standard_filters_test', () => {
 
   it('test_truncatewords_errors', async () => {
     const max = Number.MAX_SAFE_INTEGER;
-    await assert.rejects(async () => filters.truncatewords('one two three four', max + 1), Dry.ArgumentError);
-    await assert.rejects(async () => filters.truncatewords('one two three four', max + 1), /too big for truncatewords/);
+    await assert.rejects(
+      async () => filters.truncatewords('one two three four', max + 1),
+      Dry.ArgumentError
+    );
+    await assert.rejects(
+      async () => filters.truncatewords('one two three four', max + 1),
+      /too big for truncatewords/
+    );
   });
 
   it('test_strip_html', () => {
     assert.equal('test', filters.strip_html('<div>test</div>'));
     assert.equal('test', filters.strip_html("<div id='test'>test</div>"));
-    assert.equal('', filters.strip_html("<script type='text/javascript'>document.write('some stuff');</script>"));
+    assert.equal(
+      '',
+      filters.strip_html(
+        "<script type='text/javascript'>document.write('some stuff');</script>"
+      )
+    );
     assert.equal('', filters.strip_html("<style type='text/css'>foo bar</style>"));
     assert.equal('test', filters.strip_html("<div\nclass='multiline'>test</div>"));
     assert.equal('test', filters.strip_html('<!-- foo bar \n test -->test'));
@@ -260,16 +312,22 @@ describe('standard_filters_test', () => {
 
   it('test_sort', () => {
     assert.deepEqual([1, 2, 3, 4], filters.sort([4, 3, 2, 1]));
-    assert.deepEqual([{ 'a': 1 }, { 'a': 2 }, { 'a': 3 }, { 'a': 4 }], filters.sort([{ 'a': 4 }, { 'a': 3 }, { 'a': 1 }, { 'a': 2 }], 'a'));
+    assert.deepEqual(
+      [{ a: 1 }, { a: 2 }, { a: 3 }, { a: 4 }],
+      filters.sort([{ a: 4 }, { a: 3 }, { a: 1 }, { a: 2 }], 'a')
+    );
   });
 
   it('test_sort_with_nils', () => {
     assert.deepEqual([1, 2, 3, 4, null], filters.sort([null, 4, 3, 2, 1]));
-    assert.deepEqual([{ 'a': 1 }, { 'a': 2 }, { 'a': 3 }, { 'a': 4 }, {}], filters.sort([{ 'a': 4 }, { 'a': 3 }, {}, { 'a': 1 }, { 'a': 2 }], 'a'));
+    assert.deepEqual(
+      [{ a: 1 }, { a: 2 }, { a: 3 }, { a: 4 }, {}],
+      filters.sort([{ a: 4 }, { a: 3 }, {}, { a: 1 }, { a: 2 }], 'a')
+    );
   });
 
   it('test_sort_when_property_is_sometimes_missing_puts_nils_last', () => {
-    const input       = [
+    const input = [
       { price: 4, handle: 'alpha' },
       { handle: 'beta' },
       { price: 1, handle: 'gamma' },
@@ -288,12 +346,21 @@ describe('standard_filters_test', () => {
 
   it('test_sort_natural', () => {
     assert.deepEqual(['a', 'B', 'c', 'D'], filters.sort_natural(['c', 'D', 'a', 'B']));
-    assert.deepEqual([{ a: 'a' }, { a: 'B' }, { a: 'c' }, { a: 'D' }], filters.sort_natural([{ a: 'D' }, { a: 'c' }, { a: 'a' }, { a: 'B' }], 'a'));
+    assert.deepEqual(
+      [{ a: 'a' }, { a: 'B' }, { a: 'c' }, { a: 'D' }],
+      filters.sort_natural([{ a: 'D' }, { a: 'c' }, { a: 'a' }, { a: 'B' }], 'a')
+    );
   });
 
   it('test_sort_natural_with_nils', () => {
-    assert.deepEqual(['a', 'B', 'c', 'D', null], filters.sort_natural([null, 'c', 'D', 'a', 'B']));
-    assert.deepEqual([{ a: 'a' }, { a: 'B' }, { a: 'c' }, { a: 'D' }, {}], filters.sort_natural([{ a: 'D' }, { a: 'c' }, {}, { a: 'a' }, { a: 'B' }], 'a'));
+    assert.deepEqual(
+      ['a', 'B', 'c', 'D', null],
+      filters.sort_natural([null, 'c', 'D', 'a', 'B'])
+    );
+    assert.deepEqual(
+      [{ a: 'a' }, { a: 'B' }, { a: 'c' }, { a: 'D' }, {}],
+      filters.sort_natural([{ a: 'D' }, { a: 'c' }, {}, { a: 'a' }, { a: 'B' }], 'a')
+    );
   });
 
   it('test_sort_natural_when_property_is_sometimes_missing_puts_nils_last', () => {
@@ -336,7 +403,10 @@ describe('standard_filters_test', () => {
     ];
 
     assert.deepEqual(expectation, filters.sort_natural(input, 'key'));
-    assert.deepEqual(['a', 'b', 'c', 'X', 'Y', 'Z'], filters.sort_natural(['X', 'Y', 'Z', 'a', 'b', 'c']));
+    assert.deepEqual(
+      ['a', 'b', 'c', 'X', 'Y', 'Z'],
+      filters.sort_natural(['X', 'Y', 'Z', 'a', 'b', 'c'])
+    );
   });
 
   it('test_sort_empty_array', () => {
@@ -365,13 +435,19 @@ describe('standard_filters_test', () => {
     assert.deepEqual([2, 10], filters.sort([10, 2]));
     assert.deepEqual([{ a: 2 }, { a: 10 }], filters.sort([{ a: 10 }, { a: 2 }], 'a'));
     assert.deepEqual(['10', '2'], filters.sort(['10', '2']));
-    assert.deepEqual([{ a: '10' }, { a: '2' }], filters.sort([{ a: '10' }, { a: '2' }], 'a'));
+    assert.deepEqual(
+      [{ a: '10' }, { a: '2' }],
+      filters.sort([{ a: '10' }, { a: '2' }], 'a')
+    );
   });
 
   it('test_uniq', () => {
     assert.deepEqual(['foo'], filters.uniq('foo'));
     assert.deepEqual([1, 3, 2, 4], filters.uniq([1, 1, 3, 2, 3, 1, 4, 3, 2, 1]));
-    assert.deepEqual([{ a: 1 }, { a: 3 }, { a: 2 }], filters.uniq([{ a: 1 }, { a: 3 }, { a: 1 }, { a: 2 }], 'a'));
+    assert.deepEqual(
+      [{ a: 1 }, { a: 3 }, { a: 2 }],
+      filters.uniq([{ a: 1 }, { a: 3 }, { a: 1 }, { a: 2 }], 'a')
+    );
     const testdrop = new TestDrop();
     assert.deepEqual([testdrop], filters.uniq([testdrop, new TestDrop()], 'test'));
   });
@@ -403,7 +479,10 @@ describe('standard_filters_test', () => {
   });
 
   it('test_map', async () => {
-    assert.deepEqual([1, 2, 3, 4], await filters.map([{ a: 1 }, { a: 2 }, { a: 3 }, { a: 4 }], 'a'));
+    assert.deepEqual(
+      [1, 2, 3, 4],
+      await filters.map([{ a: 1 }, { a: 2 }, { a: 3 }, { a: 4 }], 'a')
+    );
     await assert_template_result('abc', "{{ ary | map:'foo' | map:'bar' }}", {
       ary: [{ foo: { bar: 'a' } }, { foo: { bar: 'b' } }, { foo: { bar: 'c' } }]
     });
@@ -445,17 +524,16 @@ describe('standard_filters_test', () => {
   });
 
   it('test_map_over_drops_returning_procs', async () => {
-    const drops = [
-      { proc: () => 'foo' },
-      { proc: () => 'bar' }
-    ];
+    const drops = [{ proc: () => 'foo' }, { proc: () => 'bar' }];
 
     const templ = '{{ drops | map: "proc" }}';
     await assert_template_result('foobar', templ, { drops });
   });
 
   it('test_map_works_on_enumerables', async () => {
-    await assert_template_result('123', '{{ foo | map: "foo" }}', { foo: new TestEnumerable() });
+    await assert_template_result('123', '{{ foo | map: "foo" }}', {
+      foo: new TestEnumerable()
+    });
   });
 
   it('test_map_returns_empty_on_2d_input_array', async () => {
@@ -469,16 +547,24 @@ describe('standard_filters_test', () => {
   });
 
   it('test_sort_works_on_enumerables', async () => {
-    await assert_template_result('213', '{{ foo | sort: "bar" | map: "foo" }}', { foo: new TestEnumerable() });
+    await assert_template_result('213', '{{ foo | sort: "bar" | map: "foo" }}', {
+      foo: new TestEnumerable()
+    });
   });
 
   it('test_first_and_last_call_to_liquid', async () => {
-    await assert_template_result('foobar', '{{ foo | first }}', { foo: [new ThingWithToLiquid()] });
-    await assert_template_result('foobar', '{{ foo | last }}', { foo: [new ThingWithToLiquid()] });
+    await assert_template_result('foobar', '{{ foo | first }}', {
+      foo: [new ThingWithToLiquid()]
+    });
+    await assert_template_result('foobar', '{{ foo | last }}', {
+      foo: [new ThingWithToLiquid()]
+    });
   });
 
   it('test_truncate_calls_to_liquid', async () => {
-    await assert_template_result('wo...', '{{ foo | truncate: 5 }}', { foo: new TestThing() });
+    await assert_template_result('wo...', '{{ foo | truncate: 5 }}', {
+      foo: new TestThing()
+    });
   });
 
   it('test_date', cb => {
@@ -563,44 +649,67 @@ describe('standard_filters_test', () => {
 
   it('test_strip', async () => {
     await assert_template_result('ab c', '{{ source | strip }}', { source: ' ab c  ' });
-    await assert_template_result('ab c', '{{ source | strip }}', { source: ' \tab c  \n \t' });
+    await assert_template_result('ab c', '{{ source | strip }}', {
+      source: ' \tab c  \n \t'
+    });
   });
 
   it('test_lstrip', async () => {
-    await assert_template_result('ab c  ', '{{ source | lstrip }}', { source: ' ab c  ' });
-    await assert_template_result('ab c  \n \t', '{{ source | lstrip }}', { source: ' \tab c  \n \t' });
+    await assert_template_result('ab c  ', '{{ source | lstrip }}', {
+      source: ' ab c  '
+    });
+    await assert_template_result('ab c  \n \t', '{{ source | lstrip }}', {
+      source: ' \tab c  \n \t'
+    });
   });
 
   it('test_rstrip', async () => {
     await assert_template_result(' ab c', '{{ source | rstrip }}', { source: ' ab c  ' });
-    await assert_template_result(' \tab c', '{{ source | rstrip }}', { source: ' \tab c  \n \t' });
+    await assert_template_result(' \tab c', '{{ source | rstrip }}', {
+      source: ' \tab c  \n \t'
+    });
   });
 
   it('test_strip_newlines', async () => {
-    await assert_template_result('abc', '{{ source | strip_newlines }}', { source: 'a\nb\nc' });
-    await assert_template_result('abc', '{{ source | strip_newlines }}', { source: 'a\r\nb\nc' });
+    await assert_template_result('abc', '{{ source | strip_newlines }}', {
+      source: 'a\nb\nc'
+    });
+    await assert_template_result('abc', '{{ source | strip_newlines }}', {
+      source: 'a\r\nb\nc'
+    });
   });
 
   it('test_newlines_to_br', async () => {
-    await assert_template_result('a<br />\nb<br />\nc', '{{ source | newline_to_br }}', { source: 'a\nb\nc' });
-    await assert_template_result('a<br />\nb<br />\nc', '{{ source | newline_to_br }}', { source: 'a\r\nb\nc' });
+    await assert_template_result('a<br />\nb<br />\nc', '{{ source | newline_to_br }}', {
+      source: 'a\nb\nc'
+    });
+    await assert_template_result('a<br />\nb<br />\nc', '{{ source | newline_to_br }}', {
+      source: 'a\r\nb\nc'
+    });
   });
 
   it('test_plus', async () => {
     await assert_template_result('2', '{{ 1 | plus:1 }}');
     await assert_template_result('2.0', "{{ '1' | plus:'1.0' }}");
 
-    await assert_template_result('5', "{{ price | plus:'2' }}", { price: new NumberLikeThing(3) });
+    await assert_template_result('5', "{{ price | plus:'2' }}", {
+      price: new NumberLikeThing(3)
+    });
   });
 
   it('test_minus', async () => {
-    await assert_template_result('4', '{{ input | minus:operand }}', { input: 5, operand: 1 });
+    await assert_template_result('4', '{{ input | minus:operand }}', {
+      input: 5,
+      operand: 1
+    });
     await assert_template_result('2.3', "{{ '4.3' | minus:'2' }}");
 
-    await assert_template_result('5', "{{ price | minus:'2' }}", { price: new NumberLikeThing(7) });
+    await assert_template_result('5', "{{ price | minus:'2' }}", {
+      price: new NumberLikeThing(7)
+    });
   });
 
-  it('test_abs', async  () => {
+  it('test_abs', async () => {
     await assert_template_result('17', '{{ 17 | abs }}');
     await assert_template_result('17', '{{ -17 | abs }}');
     await assert_template_result('17', "{{ '17' | abs }}");
@@ -613,17 +722,19 @@ describe('standard_filters_test', () => {
     await assert_template_result('17.42', "{{ '-17.42' | abs }}");
   });
 
-  it('test_times', async  () => {
+  it('test_times', async () => {
     await assert_template_result('12', '{{ 3 | times:4 }}');
     await assert_template_result('0', "{{ 'foo' | times:4 }}");
     await assert_template_result('6', "{{ '2.1' | times:3 | replace: '.','-' | plus:0}}");
     await assert_template_result('7.25', '{{ 0.0725 | times:100 }}');
     await assert_template_result('-7.25', '{{ "-0.0725" | times:100 }}');
     await assert_template_result('7.25', '{{ "-0.0725" | times: -100 }}');
-    await assert_template_result('4', '{{ price | times:2 }}', { price: new NumberLikeThing(2) });
+    await assert_template_result('4', '{{ price | times:2 }}', {
+      price: new NumberLikeThing(2)
+    });
   });
 
-  it('test_divided_by', async  () => {
+  it('test_divided_by', async () => {
     await assert_template_result('4', '{{ 12 | divided_by:3 }}');
     await assert_template_result('4', '{{ 14 | divided_by:3 }}');
 
@@ -633,58 +744,85 @@ describe('standard_filters_test', () => {
 
     await assert_template_result('0.5', '{{ 2.0 | divided_by:4 }}');
     await assert_template_result('1', '{{ 4.0 | divided_by:4 }}');
-    await assert_template_result('5', '{{ price | divided_by:2 }}', { price: new NumberLikeThing(10) });
+    await assert_template_result('5', '{{ price | divided_by:2 }}', {
+      price: new NumberLikeThing(10)
+    });
   });
 
   it('test_divided_by_errors', async () => {
-    assert.equal('Dry error (line 1): divided_by - cannot divide by zero', await Template.parse('{{ 5 | divided_by:0 }}').render());
+    assert.equal(
+      'Dry error (line 1): divided_by - cannot divide by zero',
+      await Template.parse('{{ 5 | divided_by:0 }}').render()
+    );
 
-    await assert.rejects(async () => assert_template_result('', '{{ 5 | divided_by:0 }}'), Dry.ZeroDivisionError);
-    await assert.rejects(async () => assert_template_result('4', '{{ 1 | modulo: 0 }}'), Dry.ZeroDivisionError);
+    await assert.rejects(
+      async () => assert_template_result('', '{{ 5 | divided_by:0 }}'),
+      Dry.ZeroDivisionError
+    );
+    await assert.rejects(
+      async () => assert_template_result('4', '{{ 1 | modulo: 0 }}'),
+      Dry.ZeroDivisionError
+    );
   });
 
-  it('test_modulo', async  () => {
+  it('test_modulo', async () => {
     await assert_template_result('1', '{{ 3 | modulo:2 }}');
-    await assert_template_result('1', '{{ price | modulo:2 }}', { price: new NumberLikeThing(3) });
+    await assert_template_result('1', '{{ price | modulo:2 }}', {
+      price: new NumberLikeThing(3)
+    });
   });
 
-  it('test_modulo_error', async  () => {
-    await assert.rejects(async () => assert_template_result('4', '{{ 1 | modulo: 0 }}'), Dry.ZeroDivisionError);
+  it('test_modulo_error', async () => {
+    await assert.rejects(
+      async () => assert_template_result('4', '{{ 1 | modulo: 0 }}'),
+      Dry.ZeroDivisionError
+    );
   });
 
-  it('test_round', async  () => {
+  it('test_round', async () => {
     await assert_template_result('5', '{{ input | round }}', { input: 4.6 });
     await assert_template_result('4', "{{ '4.3' | round }}");
     await assert_template_result('4.56', '{{ input | round: 2 }}', { input: 4.5612 });
 
-    await assert_template_result('5', '{{ price | round }}', { price: new NumberLikeThing(4.6) });
-    await assert_template_result('4', '{{ price | round }}', { price: new NumberLikeThing(4.3) });
+    await assert_template_result('5', '{{ price | round }}', {
+      price: new NumberLikeThing(4.6)
+    });
+    await assert_template_result('4', '{{ price | round }}', {
+      price: new NumberLikeThing(4.3)
+    });
   });
 
-  it('test_round_float_domain_error', async  () => {
+  it('test_round_float_domain_error', async () => {
     // in ruby this was a FloatDomainError, but in js we're throwing a ZeroDivisionError
     // since floats do not retain decimals when the value is zero
-    await assert.rejects(async () => assert_template_result('4', '{{ 1.0 | divided_by: 0.0 | round }}'), Dry.ZeroDivisionError);
+    await assert.rejects(
+      async () => assert_template_result('4', '{{ 1.0 | divided_by: 0.0 | round }}'),
+      Dry.ZeroDivisionError
+    );
   });
 
-  it('test_ceil', async  () => {
+  it('test_ceil', async () => {
     await assert_template_result('5', '{{ input | ceil }}', { input: 4.6 });
     await assert_template_result('5', "{{ '4.3' | ceil }}");
 
-    await assert_template_result('5', '{{ price | ceil }}', { price: new NumberLikeThing(4.6) });
+    await assert_template_result('5', '{{ price | ceil }}', {
+      price: new NumberLikeThing(4.6)
+    });
   });
 
-  it('test_ceil_float_domain_error', async  () => {
+  it('test_ceil_float_domain_error', async () => {
     await assert.rejects(async () => {
       return assert_template_result('4', '{{ 1.0 | divided_by: 0.0 | ceil }}');
     }, Dry.ZeroDivisionError);
   });
 
-  it('test_floor', async  () => {
+  it('test_floor', async () => {
     await assert_template_result('4', '{{ input | floor }}', { input: 4.6 });
     await assert_template_result('4', "{{ '4.3' | floor }}");
 
-    await assert_template_result('5', '{{ price | floor }}', { price: new NumberLikeThing(5.4) });
+    await assert_template_result('5', '{{ price | floor }}', {
+      price: new NumberLikeThing(5.4)
+    });
   });
 
   it('test_floor_float_domain_error', async () => {
@@ -693,30 +831,42 @@ describe('standard_filters_test', () => {
     }, Dry.ZeroDivisionError);
   });
 
-  it('test_at_most', async  () => {
+  it('test_at_most', async () => {
     await assert_template_result('4', '{{ 5 | at_most:4 }}');
     await assert_template_result('5', '{{ 5 | at_most:5 }}');
     await assert_template_result('5', '{{ 5 | at_most:6 }}');
 
     await assert_template_result('4.5', '{{ 4.5 | at_most:5 }}');
-    await assert_template_result('5', '{{ width | at_most:5 }}', { 'width': new NumberLikeThing(6) });
-    await assert_template_result('4', '{{ width | at_most:5 }}', { 'width': new NumberLikeThing(4) });
-    await assert_template_result('4', '{{ 5 | at_most: width }}', { 'width': new NumberLikeThing(4) });
+    await assert_template_result('5', '{{ width | at_most:5 }}', {
+      width: new NumberLikeThing(6)
+    });
+    await assert_template_result('4', '{{ width | at_most:5 }}', {
+      width: new NumberLikeThing(4)
+    });
+    await assert_template_result('4', '{{ 5 | at_most: width }}', {
+      width: new NumberLikeThing(4)
+    });
   });
 
-  it('test_at_least', async  () => {
+  it('test_at_least', async () => {
     await assert_template_result('5', '{{ 5 | at_least:4 }}');
     await assert_template_result('5', '{{ 5 | at_least:5 }}');
     await assert_template_result('6', '{{ 5 | at_least:6 }}');
 
     await assert_template_result('5', '{{ 4.5 | at_least:5 }}');
-    await assert_template_result('6', '{{ width | at_least:5 }}', { 'width': new NumberLikeThing(6) });
-    await assert_template_result('5', '{{ width | at_least:5 }}', { 'width': new NumberLikeThing(4) });
-    await assert_template_result('6', '{{ 5 | at_least: width }}', { 'width': new NumberLikeThing(6) });
+    await assert_template_result('6', '{{ width | at_least:5 }}', {
+      width: new NumberLikeThing(6)
+    });
+    await assert_template_result('5', '{{ width | at_least:5 }}', {
+      width: new NumberLikeThing(4)
+    });
+    await assert_template_result('6', '{{ 5 | at_least: width }}', {
+      width: new NumberLikeThing(6)
+    });
   });
 
-  it('test_append', async  () => {
-    const assigns = { 'a': 'bc', 'b': 'd' };
+  it('test_append', async () => {
+    const assigns = { a: 'bc', b: 'd' };
     await assert_template_result('bcd', "{{ a | append: 'd'}}", assigns);
     await assert_template_result('bcd', '{{ a | append: b}}', assigns);
   });
@@ -736,11 +886,19 @@ describe('standard_filters_test', () => {
   });
 
   it('test_prepend', async () => {
-    const assigns = { 'a': 'bc', 'b': 'a' };
+    const assigns = { a: 'bc', b: 'a' };
     await assert_template_result('abc', "{{ a | prepend: 'a'}}", assigns);
     await assert_template_result('abc', '{{ a | prepend: b}}', assigns);
-    await assert_template_result('helloworld', '{{ "world" | prepend: "hello" }}', assigns);
-    await assert_template_result('helloworld', '{{ "world" | prepend : "hello" }}', assigns);
+    await assert_template_result(
+      'helloworld',
+      '{{ "world" | prepend: "hello" }}',
+      assigns
+    );
+    await assert_template_result(
+      'helloworld',
+      '{{ "world" | prepend : "hello" }}',
+      assigns
+    );
   });
 
   it('test_throws_when_missing_between_filter_name_and_filter_arguments', () => {
@@ -762,13 +920,16 @@ describe('standard_filters_test', () => {
   });
 
   it('test_default_handle_false', async () => {
-    assert.equal('foo', filters.default('foo', 'bar', { 'allow_false': true }));
-    assert.equal('bar', filters.default(null, 'bar', { 'allow_false': true }));
-    assert.equal('bar', filters.default('', 'bar', { 'allow_false': true }));
-    assert.equal(false, filters.default(false, 'bar', { 'allow_false': true }));
-    assert.equal('bar', filters.default([], 'bar', { 'allow_false': true }));
-    assert.equal('bar', filters.default({}, 'bar', { 'allow_false': true }));
-    await assert_template_result('false', "{{ false | default: 'bar', allow_false: true }}");
+    assert.equal('foo', filters.default('foo', 'bar', { allow_false: true }));
+    assert.equal('bar', filters.default(null, 'bar', { allow_false: true }));
+    assert.equal('bar', filters.default('', 'bar', { allow_false: true }));
+    assert.equal(false, filters.default(false, 'bar', { allow_false: true }));
+    assert.equal('bar', filters.default([], 'bar', { allow_false: true }));
+    assert.equal('bar', filters.default({}, 'bar', { allow_false: true }));
+    await assert_template_result(
+      'false',
+      "{{ false | default: 'bar', allow_false: true }}"
+    );
   });
 
   it('test_date_raises_nothing', async () => {
@@ -844,9 +1005,18 @@ describe('standard_filters_test', () => {
       { message: 'Hallo!', language: 'German' }
     ];
 
-    assert.deepEqual([{ message: 'Bonjour!', language: 'French' }], filters.where(input, 'language', 'French'));
-    assert.deepEqual([{ message: 'Hallo!', language: 'German' }], filters.where(input, 'language', 'German'));
-    assert.deepEqual([{ message: 'Hello!', language: 'English' }], filters.where(input, 'language', 'English'));
+    assert.deepEqual(
+      [{ message: 'Bonjour!', language: 'French' }],
+      filters.where(input, 'language', 'French')
+    );
+    assert.deepEqual(
+      [{ message: 'Hallo!', language: 'German' }],
+      filters.where(input, 'language', 'German')
+    );
+    assert.deepEqual(
+      [{ message: 'Hello!', language: 'English' }],
+      filters.where(input, 'language', 'English')
+    );
   });
 
   it('test_where_array_of_only_unindexable_values', () => {
@@ -854,66 +1024,8 @@ describe('standard_filters_test', () => {
     assert.equal(filters.where([null], 'ok'), null);
   });
 
-  it.skip('test_all_filters_never_raise_non_liquid_exception', () => {
-    const test_drop = new TestDrop();
-    test_drop.context = new Dry.Context();
-
-    const test_enum = new TestEnumerable();
-    test_enum.context = new Dry.Context();
-
-    const test_types = [
-      'foo',
-      123,
-      0,
-      0.0,
-      -1234.003030303,
-      -99999999,
-      // eslint-disable-next-line no-loss-of-precision
-      1234.38383000383830003838300,
-      null,
-      true,
-      false,
-      new TestThing(),
-      test_drop,
-      test_enum,
-      ['foo', 'bar'],
-      { foo: 'bar' },
-      { foo: 'bar' },
-      [{ foo: 'bar' }, { foo: 123 }, { foo: null }, { foo: true }, { foo: ['foo', 'bar'] }],
-      { 1: 'bar' },
-      ['foo', 123, null, true, false, Dry.Drop, ['foo'], { foo: 'bar' }]
-    ];
-
-    test_types.forEach(first => {
-      test_types.forEach(other => {
-        Object.keys(filters).forEach(method => {
-          const filter = filters[method];
-          if (typeof filter !== 'function') return;
-          // let arg_count = filter.length;
-          // if (arg_count < 0) arg_count *= -1;
-          const inputs = [first, other];
-          // if (arg_count > 1) inputs.push([other] * (arg_count - 1));
-          try {
-            return filter(...inputs);
-          } catch (err) {
-            if (!(err instanceof Dry.DryError)) {
-              console.log(err);
-            }
-            // Dry.ArgumentError, Dry.ZeroDivisionError
-            return null;
-          }
-        });
-      });
-    });
-  });
-
   it('test_where_no_target_value', () => {
-    const input = [
-      { foo: false },
-      { foo: true },
-      { foo: 'for sure' },
-      { bar: true }
-    ];
+    const input = [{ foo: false }, { foo: true }, { foo: 'for sure' }, { bar: true }];
 
     assert.deepEqual([{ foo: true }, { foo: 'for sure' }], filters.where(input, 'foo'));
   });
